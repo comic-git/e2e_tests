@@ -1,0 +1,3 @@
+This page exists to validate that page-local post text migrates into TOML cleanly.
+
+It also uses the singular `Filename` field rather than `Filenames`.
