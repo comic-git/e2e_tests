@@ -1,0 +1,7 @@
+{
+  "comic": {
+    "og:title": "Custom share title for page 007",
+    "og:description": "This page overrides the default social media description.",
+    "og:image:alt": "A custom alt description for social sharing"
+  }
+}

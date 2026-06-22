@@ -1,0 +1,201 @@
+<?xml version="1.0" ?>
+<rss xmlns:atom="http://www.w3.org/2005/Atom" xmlns:dc="http://purl.org/dc/elements/1.1/" version="2.0">
+    <channel>
+        <atom:link href="https://comic-git.github.io/e2e_tests/feed.xml" rel="self" type="application/rss+xml"/>
+        <title>This is your new comic_git site!</title>
+        <description>Explore a free webcomic-based static site generator delivered through GitHub!</description>
+        <link>https://comic-git.github.io/e2e_tests/</link>
+        <dc:creator>Your Name Here</dc:creator>
+        <language>en-us</language>
+        <image>
+            <title>This is your new comic_git site!</title>
+            <link>https://comic-git.github.io/e2e_tests/</link>
+            <url>https://comic-git.github.io/e2e_tests/your_content/images/banner.png</url>
+            <width>100</width>
+            <height>36</height>
+        </image>
+        <item>
+            <title>Page 1</title>
+            <dc:creator>Your Name Here</dc:creator>
+            <pubDate>Fri, 01 Aug 2025 00:00:00 +0000</pubDate>
+            <link>https://comic-git.github.io/e2e_tests/comic/001/</link>
+            <guid isPermaLink="true">https://comic-git.github.io/e2e_tests/comic/001/</guid>
+            <category type="storyline">Chapter 1</category>
+            <category type="character">Alice</category>
+            <category type="character">Bob</category>
+            <category type="character">Eve</category>
+            <category type="tag">Tag 1</category>
+            <category type="tag">Tag 2</category>
+            <category type="tag">Tag 3</category>
+            <description><![CDATA[<p><img src="https://comic-git.github.io/e2e_tests/your_content/comics/001/Page 1.png" alt_text="This is where your first comic page will go!"></p>
+
+<hr>
+
+<p>If you'd like some ideas on what "you" can do next with comic_git...</p>
+
+<ul>
+<li>Replace the image on this page with your own comic image by replacing the <code>Page 1.png</code> file at <code>your_content/comics/001/</code></li>
+<li>Update this page's Post Date, Tags, or other details by updating the <code>info.ini</code> file at <code>your_content/comics/001/</code></li>
+<li>Replace the text you're reading right now by updating the <code>post.txt</code> file at <code>your_content/comics/001/</code></li>
+<li>Change the English transcript below by updating the <code>English.txt</code> file at <code>your_content/comics/001/</code></li>
+<li>Read through <a href="https://comic-git.gitbook.io/documentation/basic-editing/adding-comic-pages">Adding Comic Pages</a> for more information on uploading comic pages to your site.</li>
+</ul>
+
+<p>For more helpful tips on how best to use comic_git:</p>
+
+<ul>
+<li>If you want your home page to be your latest comic, <a href="https://comic-git.gitbook.io/documentation/advanced-editing/themes#using-existing-themes">set your Theme</a> to <code>homepage_is_latest_comic</code>.</li>
+<li>To make basic aesthetic changes to your new website, like changing colors and fonts, update the <code>fonts.css</code> and <code>stylesheet.css</code> files located in the <code>your_content/themes/&lt;theme&gt;/css/</code> folder.</li>
+<li>Make sure you read through and understand the <a href="https://comic-git.gitbook.io/documentation/basic-editing/editing-your-website">Basic Editing</a> section of the documentation.</li>
+<li>Once you're comfortable with the basic comic_git usage, make sure to check out <a href="https://comic-git.gitbook.io/documentation/advanced-editing/advanced-editing-and-the-comic_git-engine">Advanced Editing</a> or even <a href="https://comic-git.gitbook.io/documentation/expert-editing/expert-editing">Expert Editing</a>!</li>
+<li>If you ever have troubles, or your website doesn't build properly, make sure to check out the <a href="https://comic-git.gitbook.io/documentation/additional-information/troubleshooting">Troubleshooting</a> page.</li>
+</ul>
+]]></description>
+        </item>
+        <item>
+            <title>Full Metadata Page</title>
+            <dc:creator>Your Name Here</dc:creator>
+            <pubDate>Sat, 02 Aug 2025 00:00:00 +0000</pubDate>
+            <link>https://comic-git.github.io/e2e_tests/comic/002/</link>
+            <guid isPermaLink="true">https://comic-git.github.io/e2e_tests/comic/002/</guid>
+            <category type="storyline">Chapter 1</category>
+            <category type="character">Alice</category>
+            <category type="character">Bob</category>
+            <category type="tag">happy-path</category>
+            <category type="tag">metadata</category>
+            <description><![CDATA[<p><img src="https://comic-git.github.io/e2e_tests/your_content/comics/002/Page 2.png" alt_text="A page that exercises the common metadata fields."></p>
+
+<hr>
+
+<p></p>
+]]></description>
+        </item>
+        <item>
+            <title>Explicit Multi Image Order</title>
+            <dc:creator>Your Name Here</dc:creator>
+            <pubDate>Sun, 03 Aug 2025 00:00:00 +0000</pubDate>
+            <link>https://comic-git.github.io/e2e_tests/comic/003/</link>
+            <guid isPermaLink="true">https://comic-git.github.io/e2e_tests/comic/003/</guid>
+            <category type="storyline">Chapter 1</category>
+            <category type="character">Alice</category>
+            <category type="tag">happy-path</category>
+            <category type="tag">image-order</category>
+            <description><![CDATA[<p><img src="https://comic-git.github.io/e2e_tests/your_content/comics/003/panel-b.png" alt_text="Two images rendered in explicit order."></p>
+<p><img src="https://comic-git.github.io/e2e_tests/your_content/comics/003/panel-a.png" alt_text="Two images rendered in explicit order."></p>
+
+<hr>
+
+<p></p>
+]]></description>
+        </item>
+        <item>
+            <title>alpha</title>
+            <dc:creator>Your Name Here</dc:creator>
+            <pubDate>Mon, 04 Aug 2025 00:00:00 +0000</pubDate>
+            <link>https://comic-git.github.io/e2e_tests/comic/004/</link>
+            <guid isPermaLink="true">https://comic-git.github.io/e2e_tests/comic/004/</guid>
+            <category type="storyline">Chapter 1</category>
+            <category type="character">Bob</category>
+            <category type="tag">edge-case</category>
+            <category type="tag">auto-discovery</category>
+            <description><![CDATA[<p><img src="https://comic-git.github.io/e2e_tests/your_content/comics/004/alpha.png" alt_text="Images on this page are discovered automatically."></p>
+<p><img src="https://comic-git.github.io/e2e_tests/your_content/comics/004/beta.png" alt_text="Images on this page are discovered automatically."></p>
+
+<hr>
+
+<p></p>
+]]></description>
+        </item>
+        <item>
+            <title>Singular Filename And Post Text</title>
+            <dc:creator>Your Name Here</dc:creator>
+            <pubDate>Tue, 05 Aug 2025 00:00:00 +0000</pubDate>
+            <link>https://comic-git.github.io/e2e_tests/comic/005/</link>
+            <guid isPermaLink="true">https://comic-git.github.io/e2e_tests/comic/005/</guid>
+            <category type="storyline">Chapter 1</category>
+            <category type="character">Eve</category>
+            <category type="tag">happy-path</category>
+            <category type="tag">post-text</category>
+            <description><![CDATA[<p><img src="https://comic-git.github.io/e2e_tests/your_content/comics/005/cover.png" alt_text="This page uses the singular Filename field."></p>
+
+<hr>
+
+<p>This page exists to validate that page-local post text migrates into TOML cleanly.</p>
+
+<p>It also uses the singular <code>Filename</code> field rather than <code>Filenames</code>.</p>
+]]></description>
+        </item>
+        <item>
+            <title>Transcript Precedence</title>
+            <dc:creator>Your Name Here</dc:creator>
+            <pubDate>Wed, 06 Aug 2025 00:00:00 +0000</pubDate>
+            <link>https://comic-git.github.io/e2e_tests/comic/006/</link>
+            <guid isPermaLink="true">https://comic-git.github.io/e2e_tests/comic/006/</guid>
+            <category type="storyline">Chapter 2</category>
+            <category type="character">Alice</category>
+            <category type="character">Eve</category>
+            <category type="tag">edge-case</category>
+            <category type="tag">transcripts</category>
+            <description><![CDATA[<p><img src="https://comic-git.github.io/e2e_tests/your_content/comics/006/Page 6.png" alt_text="This page has multiple transcript files."></p>
+
+<hr>
+
+<p></p>
+]]></description>
+        </item>
+        <item>
+            <title>Page Social Override</title>
+            <dc:creator>Your Name Here</dc:creator>
+            <pubDate>Thu, 07 Aug 2025 00:00:00 +0000</pubDate>
+            <link>https://comic-git.github.io/e2e_tests/comic/007/</link>
+            <guid isPermaLink="true">https://comic-git.github.io/e2e_tests/comic/007/</guid>
+            <category type="storyline">Chapter 2</category>
+            <category type="character">Bob</category>
+            <category type="character">Eve</category>
+            <category type="tag">edge-case</category>
+            <category type="tag">social-media</category>
+            <description><![CDATA[<p><img src="https://comic-git.github.io/e2e_tests/your_content/comics/007/Page 7.png" alt_text="This page defines custom social metadata."></p>
+
+<hr>
+
+<p></p>
+]]></description>
+        </item>
+        <item>
+            <title>Extra Metadata Preservation</title>
+            <dc:creator>Your Name Here</dc:creator>
+            <pubDate>Fri, 08 Aug 2025 00:00:00 +0000</pubDate>
+            <link>https://comic-git.github.io/e2e_tests/comic/008/</link>
+            <guid isPermaLink="true">https://comic-git.github.io/e2e_tests/comic/008/</guid>
+            <category type="storyline">Chapter 2</category>
+            <category type="character">Alice</category>
+            <category type="character">Bob</category>
+            <category type="character">Eve</category>
+            <category type="tag">edge-case</category>
+            <category type="tag">extra-fields</category>
+            <description><![CDATA[<p><img src="https://comic-git.github.io/e2e_tests/your_content/comics/008/Page 8.png" alt_text="This page carries custom metadata for hooks and templates."></p>
+
+<hr>
+
+<p></p>
+]]></description>
+        </item>
+        <item>
+            <title>External Transcript Folder</title>
+            <dc:creator>Your Name Here</dc:creator>
+            <pubDate>Sat, 09 Aug 2025 00:00:00 +0000</pubDate>
+            <link>https://comic-git.github.io/e2e_tests/comic/009/</link>
+            <guid isPermaLink="true">https://comic-git.github.io/e2e_tests/comic/009/</guid>
+            <category type="storyline">Chapter 2</category>
+            <category type="character">Alice</category>
+            <category type="tag">edge-case</category>
+            <category type="tag">external-transcripts</category>
+            <description><![CDATA[<p><img src="https://comic-git.github.io/e2e_tests/your_content/comics/009/Page 9.png" alt_text="This page loads transcripts from the configured transcripts folder."></p>
+
+<hr>
+
+<p></p>
+]]></description>
+        </item>
+    </channel>
+</rss>

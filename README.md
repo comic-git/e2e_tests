@@ -1,4 +1,4 @@
-﻿# e2e_tests
+# e2e_tests
 
 This repo is a local end-to-end test harness for `comic_git_engine`.
 
@@ -26,14 +26,35 @@ Harness-specific artifacts should live outside `your_content/`.
 ```text
 .
   your_content/         # realistic host-repo fixture content
-  golden_build/         # expected built site output
-  golden_toml/          # expected migrated TOML output
+  golden_builds/        # expected built site output grouped by scenario
+  golden_toml/          # expected migrated TOML output grouped by scenario later
   scripts/              # local harness scripts
-  specs/                # plans and design notes for the harness
+  specs/                # ephemeral plans and design notes for the harness
   comic_git_engine/     # local engine link/junction
 ```
 
 Some of these folders may not exist yet. The harness can grow into this shape incrementally.
+
+## Current State
+
+Implemented today:
+
+- `scripts/run_e2e.py`
+- `refresh-build` command
+- `legacy-build` command
+- temp-workspace execution
+- byte-for-byte build comparison against `golden_builds/<scenario>/`
+- full parity baseline scenario at `golden_builds/e2e_tests/`
+- realistic legacy fixture content under `your_content/`
+- distinct generated fixture art for pages `002` through `010`
+
+Current default scenario behavior:
+
+- scenario name: `e2e_tests`
+- `GITHUB_REPOSITORY` is set by the harness
+- the baseline scenario should rely on GitHub Pages inference from `GITHUB_REPOSITORY`
+- `Comic subdirectory` and `Comic domain` should be omitted from `your_content/comic_info.ini` in the baseline scenario
+- explicit `comic_info.ini` override cases should be modeled as separate scenarios with their own goldens
 
 ## Test Strategy
 
@@ -41,16 +62,25 @@ The intended validation flow is:
 
 1. copy the repo to a temp workspace
 2. run a legacy build
-3. compare the built output to `golden_build/`
+3. compare the built output to `golden_builds/<scenario>/`
 4. migrate legacy content to TOML
-5. compare generated TOML to `golden_toml/`
+5. compare generated TOML to `golden_toml/<scenario>/`
 6. run a TOML build
-7. compare the built output to `golden_build/`
+7. compare the built output to `golden_builds/<scenario>/`
 
 This gives two distinct guarantees:
 
 - migration correctness
 - rendering correctness after migration
+
+## Golden Strategy
+
+Use two kinds of golden scenarios:
+
+- one full parity scenario that captures the whole built site
+- smaller focused scenarios that only include the files they care about
+
+Subset scenarios should compare only the files present in the selected golden directory. If a scenario needs to prove a file should not exist, add an explicit absence assertion mechanism rather than forcing every scenario to store a full site copy.
 
 ## Notes
 
