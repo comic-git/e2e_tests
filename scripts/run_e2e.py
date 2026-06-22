@@ -13,6 +13,7 @@ ROOT = Path(__file__).resolve().parents[1]
 GOLDEN_BUILDS_ROOT = ROOT / 'golden_builds'
 DEFAULT_SCENARIO = 'e2e_tests'
 DEFAULT_GITHUB_REPOSITORY = 'comic-git/e2e_tests'
+DEFAULT_PYTHON = ROOT / 'venv' / 'Scripts' / 'python.exe'
 IGNORE_WORKSPACE_NAMES = {
     '.git',
     '.idea',
@@ -34,6 +35,12 @@ def parse_args() -> argparse.Namespace:
         '--github-repository',
         default=DEFAULT_GITHUB_REPOSITORY,
         help='Value to use for GITHUB_REPOSITORY during builds.',
+    )
+    parser.add_argument(
+        '--python',
+        dest='python_executable',
+        default=str(DEFAULT_PYTHON if DEFAULT_PYTHON.exists() else Path(sys.executable)),
+        help='Python executable to use when running comic_git_engine.',
     )
     parser.add_argument('--keep-temp', action='store_true', help='Keep the temporary workspace for debugging.')
     return parser.parse_args()
@@ -77,11 +84,11 @@ def create_engine_junction(workspace: Path, engine_target: Path) -> None:
     )
 
 
-def build_legacy_site(workspace: Path, github_repository: str) -> Path:
+def build_legacy_site(workspace: Path, github_repository: str, python_executable: str) -> Path:
     env = os.environ.copy()
     env['GITHUB_REPOSITORY'] = github_repository
     subprocess.run(
-        [sys.executable, str(workspace / 'comic_git_engine' / 'src' / 'build' / 'build_site.py')],
+        [python_executable, str(workspace / 'comic_git_engine' / 'src' / 'build' / 'build_site.py')],
         cwd=workspace,
         env=env,
         check=True,
@@ -158,7 +165,7 @@ def cmd_refresh_build(args: argparse.Namespace) -> int:
     with TempWorkspace(args.keep_temp) as workspace:
         copy_fixture_repo(workspace)
         create_engine_junction(workspace, engine_target)
-        build_dir = build_legacy_site(workspace, args.github_repository)
+        build_dir = build_legacy_site(workspace, args.github_repository, args.python_executable)
         refresh_golden_build(build_dir, golden_dir)
     print(f'Refreshed golden build at {golden_dir}')
     return 0
@@ -173,7 +180,7 @@ def cmd_legacy_build(args: argparse.Namespace) -> int:
     with TempWorkspace(args.keep_temp) as workspace:
         copy_fixture_repo(workspace)
         create_engine_junction(workspace, engine_target)
-        build_dir = build_legacy_site(workspace, args.github_repository)
+        build_dir = build_legacy_site(workspace, args.github_repository, args.python_executable)
         differences = compare_directories(golden_dir, build_dir)
     if differences:
         print(f'Legacy build did not match golden build scenario {args.scenario}:', file=sys.stderr)
