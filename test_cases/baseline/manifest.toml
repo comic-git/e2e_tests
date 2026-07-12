@@ -1,0 +1,8 @@
+name = "baseline"
+
+[env]
+GITHUB_REPOSITORY = "comic-git/e2e_tests"
+
+[compare.build]
+mode = "full"
+absent = []

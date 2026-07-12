@@ -11,23 +11,19 @@ Its job is to validate that the engine can:
 
 ## Design Constraints
 
-This repo should continue to look like a normal `comic_git` host repo in all the ways that matter to the engine.
+This repo is a harness repo, not a normal `comic_git` host repo.
 
-That means:
+Checked-in fixture inputs live under `test_cases/<case>/your_content/`. During a run, the harness stages the selected fixture into a temporary workspace as root-level `your_content/`, so the engine still sees a realistic host-repo layout without mutating checked-in fixture data.
 
-- all user-provided site content lives under `your_content/`
-- `your_content/` should look like something a real user might create
-- engine-facing fixture data should stay realistic and readable
-
-Harness-specific artifacts should live outside `your_content/`.
+Root-level `your_content/` and `build/` are ignored to avoid accidentally committing local manual runs.
 
 ## Expected Layout
 
 ```text
 .
-  your_content/         # realistic host-repo fixture content
-  golden_builds/        # expected built site output grouped by scenario
-  golden_toml/          # expected migrated TOML output grouped by scenario later
+  test_cases/           # checked-in fixture inputs and manifests
+  golden_builds/        # expected built site output grouped by test case
+  golden_toml/          # expected migrated TOML output grouped by test case later
   scripts/              # local harness scripts
   specs/                # ephemeral plans and design notes for the harness
   comic_git_engine/     # local engine link/junction
@@ -43,30 +39,50 @@ Implemented today:
 - `refresh-build` command
 - `legacy-build` command
 - temp-workspace execution
-- byte-for-byte build comparison against `golden_builds/<scenario>/`
-- full parity baseline scenario at `golden_builds/e2e_tests/`
-- realistic legacy fixture content under `your_content/`
+- test case inputs under `test_cases/<case>/your_content/`
+- co-located test case manifests at `test_cases/<case>/manifest.toml`
+- byte-for-byte build comparison against `golden_builds/<case>/`
+- full parity baseline test case at `golden_builds/baseline/`
+- realistic legacy fixture content under `test_cases/baseline/your_content/`
 - distinct generated fixture art for pages `002` through `010`
 
-Current default scenario behavior:
+Current default test case behavior:
 
-- scenario name: `e2e_tests`
-- `GITHUB_REPOSITORY` is set by the harness
-- the baseline scenario should rely on GitHub Pages inference from `GITHUB_REPOSITORY`
-- `Comic subdirectory` and `Comic domain` should be omitted from `your_content/comic_info.ini` in the baseline scenario
-- explicit `comic_info.ini` override cases should be modeled as separate scenarios with their own goldens
+- test case name: `baseline`
+- `GITHUB_REPOSITORY` is set by `test_cases/baseline/manifest.toml`
+- the baseline test case should rely on GitHub Pages inference from `GITHUB_REPOSITORY`
+- `Comic subdirectory` and `Comic domain` should be omitted from `test_cases/baseline/your_content/comic_info.ini`
+- explicit `comic_info.ini` override cases should be modeled as separate test cases with their own goldens
+
+## Test Case Manifests
+
+Each test case has a co-located `manifest.toml`:
+
+```toml
+name = "baseline"
+
+[env]
+GITHUB_REPOSITORY = "comic-git/e2e_tests"
+
+[compare.build]
+mode = "full"
+absent = []
+```
+
+`compare.build.mode` can be `full` or `subset`. Full mode compares the entire build output against `golden_builds/<case>/`; subset mode compares only files present in the golden directory. `compare.build.absent` lists output paths that must not exist.
 
 ## Test Strategy
 
 The intended validation flow is:
 
 1. copy the repo to a temp workspace
-2. run a legacy build
-3. compare the built output to `golden_builds/<scenario>/`
-4. migrate legacy content to TOML
-5. compare generated TOML to `golden_toml/<scenario>/`
-6. run a TOML build
-7. compare the built output to `golden_builds/<scenario>/`
+2. stage `test_cases/<case>/your_content/` as `your_content/`
+3. run a legacy build
+4. compare the built output to `golden_builds/<case>/`
+5. migrate legacy content to TOML
+6. compare generated TOML to `golden_toml/<case>/`
+7. run a TOML build
+8. compare the built output to `golden_builds/<case>/`
 
 This gives two distinct guarantees:
 
@@ -75,12 +91,12 @@ This gives two distinct guarantees:
 
 ## Golden Strategy
 
-Use two kinds of golden scenarios:
+Use two kinds of golden test cases:
 
-- one full parity scenario that captures the whole built site
-- smaller focused scenarios that only include the files they care about
+- one full parity test case that captures the whole built site
+- smaller focused test cases that only include the files they care about
 
-Subset scenarios should compare only the files present in the selected golden directory. If a scenario needs to prove a file should not exist, add an explicit absence assertion mechanism rather than forcing every scenario to store a full site copy.
+Subset test cases should compare only the files present in the selected golden directory. If a test case needs to prove a file should not exist, add an explicit absence assertion mechanism rather than forcing every test case to store a full site copy.
 
 ## Notes
 

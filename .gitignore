@@ -6,3 +6,6 @@ specs/
 
 *.pyc
 /comic_git_engine
+/comic_git_engine/
+/build/
+/your_content/
