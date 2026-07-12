@@ -50,3 +50,5 @@ See [`docs/testing.md`](docs/testing.md) for the full harness workflow.
 | `specs/`                           | Ignored scratch plans and temporary agent notes            |
 
 Root-level `your_content/` and `build/` are ignored local artifacts. Checked-in fixture input belongs under `test_cases/<case>/your_content/`.
+
+Golden builds are directly viewable with a local static server. For normal non-empty subdirectory cases, serve `golden_builds/` and open `/<case>/`. Blank-subdirectory cases are the exception; serve that case's golden folder directly and open `/`.

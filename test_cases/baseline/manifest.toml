@@ -9,4 +9,4 @@ migration = false
 migrated_build = false
 
 [env]
-GITHUB_REPOSITORY = "comic-git/e2e_tests"
+GITHUB_REPOSITORY = "comic-git/baseline"

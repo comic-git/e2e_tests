@@ -16,7 +16,7 @@ This document is a human-readable planning and review aid. Test behavior is defi
 
 ## Inputs
 
-- Env: `GITHUB_REPOSITORY=comic-git/e2e_tests`
+- Env: `GITHUB_REPOSITORY=comic-git/baseline`
 - Source format: legacy INI
 - Check: build output parity
 - Comparison: full byte-for-byte build output parity
@@ -36,7 +36,8 @@ This document is a human-readable planning and review aid. Test behavior is defi
 
 ## Expected Behavior
 
-- GitHub Pages base URL and subdirectory are inferred from `GITHUB_REPOSITORY`.
+- GitHub Pages base URL and `/baseline` subdirectory are inferred from `GITHUB_REPOSITORY`.
 - `Comic subdirectory` and `Comic domain` are omitted from `comic_info.ini`.
 - Future-dated page source content remains part of copied content, but no public comic page is emitted for it.
 - Fresh build output matches `golden_builds/baseline/` byte-for-byte.
+- The golden can be reviewed by serving `golden_builds/` and opening `/baseline/`.

@@ -1,0 +1,12 @@
+name = "blank-subdirectory"
+description = "Focused build parity coverage for a site mounted at the domain root with a blank Comic subdirectory."
+source_format = "legacy_ini"
+tags = ["legacy-ini", "blank-subdirectory", "focused", "full-parity"]
+
+[checks]
+build = true
+migration = false
+migrated_build = false
+
+[env]
+GITHUB_REPOSITORY = "ignored/example-repo"

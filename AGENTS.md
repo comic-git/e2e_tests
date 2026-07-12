@@ -42,3 +42,5 @@ This repo is a harness repo, not a normal `comic_git` host repo. Root-level `you
 - golden build: `golden_builds/baseline/`
 
 The baseline case exercises GitHub Pages inference by omitting `Comic subdirectory` and `Comic domain` from `comic_info.ini` and setting `GITHUB_REPOSITORY` in the manifest.
+
+For local visual review, any non-empty base subdirectory must match the test case name. Blank-subdirectory cases are explicit exceptions and should be reviewed by serving their own golden folder directly.

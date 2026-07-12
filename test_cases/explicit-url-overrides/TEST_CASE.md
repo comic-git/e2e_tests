@@ -20,15 +20,16 @@ This document is a human-readable planning and review aid. Test behavior is defi
 - Check: build output parity
 - Env: `GITHUB_REPOSITORY=ignored/example-repo`
 - Config override: `Comic domain = example.test`
-- Config override: `Comic subdirectory = custom-comic`
+- Config override: `Comic subdirectory = explicit-url-overrides`
 
 ## Coverage
 
 - Explicit `Comic domain` overrides any domain inferred from `GITHUB_REPOSITORY`.
 - Explicit `Comic subdirectory` overrides any repository-name subdirectory inferred from `GITHUB_REPOSITORY`.
-- Generated URLs and root-relative asset paths use `/custom-comic`.
+- Generated URLs and root-relative asset paths use `/explicit-url-overrides`.
 
 ## Expected Behavior
 
-- Build logs report `https://example.test/custom-comic`.
+- Build logs report `https://example.test/explicit-url-overrides`.
 - Fresh build output matches `golden_builds/explicit-url-overrides/` byte-for-byte.
+- The golden can be reviewed by serving `golden_builds/` and opening `/explicit-url-overrides/`.

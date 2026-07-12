@@ -59,6 +59,7 @@ Rules:
 - Keep `manifest.toml` machine-readable and explicit.
 - Keep `TEST_CASE.md` human-readable; do not encode behavior there.
 - Keep focused cases small rather than using subset comparisons.
+- For local review, any non-empty base subdirectory must match the test case name.
 - Do not rely on root-level `your_content/`; it is ignored and only for local manual runs.
 
 ## Adding A Test Case
@@ -80,6 +81,31 @@ Focused cases should not keep adding complexity to baseline by default. Prefer a
 ## Explicit URL Override Case
 
 `explicit-url-overrides` is the first focused case. It uses a tiny legacy INI fixture to verify that explicit `Comic domain` and `Comic subdirectory` settings override `GITHUB_REPOSITORY` inference.
+
+## Blank Subdirectory Case
+
+`blank-subdirectory` is a focused case for root-mounted output. It is the explicit exception to the case-name subdirectory rule and should be served from `golden_builds/blank-subdirectory/` directly.
+
+## Manual Visual Review
+
+For cases with a non-empty base subdirectory:
+
+```powershell
+cd golden_builds
+python -m http.server 8000
+# open http://localhost:8000/baseline/
+# open http://localhost:8000/explicit-url-overrides/
+```
+
+For the blank-subdirectory case:
+
+```powershell
+cd golden_builds/blank-subdirectory
+python -m http.server 8001
+# open http://localhost:8001/
+```
+
+The local server root matters because generated pages use root-relative URLs.
 
 ## Future Checks
 

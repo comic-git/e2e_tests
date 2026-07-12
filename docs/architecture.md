@@ -60,7 +60,7 @@ migration = false
 migrated_build = false
 
 [env]
-GITHUB_REPOSITORY = "comic-git/e2e_tests"
+GITHUB_REPOSITORY = "comic-git/baseline"
 ```
 
 The runner currently requires:
@@ -89,6 +89,26 @@ Build output validation follows this flow:
 Refresh follows the same build flow, then fully wipes and rewrites `golden_builds/<case>/`.
 
 `check-build --all` runs every manifest-backed test case with `[checks].build = true`. `refresh-build` intentionally operates on one case at a time.
+
+## Local Static Review
+
+Every golden build should be viewable as a static website from a local web server.
+
+The engine writes the same raw output tree regardless of base subdirectory. The base subdirectory only controls where that tree is mounted when hosted. GitHub Pages project sites mount repository output at `/<repo-name>/`, so local review must mirror that URL shape or root-relative CSS, JavaScript, image, and page links will 404.
+
+Harness rule:
+
+- If a test case has a non-empty base subdirectory, that subdirectory must equal the test case name.
+- For those cases, serve `golden_builds/` and open `http://localhost:<port>/<case>/`.
+- If a test case intentionally has a blank base subdirectory, serve `golden_builds/<case>/` directly and open `http://localhost:<port>/`.
+
+Examples:
+
+| Case                     | Base subdirectory        | Server root                         | Review URL                                        |
+|--------------------------|--------------------------|-------------------------------------|---------------------------------------------------|
+| `baseline`               | `baseline`               | `golden_builds/`                    | `http://localhost:<port>/baseline/`               |
+| `explicit-url-overrides` | `explicit-url-overrides` | `golden_builds/`                    | `http://localhost:<port>/explicit-url-overrides/` |
+| `blank-subdirectory`     | blank                    | `golden_builds/blank-subdirectory/` | `http://localhost:<port>/`                        |
 
 ## Design Decisions
 

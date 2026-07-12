@@ -21,6 +21,12 @@ Behavior comes from `manifest.toml`, `your_content/`, and the matching golden ou
 
 Review refreshed output carefully before committing because golden changes redefine the expected engine contract.
 
+### Local review depends on the URL mount point
+
+The engine output tree does not change when a base subdirectory is configured. The same files are written at the build root.
+
+The subdirectory only matters when the site is served. For normal non-empty subdirectory cases, the subdirectory must match the test case name so `golden_builds/` can be served and `/<case>/` resolves correctly. Blank-subdirectory cases must be served from their own golden folder.
+
 ### Engine error banners matter
 
 When `GITHUB_REPOSITORY` is set, the engine can print its fatal error banner without returning a nonzero process exit.
