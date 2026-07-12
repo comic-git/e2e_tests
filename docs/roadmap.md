@@ -5,7 +5,7 @@
 
 ## Near Term
 
-- Add focused independent test cases for explicit `comic_info.ini` URL override behavior.
+- Add focused independent test cases for additional high-value build behavior, such as RSS settings, transcript settings, future-page filtering, and theme overrides.
 - Keep each focused fixture small enough that full golden comparison remains practical.
 - Add `TEST_CASE.md` for every new case.
 
@@ -15,7 +15,7 @@
 - Add `golden_toml/<case>/` snapshots.
 - Add `migrate-only` validation.
 - Add TOML-build parity checks that compare migrated builds against `golden_builds/<case>/`.
-- Add an `all` command once all checks exist.
+- Extend all-cases execution to migration and migrated-build checks once those checks exist.
 
 ## CI And Platform Support
 

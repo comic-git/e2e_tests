@@ -25,9 +25,10 @@ def parse_args() -> argparse.Namespace:
         '--case',
         '--scenario',
         dest='case',
-        default=DEFAULT_CASE,
-        help='Test case name under test_cases/. --scenario is accepted as a compatibility alias.',
+        default=None,
+        help=f'Test case name under test_cases/. Defaults to {DEFAULT_CASE}. --scenario is accepted as a compatibility alias.',
     )
+    parser.add_argument('--all', action='store_true', help='Run the command for every build-enabled test case.')
     parser.add_argument(
         '--github-repository',
         default=None,
@@ -61,6 +62,20 @@ def test_case_doc_path(case_name: str) -> Path:
 
 def case_golden_build_dir(case_name: str) -> Path:
     return GOLDEN_BUILDS_ROOT / case_name
+
+
+def selected_case(args: argparse.Namespace) -> str:
+    return args.case or DEFAULT_CASE
+
+
+def list_test_cases() -> list[str]:
+    if not TEST_CASES_ROOT.exists():
+        return []
+    return sorted(
+        child.name
+        for child in TEST_CASES_ROOT.iterdir()
+        if child.is_dir() and (child / 'manifest.toml').exists()
+    )
 
 
 def warn_if_missing_test_case_doc(case_name: str) -> None:
@@ -145,12 +160,21 @@ def create_engine_junction(workspace: Path, engine_target: Path) -> None:
 def build_site(workspace: Path, env_overrides: dict[str, str], python_executable: str) -> Path:
     env = os.environ.copy()
     env.update(env_overrides)
-    subprocess.run(
+    result = subprocess.run(
         [python_executable, str(workspace / 'comic_git_engine' / 'src' / 'build' / 'build_site.py')],
         cwd=workspace,
         env=env,
-        check=True,
+        text=True,
+        capture_output=True,
     )
+    if result.stdout:
+        print(result.stdout, end='')
+    if result.stderr:
+        print(result.stderr, end='', file=sys.stderr)
+    if result.returncode != 0:
+        raise subprocess.CalledProcessError(result.returncode, result.args)
+    if '============= ERROR =============' in result.stdout:
+        raise RuntimeError('Engine build reported an error. Check build output above.')
     build_dir = workspace / 'build'
     if not build_dir.exists():
         raise RuntimeError('Build did not produce a build/ directory. Check build output above.')
@@ -217,16 +241,16 @@ class TempWorkspace:
             self._tmp.cleanup()
 
 
-def cmd_refresh_build(args: argparse.Namespace) -> int:
-    warn_if_missing_test_case_doc(args.case)
-    manifest = load_test_case_manifest(args.case)
+def cmd_refresh_build_case(args: argparse.Namespace, case_name: str) -> int:
+    warn_if_missing_test_case_doc(case_name)
+    manifest = load_test_case_manifest(case_name)
     if not build_check_enabled(manifest):
-        print(f'Test case {args.case} does not enable build output checks.', file=sys.stderr)
+        print(f'Test case {case_name} does not enable build output checks.', file=sys.stderr)
         return 2
-    content_source = test_case_content_dir(args.case)
+    content_source = test_case_content_dir(case_name)
     env_overrides = build_env_overrides(args, manifest)
     engine_target = resolve_engine_target()
-    golden_dir = case_golden_build_dir(args.case)
+    golden_dir = case_golden_build_dir(case_name)
     with TempWorkspace(args.keep_temp) as workspace:
         stage_test_case_content(workspace, content_source)
         create_engine_junction(workspace, engine_target)
@@ -236,15 +260,22 @@ def cmd_refresh_build(args: argparse.Namespace) -> int:
     return 0
 
 
-def cmd_check_build(args: argparse.Namespace) -> int:
-    warn_if_missing_test_case_doc(args.case)
-    manifest = load_test_case_manifest(args.case)
-    if not build_check_enabled(manifest):
-        print(f'Test case {args.case} does not enable build output checks.', file=sys.stderr)
+def cmd_refresh_build(args: argparse.Namespace) -> int:
+    if args.all:
+        print('refresh-build does not support --all. Refresh one test case at a time.', file=sys.stderr)
         return 2
-    content_source = test_case_content_dir(args.case)
+    return cmd_refresh_build_case(args, selected_case(args))
+
+
+def cmd_check_build_case(args: argparse.Namespace, case_name: str) -> int:
+    warn_if_missing_test_case_doc(case_name)
+    manifest = load_test_case_manifest(case_name)
+    if not build_check_enabled(manifest):
+        print(f'Test case {case_name} does not enable build output checks.', file=sys.stderr)
+        return 2
+    content_source = test_case_content_dir(case_name)
     env_overrides = build_env_overrides(args, manifest)
-    golden_dir = case_golden_build_dir(args.case)
+    golden_dir = case_golden_build_dir(case_name)
     if not golden_dir.exists():
         print(f'{golden_dir} does not exist. Run refresh-build first.', file=sys.stderr)
         return 2
@@ -255,13 +286,43 @@ def cmd_check_build(args: argparse.Namespace) -> int:
         build_dir = build_site(workspace, env_overrides, args.python_executable)
         differences = compare_directories(golden_dir, build_dir)
     if differences:
-        print(f'Build output did not match golden build for test case {args.case}:', file=sys.stderr)
+        print(f'Build output did not match golden build for test case {case_name}:', file=sys.stderr)
         for diff in differences[:50]:
             print(f'  - {diff}', file=sys.stderr)
         if len(differences) > 50:
             print(f'  ... {len(differences) - 50} more differences', file=sys.stderr)
         return 1
-    print(f'Build output matches golden build for test case {args.case}.')
+    print(f'Build output matches golden build for test case {case_name}.')
+    return 0
+
+
+def cmd_check_build(args: argparse.Namespace) -> int:
+    if not args.all:
+        return cmd_check_build_case(args, selected_case(args))
+
+    case_names = list_test_cases()
+    if not case_names:
+        print(f'No test cases found under {TEST_CASES_ROOT}', file=sys.stderr)
+        return 2
+
+    failures = 0
+    skipped = 0
+    for case_name in case_names:
+        manifest = load_test_case_manifest(case_name)
+        if not build_check_enabled(manifest):
+            skipped += 1
+            print(f'Skipping test case {case_name}; build output checks are disabled.')
+            continue
+        print(f'Checking build output for test case {case_name}...', flush=True)
+        result = cmd_check_build_case(args, case_name)
+        if result != 0:
+            failures += 1
+
+    checked = len(case_names) - skipped
+    if failures:
+        print(f'Build output checks failed for {failures} of {checked} checked test cases.', file=sys.stderr)
+        return 1
+    print(f'Build output checks passed for {checked} test case(s); skipped {skipped}.')
     return 0
 
 

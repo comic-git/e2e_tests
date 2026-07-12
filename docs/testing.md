@@ -14,6 +14,9 @@ python scripts/run_e2e.py check-build
 # Validate a named case
 python scripts/run_e2e.py check-build --case baseline
 
+# Validate every build-enabled case
+python scripts/run_e2e.py check-build --all
+
 # Keep the temp workspace for debugging
 python scripts/run_e2e.py check-build --case baseline --keep-temp
 ```
@@ -27,6 +30,8 @@ Refresh is deliberate and destructive for the selected golden output.
 ```powershell
 python scripts/run_e2e.py refresh-build --case baseline
 ```
+
+Refresh one case at a time. `refresh-build --all` is intentionally unsupported so broad golden rewrites stay deliberate.
 
 This command:
 
@@ -64,12 +69,17 @@ Rules:
 4. Run `python scripts/run_e2e.py refresh-build --case <case>`.
 5. Inspect `golden_builds/<case>/`.
 6. Run `python scripts/run_e2e.py check-build --case <case>`.
+7. Run `python scripts/run_e2e.py check-build --all`.
 
 ## Baseline Case
 
 The baseline case is a broad full-parity fixture. It should remain realistic and cover common legacy INI behavior.
 
 Focused cases should not keep adding complexity to baseline by default. Prefer a new small independent case when validating a specific edge case or config combination.
+
+## Explicit URL Override Case
+
+`explicit-url-overrides` is the first focused case. It uses a tiny legacy INI fixture to verify that explicit `Comic domain` and `Comic subdirectory` settings override `GITHUB_REPOSITORY` inference.
 
 ## Future Checks
 

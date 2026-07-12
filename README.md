@@ -21,6 +21,12 @@ python scripts/run_e2e.py check-build --case baseline
 python scripts/run_e2e.py refresh-build --case baseline
 ```
 
+To run every build-enabled case:
+
+```powershell
+python scripts/run_e2e.py check-build --all
+```
+
 See [`docs/testing.md`](docs/testing.md) for the full harness workflow.
 
 ## Docs

@@ -21,6 +21,12 @@ Behavior comes from `manifest.toml`, `your_content/`, and the matching golden ou
 
 Review refreshed output carefully before committing because golden changes redefine the expected engine contract.
 
+### Engine error banners matter
+
+When `GITHUB_REPOSITORY` is set, the engine can print its fatal error banner without returning a nonzero process exit.
+
+The harness captures engine output and fails if it sees that banner. Do not remove that check unless the engine entry point starts returning nonzero exit codes for those failures.
+
 ### The current engine link is Windows-specific
 
 The runner currently creates a temp `comic_git_engine/` junction with `cmd /c mklink /J`.

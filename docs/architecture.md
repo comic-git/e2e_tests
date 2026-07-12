@@ -88,6 +88,8 @@ Build output validation follows this flow:
 
 Refresh follows the same build flow, then fully wipes and rewrites `golden_builds/<case>/`.
 
+`check-build --all` runs every manifest-backed test case with `[checks].build = true`. `refresh-build` intentionally operates on one case at a time.
+
 ## Design Decisions
 
 ### Minimal temp host repo

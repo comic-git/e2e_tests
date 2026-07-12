@@ -1,0 +1,12 @@
+name = "explicit-url-overrides"
+description = "Focused build parity coverage for explicit Comic domain and Comic subdirectory settings."
+source_format = "legacy_ini"
+tags = ["legacy-ini", "url-overrides", "focused", "full-parity"]
+
+[checks]
+build = true
+migration = false
+migrated_build = false
+
+[env]
+GITHUB_REPOSITORY = "ignored/example-repo"

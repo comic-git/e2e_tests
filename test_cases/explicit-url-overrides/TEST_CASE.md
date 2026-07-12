@@ -1,0 +1,34 @@
+# Explicit URL Overrides
+
+## Purpose
+
+Focused build parity coverage for explicit `Comic domain` and `Comic subdirectory` settings in legacy INI content.
+
+This case pairs with `baseline`, which intentionally omits those settings and relies on GitHub Pages inference.
+
+## Source Of Truth
+
+This document is a human-readable planning and review aid. Test behavior is defined by:
+
+- `manifest.toml`
+- `your_content/`
+- `golden_builds/explicit-url-overrides/`
+
+## Inputs
+
+- Source format: legacy INI
+- Check: build output parity
+- Env: `GITHUB_REPOSITORY=ignored/example-repo`
+- Config override: `Comic domain = example.test`
+- Config override: `Comic subdirectory = custom-comic`
+
+## Coverage
+
+- Explicit `Comic domain` overrides any domain inferred from `GITHUB_REPOSITORY`.
+- Explicit `Comic subdirectory` overrides any repository-name subdirectory inferred from `GITHUB_REPOSITORY`.
+- Generated URLs and root-relative asset paths use `/custom-comic`.
+
+## Expected Behavior
+
+- Build logs report `https://example.test/custom-comic`.
+- Fresh build output matches `golden_builds/explicit-url-overrides/` byte-for-byte.
