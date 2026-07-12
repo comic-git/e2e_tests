@@ -1,8 +1,11 @@
 name = "baseline"
+description = "Full legacy build parity coverage for the baseline realistic fixture."
+tags = ["legacy-build", "baseline", "github-pages-inference", "full-parity"]
+
+[modes]
+legacy_build = true
+migration = false
+toml_build = false
 
 [env]
 GITHUB_REPOSITORY = "comic-git/e2e_tests"
-
-[compare.build]
-mode = "full"
-absent = []

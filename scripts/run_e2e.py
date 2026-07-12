@@ -14,21 +14,8 @@ ROOT = Path(__file__).resolve().parents[1]
 TEST_CASES_ROOT = ROOT / 'test_cases'
 GOLDEN_BUILDS_ROOT = ROOT / 'golden_builds'
 DEFAULT_CASE = 'baseline'
-DEFAULT_GITHUB_REPOSITORY = 'comic-git/e2e_tests'
 DEFAULT_PYTHON = ROOT / 'venv' / 'Scripts' / 'python.exe'
-IGNORE_WORKSPACE_NAMES = {
-    '.git',
-    '.idea',
-    'venv',
-    'build',
-    'golden_builds',
-    'golden_toml',
-    'comic_git_engine',
-    'test_cases',
-    'your_content',
-    '__pycache__',
-}
-IGNORE_WORKSPACE_SUFFIXES = {'.pyc'}
+REQUIRED_BUILD_ENV_VARS = {'GITHUB_REPOSITORY'}
 
 
 def parse_args() -> argparse.Namespace:
@@ -68,8 +55,18 @@ def test_case_manifest_path(case_name: str) -> Path:
     return test_case_dir(case_name) / 'manifest.toml'
 
 
+def test_case_doc_path(case_name: str) -> Path:
+    return test_case_dir(case_name) / 'TEST_CASE.md'
+
+
 def case_golden_build_dir(case_name: str) -> Path:
     return GOLDEN_BUILDS_ROOT / case_name
+
+
+def warn_if_missing_test_case_doc(case_name: str) -> None:
+    doc_path = test_case_doc_path(case_name)
+    if not doc_path.exists():
+        print(f'Warning: missing test case documentation: {doc_path}', file=sys.stderr)
 
 
 def load_test_case_manifest(case_name: str) -> dict:
@@ -81,32 +78,43 @@ def load_test_case_manifest(case_name: str) -> dict:
     manifest_name = manifest.get('name')
     if manifest_name is not None and manifest_name != case_name:
         raise ValueError(f'Manifest name {manifest_name!r} does not match test case {case_name!r}')
+    if not isinstance(manifest.get('description', ''), str):
+        raise ValueError('description must be a string when present')
+    tags = manifest.get('tags', [])
+    if not isinstance(tags, list) or not all(isinstance(tag, str) for tag in tags):
+        raise ValueError('tags must be a list of strings when present')
     return manifest
 
 
+def legacy_build_enabled(manifest: dict) -> bool:
+    if 'modes' not in manifest:
+        raise ValueError('manifest must include a [modes] table')
+    modes = manifest['modes']
+    if not isinstance(modes, dict):
+        raise ValueError('modes must be a table')
+    for mode_name in ('legacy_build', 'migration', 'toml_build'):
+        if mode_name not in modes:
+            raise ValueError(f'modes.{mode_name} must be explicitly set')
+        if not isinstance(modes[mode_name], bool):
+            raise ValueError(f'modes.{mode_name} must be a boolean')
+    return modes['legacy_build']
+
+
 def build_env_overrides(args: argparse.Namespace, manifest: dict) -> dict[str, str]:
-    env_config = manifest.get('env', {})
+    if 'env' not in manifest:
+        raise ValueError('manifest must include an [env] table')
+    env_config = manifest['env']
     if not isinstance(env_config, dict):
         raise ValueError('env must be a table of environment variable names and string values')
     if not all(isinstance(key, str) and isinstance(value, str) for key, value in env_config.items()):
         raise ValueError('env must only contain string keys and string values')
+    missing = sorted(REQUIRED_BUILD_ENV_VARS - env_config.keys())
+    if missing:
+        raise ValueError(f'env is missing required build variables: {", ".join(missing)}')
     env_overrides = dict(env_config)
     if args.github_repository:
         env_overrides['GITHUB_REPOSITORY'] = args.github_repository
-    else:
-        env_overrides.setdefault('GITHUB_REPOSITORY', DEFAULT_GITHUB_REPOSITORY)
     return env_overrides
-
-
-def build_compare_config(manifest: dict) -> tuple[str, list[str]]:
-    compare_config = manifest.get('compare', {}).get('build', {})
-    mode = compare_config.get('mode', 'full')
-    if mode not in {'full', 'subset'}:
-        raise ValueError(f'Unsupported build comparison mode: {mode}')
-    absent = compare_config.get('absent', [])
-    if not isinstance(absent, list) or not all(isinstance(path, str) for path in absent):
-        raise ValueError('compare.build.absent must be a list of paths')
-    return mode, absent
 
 
 def resolve_engine_target() -> Path:
@@ -116,26 +124,10 @@ def resolve_engine_target() -> Path:
     return engine_path.resolve()
 
 
-def should_ignore(path: Path) -> bool:
-    if path.name in IGNORE_WORKSPACE_NAMES:
-        return True
-    if path.suffix in IGNORE_WORKSPACE_SUFFIXES:
-        return True
-    return False
-
-
-def copy_fixture_repo(destination: Path, content_source: Path) -> None:
+def stage_test_case_content(destination: Path, content_source: Path) -> None:
     if not content_source.exists():
         raise FileNotFoundError(f'Missing test case content directory: {content_source}')
     destination.mkdir(parents=True, exist_ok=True)
-    for child in ROOT.iterdir():
-        if should_ignore(child):
-            continue
-        target = destination / child.name
-        if child.is_dir():
-            shutil.copytree(child, target)
-        else:
-            shutil.copy2(child, target)
     shutil.copytree(content_source, destination / 'your_content')
 
 
@@ -202,43 +194,6 @@ def compare_directories(expected: Path, actual: Path) -> list[str]:
     return differences
 
 
-def compare_subset(expected: Path, actual: Path) -> list[str]:
-    differences: list[str] = []
-
-    def walk(exp: Path, act: Path, rel: Path = Path('.')) -> None:
-        expected_entries = {p.name: p for p in exp.iterdir()} if exp.exists() else {}
-        actual_entries = {p.name: p for p in act.iterdir()} if act.exists() else {}
-        for name in sorted(expected_entries.keys() - actual_entries.keys()):
-            differences.append(f'missing in actual: {rel / name}')
-        for name in sorted(expected_entries.keys() & actual_entries.keys()):
-            exp_child = expected_entries[name]
-            act_child = actual_entries[name]
-            child_rel = rel / name
-            if exp_child.is_dir() and act_child.is_dir():
-                walk(exp_child, act_child, child_rel)
-            elif exp_child.is_dir() != act_child.is_dir():
-                differences.append(f'type mismatch: {child_rel}')
-            elif not filecmp.cmp(exp_child, act_child, shallow=False):
-                differences.append(f'content mismatch: {child_rel}')
-
-    walk(expected, actual)
-    return differences
-
-
-def compare_build_output(expected: Path, actual: Path, mode: str, absent_paths: list[str]) -> list[str]:
-    if mode == 'full':
-        differences = compare_directories(expected, actual)
-    elif mode == 'subset':
-        differences = compare_subset(expected, actual)
-    else:
-        raise AssertionError(f'Unhandled comparison mode: {mode}')
-
-    for absent_path in absent_paths:
-        if (actual / absent_path).exists():
-            differences.append(f'expected absent but found: {absent_path}')
-    return differences
-
-
 class TempWorkspace:
     def __init__(self, keep_temp: bool):
         self.keep_temp = keep_temp
@@ -259,13 +214,17 @@ class TempWorkspace:
 
 
 def cmd_refresh_build(args: argparse.Namespace) -> int:
+    warn_if_missing_test_case_doc(args.case)
     manifest = load_test_case_manifest(args.case)
+    if not legacy_build_enabled(manifest):
+        print(f'Test case {args.case} does not enable legacy builds.', file=sys.stderr)
+        return 2
     content_source = test_case_content_dir(args.case)
     env_overrides = build_env_overrides(args, manifest)
     engine_target = resolve_engine_target()
     golden_dir = case_golden_build_dir(args.case)
     with TempWorkspace(args.keep_temp) as workspace:
-        copy_fixture_repo(workspace, content_source)
+        stage_test_case_content(workspace, content_source)
         create_engine_junction(workspace, engine_target)
         build_dir = build_legacy_site(workspace, env_overrides, args.python_executable)
         refresh_golden_build(build_dir, golden_dir)
@@ -274,20 +233,23 @@ def cmd_refresh_build(args: argparse.Namespace) -> int:
 
 
 def cmd_legacy_build(args: argparse.Namespace) -> int:
+    warn_if_missing_test_case_doc(args.case)
     manifest = load_test_case_manifest(args.case)
+    if not legacy_build_enabled(manifest):
+        print(f'Test case {args.case} does not enable legacy builds.', file=sys.stderr)
+        return 2
     content_source = test_case_content_dir(args.case)
     env_overrides = build_env_overrides(args, manifest)
-    compare_mode, absent_paths = build_compare_config(manifest)
     golden_dir = case_golden_build_dir(args.case)
     if not golden_dir.exists():
         print(f'{golden_dir} does not exist. Run refresh-build first.', file=sys.stderr)
         return 2
     engine_target = resolve_engine_target()
     with TempWorkspace(args.keep_temp) as workspace:
-        copy_fixture_repo(workspace, content_source)
+        stage_test_case_content(workspace, content_source)
         create_engine_junction(workspace, engine_target)
         build_dir = build_legacy_site(workspace, env_overrides, args.python_executable)
-        differences = compare_build_output(golden_dir, build_dir, compare_mode, absent_paths)
+        differences = compare_directories(golden_dir, build_dir)
     if differences:
         print(f'Legacy build did not match golden build for test case {args.case}:', file=sys.stderr)
         for diff in differences[:50]:
