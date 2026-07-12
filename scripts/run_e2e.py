@@ -20,7 +20,7 @@ REQUIRED_BUILD_ENV_VARS = {'GITHUB_REPOSITORY'}
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description='Local e2e harness for comic_git_engine')
-    parser.add_argument('command', choices=['refresh-build', 'legacy-build'], help='Harness command to run.')
+    parser.add_argument('command', choices=['refresh-build', 'check-build'], help='Harness command to run.')
     parser.add_argument(
         '--case',
         '--scenario',
@@ -80,24 +80,28 @@ def load_test_case_manifest(case_name: str) -> dict:
         raise ValueError(f'Manifest name {manifest_name!r} does not match test case {case_name!r}')
     if not isinstance(manifest.get('description', ''), str):
         raise ValueError('description must be a string when present')
+    if 'source_format' not in manifest:
+        raise ValueError('manifest must include source_format')
+    if not isinstance(manifest['source_format'], str):
+        raise ValueError('source_format must be a string')
     tags = manifest.get('tags', [])
     if not isinstance(tags, list) or not all(isinstance(tag, str) for tag in tags):
         raise ValueError('tags must be a list of strings when present')
     return manifest
 
 
-def legacy_build_enabled(manifest: dict) -> bool:
-    if 'modes' not in manifest:
-        raise ValueError('manifest must include a [modes] table')
-    modes = manifest['modes']
-    if not isinstance(modes, dict):
-        raise ValueError('modes must be a table')
-    for mode_name in ('legacy_build', 'migration', 'toml_build'):
-        if mode_name not in modes:
-            raise ValueError(f'modes.{mode_name} must be explicitly set')
-        if not isinstance(modes[mode_name], bool):
-            raise ValueError(f'modes.{mode_name} must be a boolean')
-    return modes['legacy_build']
+def build_check_enabled(manifest: dict) -> bool:
+    if 'checks' not in manifest:
+        raise ValueError('manifest must include a [checks] table')
+    checks = manifest['checks']
+    if not isinstance(checks, dict):
+        raise ValueError('checks must be a table')
+    for check_name in ('build', 'migration', 'migrated_build'):
+        if check_name not in checks:
+            raise ValueError(f'checks.{check_name} must be explicitly set')
+        if not isinstance(checks[check_name], bool):
+            raise ValueError(f'checks.{check_name} must be a boolean')
+    return checks['build']
 
 
 def build_env_overrides(args: argparse.Namespace, manifest: dict) -> dict[str, str]:
@@ -138,7 +142,7 @@ def create_engine_junction(workspace: Path, engine_target: Path) -> None:
     )
 
 
-def build_legacy_site(workspace: Path, env_overrides: dict[str, str], python_executable: str) -> Path:
+def build_site(workspace: Path, env_overrides: dict[str, str], python_executable: str) -> Path:
     env = os.environ.copy()
     env.update(env_overrides)
     subprocess.run(
@@ -216,8 +220,8 @@ class TempWorkspace:
 def cmd_refresh_build(args: argparse.Namespace) -> int:
     warn_if_missing_test_case_doc(args.case)
     manifest = load_test_case_manifest(args.case)
-    if not legacy_build_enabled(manifest):
-        print(f'Test case {args.case} does not enable legacy builds.', file=sys.stderr)
+    if not build_check_enabled(manifest):
+        print(f'Test case {args.case} does not enable build output checks.', file=sys.stderr)
         return 2
     content_source = test_case_content_dir(args.case)
     env_overrides = build_env_overrides(args, manifest)
@@ -226,17 +230,17 @@ def cmd_refresh_build(args: argparse.Namespace) -> int:
     with TempWorkspace(args.keep_temp) as workspace:
         stage_test_case_content(workspace, content_source)
         create_engine_junction(workspace, engine_target)
-        build_dir = build_legacy_site(workspace, env_overrides, args.python_executable)
+        build_dir = build_site(workspace, env_overrides, args.python_executable)
         refresh_golden_build(build_dir, golden_dir)
     print(f'Refreshed golden build at {golden_dir}')
     return 0
 
 
-def cmd_legacy_build(args: argparse.Namespace) -> int:
+def cmd_check_build(args: argparse.Namespace) -> int:
     warn_if_missing_test_case_doc(args.case)
     manifest = load_test_case_manifest(args.case)
-    if not legacy_build_enabled(manifest):
-        print(f'Test case {args.case} does not enable legacy builds.', file=sys.stderr)
+    if not build_check_enabled(manifest):
+        print(f'Test case {args.case} does not enable build output checks.', file=sys.stderr)
         return 2
     content_source = test_case_content_dir(args.case)
     env_overrides = build_env_overrides(args, manifest)
@@ -248,16 +252,16 @@ def cmd_legacy_build(args: argparse.Namespace) -> int:
     with TempWorkspace(args.keep_temp) as workspace:
         stage_test_case_content(workspace, content_source)
         create_engine_junction(workspace, engine_target)
-        build_dir = build_legacy_site(workspace, env_overrides, args.python_executable)
+        build_dir = build_site(workspace, env_overrides, args.python_executable)
         differences = compare_directories(golden_dir, build_dir)
     if differences:
-        print(f'Legacy build did not match golden build for test case {args.case}:', file=sys.stderr)
+        print(f'Build output did not match golden build for test case {args.case}:', file=sys.stderr)
         for diff in differences[:50]:
             print(f'  - {diff}', file=sys.stderr)
         if len(differences) > 50:
             print(f'  ... {len(differences) - 50} more differences', file=sys.stderr)
         return 1
-    print(f'Legacy build matches golden build for test case {args.case}.')
+    print(f'Build output matches golden build for test case {args.case}.')
     return 0
 
 
@@ -265,8 +269,8 @@ def main() -> int:
     args = parse_args()
     if args.command == 'refresh-build':
         return cmd_refresh_build(args)
-    if args.command == 'legacy-build':
-        return cmd_legacy_build(args)
+    if args.command == 'check-build':
+        return cmd_check_build(args)
     raise AssertionError(f'Unhandled command: {args.command}')
 
 

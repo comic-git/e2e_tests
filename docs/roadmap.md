@@ -15,7 +15,7 @@
 - Add `golden_toml/<case>/` snapshots.
 - Add `migrate-only` validation.
 - Add TOML-build parity checks that compare migrated builds against `golden_builds/<case>/`.
-- Add an `all` command once all modes exist.
+- Add an `all` command once all checks exist.
 
 ## CI And Platform Support
 

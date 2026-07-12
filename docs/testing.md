@@ -9,13 +9,13 @@ Run commands from the `e2e_tests` repo root.
 
 ```powershell
 # Validate the default baseline case
-python scripts/run_e2e.py legacy-build
+python scripts/run_e2e.py check-build
 
 # Validate a named case
-python scripts/run_e2e.py legacy-build --case baseline
+python scripts/run_e2e.py check-build --case baseline
 
 # Keep the temp workspace for debugging
-python scripts/run_e2e.py legacy-build --case baseline --keep-temp
+python scripts/run_e2e.py check-build --case baseline --keep-temp
 ```
 
 `python` launches the harness script. The harness then defaults engine execution to `venv/Scripts/python.exe` when that venv exists.
@@ -63,20 +63,20 @@ Rules:
 3. Add a complete `test_cases/<case>/your_content/` fixture.
 4. Run `python scripts/run_e2e.py refresh-build --case <case>`.
 5. Inspect `golden_builds/<case>/`.
-6. Run `python scripts/run_e2e.py legacy-build --case <case>`.
+6. Run `python scripts/run_e2e.py check-build --case <case>`.
 
 ## Baseline Case
 
-The baseline case is a broad full-parity fixture. It should remain realistic and cover common legacy behavior.
+The baseline case is a broad full-parity fixture. It should remain realistic and cover common legacy INI behavior.
 
 Focused cases should not keep adding complexity to baseline by default. Prefer a new small independent case when validating a specific edge case or config combination.
 
-## Future Test Modes
+## Future Checks
 
-The manifest already has mode flags for:
+The manifest already has check flags for:
 
-- `legacy_build`
+- `build`
 - `migration`
-- `toml_build`
+- `migrated_build`
 
-Only `legacy_build` is implemented today. Migration and TOML-build checks should use the same principles: complete fixture input, explicit manifest inputs, temp workspace execution, and strict golden comparison.
+Only `build` is implemented today. Migration and migrated-build checks should use the same principles: complete fixture input, explicit manifest inputs, temp workspace execution, and strict golden comparison.

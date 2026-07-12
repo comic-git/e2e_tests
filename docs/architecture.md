@@ -18,7 +18,7 @@ This repo is not intended to be a normal `comic_git` host repo. Checked-in fixtu
 |---------------------|-----------------------------------------------|------------------------------------------------------------------------------------------------|
 | Runner              | [`scripts/run_e2e.py`](../scripts/run_e2e.py) | Creates temp host workspaces, stages fixtures, runs the engine, refreshes or compares goldens. |
 | Test cases          | [`test_cases/`](../test_cases/)               | Complete independent fixture inputs and per-case metadata.                                     |
-| Case manifest       | `test_cases/<case>/manifest.toml`             | Machine-readable inputs: case name, mode flags, tags, and environment variables.               |
+| Case manifest       | `test_cases/<case>/manifest.toml`             | Machine-readable inputs: case name, source format, check flags, tags, and environment variables. |
 | Case documentation  | `test_cases/<case>/TEST_CASE.md`              | Human-readable intent, coverage, and expected behavior. Not parsed by the runner.              |
 | Golden builds       | [`golden_builds/`](../golden_builds/)         | Expected full `build/` output, grouped by test case.                                           |
 | Future TOML goldens | `golden_toml/`                                | Expected migration output once legacy-to-TOML migration exists.                                |
@@ -50,13 +50,14 @@ Manifests should list all behavior-relevant inputs explicitly.
 
 ```toml
 name = "baseline"
-description = "Full legacy build parity coverage for the baseline realistic fixture."
-tags = ["legacy-build", "baseline", "github-pages-inference", "full-parity"]
+description = "Full build parity coverage for the baseline realistic legacy INI fixture."
+source_format = "legacy_ini"
+tags = ["legacy-ini", "baseline", "github-pages-inference", "full-parity"]
 
-[modes]
-legacy_build = true
+[checks]
+build = true
 migration = false
-toml_build = false
+migrated_build = false
 
 [env]
 GITHUB_REPOSITORY = "comic-git/e2e_tests"
@@ -65,16 +66,17 @@ GITHUB_REPOSITORY = "comic-git/e2e_tests"
 The runner currently requires:
 
 - `name`
-- `[modes].legacy_build`
-- `[modes].migration`
-- `[modes].toml_build`
+- `source_format`
+- `[checks].build`
+- `[checks].migration`
+- `[checks].migrated_build`
 - `[env].GITHUB_REPOSITORY`
 
 The runner warns if `TEST_CASE.md` is missing, but the warning does not fail the test.
 
 ## Data Flow
 
-Legacy build validation follows this flow:
+Build output validation follows this flow:
 
 1. Load `test_cases/<case>/manifest.toml`.
 2. Warn if `test_cases/<case>/TEST_CASE.md` is missing.
@@ -102,7 +104,7 @@ This makes refresh behavior simple: `refresh-build` always rewrites the complete
 
 ### Explicit inputs over defaults
 
-Environment variables and enabled modes are explicit in each manifest. Duplicate data across cases is acceptable because it makes test behavior reviewable and avoids hidden fallback behavior.
+Environment variables, source format, and enabled checks are explicit in each manifest. Duplicate data across cases is acceptable because it makes test behavior reviewable and avoids hidden fallback behavior.
 
 ### Independent fixtures over inheritance
 

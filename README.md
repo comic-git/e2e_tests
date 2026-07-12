@@ -11,13 +11,13 @@ It validates real engine behavior by staging realistic `your_content/` fixtures 
 ## Quick Start
 
 ```powershell
-python scripts/run_e2e.py legacy-build
+python scripts/run_e2e.py check-build
 ```
 
 The default case is `baseline`. To run or refresh a specific case:
 
 ```powershell
-python scripts/run_e2e.py legacy-build --case baseline
+python scripts/run_e2e.py check-build --case baseline
 python scripts/run_e2e.py refresh-build --case baseline
 ```
 

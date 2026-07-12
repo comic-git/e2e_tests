@@ -2,9 +2,9 @@
 
 ## Purpose
 
-Full legacy build parity coverage for realistic `comic_git` fixture content.
+Full build parity coverage for realistic legacy INI `comic_git` fixture content.
 
-This case is intended to catch broad rendering regressions and preserve the current legacy build contract while more focused cases are added around it.
+This case is intended to catch broad rendering regressions and preserve the current legacy INI build contract while more focused cases are added around it.
 
 ## Source Of Truth
 
@@ -17,7 +17,8 @@ This document is a human-readable planning and review aid. Test behavior is defi
 ## Inputs
 
 - Env: `GITHUB_REPOSITORY=comic-git/e2e_tests`
-- Build mode: legacy build
+- Source format: legacy INI
+- Check: build output parity
 - Comparison: full byte-for-byte build output parity
 
 ## Coverage
@@ -38,4 +39,4 @@ This document is a human-readable planning and review aid. Test behavior is defi
 - GitHub Pages base URL and subdirectory are inferred from `GITHUB_REPOSITORY`.
 - `Comic subdirectory` and `Comic domain` are omitted from `comic_info.ini`.
 - Future-dated page source content remains part of copied content, but no public comic page is emitted for it.
-- Fresh legacy build output matches `golden_builds/baseline/` byte-for-byte.
+- Fresh build output matches `golden_builds/baseline/` byte-for-byte.
