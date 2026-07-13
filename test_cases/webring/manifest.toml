@@ -1,0 +1,12 @@
+name = "webring"
+description = "Focused build parity coverage for local webring loading and previous/next navigation rendering."
+source_format = "legacy_ini"
+tags = ["legacy-ini", "webring", "focused", "full-parity"]
+
+[checks]
+build = true
+migration = false
+migrated_build = false
+
+[env]
+GITHUB_REPOSITORY = "comic-git/webring"

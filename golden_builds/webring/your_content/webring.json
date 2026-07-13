@@ -1,0 +1,29 @@
+{
+  "version": 1,
+  "label": "Harness Webring",
+  "home": {
+    "name": "Harness Ring Home",
+    "url": "https://example.test/webring/",
+    "image": ""
+  },
+  "members": [
+    {
+      "id": "previous-comic",
+      "name": "Previous Harness Comic",
+      "url": "https://previous.example.test/",
+      "image": ""
+    },
+    {
+      "id": "middle-comic",
+      "name": "Webring Fixture",
+      "url": "https://comic-git.github.io/webring/",
+      "image": "https://comic-git.github.io/webring/your_content/images/preview_image.png"
+    },
+    {
+      "id": "next-comic",
+      "name": "Next Harness Comic",
+      "url": "https://next.example.test/",
+      "image": "https://next.example.test/icon.png"
+    }
+  ]
+}
