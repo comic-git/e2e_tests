@@ -6,14 +6,6 @@ Focused build parity coverage for a legacy INI site with an explicit domain and 
 
 This case exists to verify the local-review exception where the generated site is mounted at `/` rather than at `/<case>/`.
 
-## Source Of Truth
-
-This document is a human-readable planning and review aid. Test behavior is defined by:
-
-- `manifest.toml`
-- `your_content/`
-- `golden_builds/blank-subdirectory/`
-
 ## Inputs
 
 - Source format: legacy INI

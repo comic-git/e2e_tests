@@ -1,0 +1,12 @@
+name = "theme-overrides"
+description = "Focused build parity coverage for non-default theme selection, template overrides, and theme CSS links."
+source_format = "legacy_ini"
+tags = ["legacy-ini", "theme-overrides", "focused", "full-parity"]
+
+[checks]
+build = true
+migration = false
+migrated_build = false
+
+[env]
+GITHUB_REPOSITORY = "comic-git/theme-overrides"

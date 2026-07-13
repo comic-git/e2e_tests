@@ -6,14 +6,6 @@ Full build parity coverage for realistic legacy INI `comic_git` fixture content.
 
 This case is intended to catch broad rendering regressions and preserve the current legacy INI build contract while more focused cases are added around it.
 
-## Source Of Truth
-
-This document is a human-readable planning and review aid. Test behavior is defined by:
-
-- `manifest.toml`
-- `your_content/`
-- `golden_builds/baseline/`
-
 ## Inputs
 
 - Env: `GITHUB_REPOSITORY=comic-git/baseline`

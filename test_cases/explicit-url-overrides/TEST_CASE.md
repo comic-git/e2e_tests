@@ -6,14 +6,6 @@ Focused build parity coverage for explicit `Comic domain` and `Comic subdirector
 
 This case pairs with `baseline`, which intentionally omits those settings and relies on GitHub Pages inference.
 
-## Source Of Truth
-
-This document is a human-readable planning and review aid. Test behavior is defined by:
-
-- `manifest.toml`
-- `your_content/`
-- `golden_builds/explicit-url-overrides/`
-
 ## Inputs
 
 - Source format: legacy INI

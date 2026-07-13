@@ -1,0 +1,3 @@
+.comic-image {
+    outline: 3px solid var(--focused-theme-accent);
+}
