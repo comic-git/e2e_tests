@@ -1,0 +1,12 @@
+name = "social-media"
+description = "Focused build parity coverage for site-level social metadata, page-level overrides, and fallback preview behavior."
+source_format = "legacy_ini"
+tags = ["legacy-ini", "social-media", "focused", "full-parity"]
+
+[checks]
+build = true
+migration = false
+migrated_build = false
+
+[env]
+GITHUB_REPOSITORY = "comic-git/social-media"

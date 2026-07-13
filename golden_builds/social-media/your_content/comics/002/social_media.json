@@ -1,0 +1,11 @@
+{
+  "comic": {
+    "og:type": "article",
+    "og:site_name": "Social Fixture Page Override",
+    "og:title": "Page-local social title for page 002",
+    "og:description": "Page-local social description for page 002",
+    "og:url": "_url",
+    "og:image": "_thumbnail",
+    "og:image:alt": "Page-local social image alt for page 002"
+  }
+}

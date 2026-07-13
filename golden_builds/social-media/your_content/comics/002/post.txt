@@ -1,0 +1,1 @@
+This post text should not appear as the Open Graph description because page-local metadata overrides it.

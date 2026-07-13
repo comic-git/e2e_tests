@@ -1,0 +1,1 @@
+This post text should become the fallback Open Graph description for the first social media fixture page.

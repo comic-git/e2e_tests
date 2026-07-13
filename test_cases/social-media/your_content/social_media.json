@@ -1,0 +1,22 @@
+{
+  "base": {
+    "og:type": "website",
+    "og:site_name": "Social Fixture Site",
+    "og:title": "_title",
+    "og:description": "Site-level social metadata from your_content/social_media.json",
+    "og:url": "_url",
+    "og:image": "_preview_image"
+  },
+  "comic": {
+    "og:type": "article",
+    "og:site_name": "Social Fixture Site",
+    "og:title": "_title",
+    "og:description": "_post_text",
+    "og:url": "_url",
+    "og:image": "_thumbnail",
+    "og:image:alt": "_alt_text"
+  },
+  "latest": {
+    "_inherits": "comic"
+  }
+}
