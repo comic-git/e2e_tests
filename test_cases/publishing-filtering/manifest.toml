@@ -1,0 +1,12 @@
+name = "publishing-filtering"
+description = "Focused build parity coverage for page discovery, scheduled publishing, and public output filtering."
+source_format = "legacy_ini"
+tags = ["legacy-ini", "publishing-filtering", "focused", "full-parity"]
+
+[checks]
+build = true
+migration = false
+migrated_build = false
+
+[env]
+GITHUB_REPOSITORY = "comic-git/publishing-filtering"
