@@ -41,13 +41,13 @@ See [`docs/testing.md`](docs/testing.md) for the full harness workflow.
 
 ## Key Folders
 
-| Folder                             | Contents                                                   |
-|------------------------------------|------------------------------------------------------------|
-| [`test_cases/`](test_cases/)       | Checked-in fixture inputs, manifests, and case docs        |
-| [`golden_builds/`](golden_builds/) | Expected full built site output grouped by test case       |
-| `golden_toml/`                     | Future expected TOML migration output grouped by test case |
-| [`scripts/`](scripts/)             | Local harness scripts                                      |
-| `specs/`                           | Ignored scratch plans and temporary agent notes            |
+| Folder                             | Contents                                                      |
+|------------------------------------|---------------------------------------------------------------|
+| [`test_cases/`](test_cases/)       | Checked-in fixture inputs, manifests, and case docs           |
+| [`golden_builds/`](golden_builds/) | Expected full built site output grouped by test case          |
+| `golden_toml/`                     | Expected migrated `your_content/` output grouped by test case |
+| [`scripts/`](scripts/)             | Local harness scripts                                         |
+| `specs/`                           | Ignored scratch plans and temporary agent notes               |
 
 Root-level `your_content/` and `build/` are ignored local artifacts. Checked-in fixture input belongs under `test_cases/<case>/your_content/`.
 

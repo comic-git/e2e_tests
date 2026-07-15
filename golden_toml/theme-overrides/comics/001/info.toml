@@ -1,0 +1,9 @@
+post_date = "2025-08-01"
+images = [
+    "Theme Override Page.png",
+]
+title = "Theme Override Page"
+alt_text = "A single-page fixture for theme override behavior."
+tags = [
+    "theme-overrides",
+]

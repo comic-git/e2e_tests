@@ -1,0 +1,7 @@
+:root {
+    --focused-theme-accent: #1f7a5c;
+}
+
+#focused-theme-index-marker {
+    border-top: 4px solid var(--focused-theme-accent);
+}

@@ -12,10 +12,10 @@
 ## Migration And TOML
 
 - Implement legacy-to-TOML migration output in `comic_git_engine`.
-- Add `golden_toml/<case>/` snapshots.
-- Add `migrate-only` validation.
-- Add TOML-build parity checks that compare migrated builds against `golden_builds/<case>/`.
-- Extend all-cases execution to migration and migrated-build checks once those checks exist.
+- Enable migration checks case-by-case once the engine migration script is ready.
+- Add `golden_toml/<case>/` snapshots for migrated fixture output.
+- Use migrated-build parity checks to compare migrated builds against `golden_builds/<case>/`.
+- Decide which focused cases should opt into migration coverage first.
 
 ## CI And Platform Support
 

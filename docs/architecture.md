@@ -21,7 +21,7 @@ This repo is not intended to be a normal `comic_git` host repo. Checked-in fixtu
 | Case manifest       | `test_cases/<case>/manifest.toml`             | Machine-readable inputs: case name, source format, check flags, tags, and environment variables. |
 | Case documentation  | `test_cases/<case>/TEST_CASE.md`              | Human-readable intent, coverage, and expected behavior. Not parsed by the runner.              |
 | Golden builds       | [`golden_builds/`](../golden_builds/)         | Expected full `build/` output, grouped by test case.                                           |
-| Future TOML goldens | `golden_toml/`                                | Expected migration output once legacy-to-TOML migration exists.                                |
+| TOML goldens        | `golden_toml/`                                | Expected migrated `your_content/` output grouped by test case.                                 |
 | Local engine link   | `comic_git_engine/`                           | Local symlink or junction to the engine repo under test.                                       |
 
 ## Test Case Model
@@ -88,7 +88,21 @@ Build output validation follows this flow:
 
 Refresh follows the same build flow, then fully wipes and rewrites `golden_builds/<case>/`.
 
-`check-build --all` runs every manifest-backed test case with `[checks].build = true`. `refresh-build` intentionally operates on one case at a time.
+Migration output validation follows this flow:
+
+1. Load `test_cases/<case>/manifest.toml`.
+2. Create a temporary workspace and stage `your_content/`.
+3. Create the local `comic_git_engine/` junction.
+4. Run the migration script from the temp workspace root.
+5. Compare the migrated temp workspace `your_content/` tree against `golden_toml/<case>/` byte-for-byte.
+
+Migrated-build validation follows the migration flow, then runs `comic_git_engine/src/build/build_site.py` in the migrated temp workspace and compares the produced `build/` tree against `golden_builds/<case>/`.
+
+The migrated-build comparison ignores the copied top-level `build/your_content/` tree. Migration intentionally changes source files there, such as replacing page-level `info.ini` with `info.toml`; the parity contract for this check is the rendered site output.
+
+The default migration script path is `comic_git_engine/src/build/migrate_to_toml.py`. It can be overridden with `--migration-script` or a manifest `[migration].script` value.
+
+`check-build --all`, `check-migration --all`, and `check-migrated-build --all` run every manifest-backed test case with the matching `[checks]` flag enabled. Refresh commands intentionally operate on one case at a time.
 
 ## Local Static Review
 
@@ -123,6 +137,12 @@ This keeps the test boundary clear: the engine can only observe the files that a
 The harness compares full build output for each case. Focused tests should stay focused by using small fixture inputs, not by weakening comparison scope.
 
 This makes refresh behavior simple: `refresh-build` always rewrites the complete golden output for the selected case.
+
+### Migrated builds compare against existing build goldens
+
+`check-migrated-build` compares migrated-build output against `golden_builds/<case>/`.
+
+That keeps the contract direct: migrating a legacy fixture to TOML should not change the produced website. The copied source tree under `build/your_content/` is ignored because migration changes it by design. If the engine intentionally changes rendered website output, refresh the build golden deliberately with `refresh-build`.
 
 ### Explicit inputs over defaults
 

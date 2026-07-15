@@ -23,6 +23,24 @@ python scripts/run_e2e.py check-build --case baseline --keep-temp
 
 `python` launches the harness script. The harness then defaults engine execution to `venv/Scripts/python.exe` when that venv exists.
 
+Migration commands are available, but should stay disabled in manifests until the engine migration script exists:
+
+```powershell
+# Compare migrated your_content/ against golden_toml/<case>/
+python scripts/run_e2e.py check-migration --case baseline
+
+# Run migration, then build, then compare build/ against golden_builds/<case>/
+python scripts/run_e2e.py check-migrated-build --case baseline
+```
+
+The harness defaults the migration script path to `comic_git_engine/src/build/migrate_to_toml.py`. If the engine lands a different script name, pass `--migration-script <path-from-comic_git_engine-root>` or set `[migration].script` in the case manifest.
+
+Install migration-only engine dependencies into the harness venv before running migration checks:
+
+```powershell
+venv\Scripts\python.exe -m pip install -r comic_git_engine\requirements_migration.txt
+```
+
 ## Refreshing Goldens
 
 Refresh is deliberate and destructive for the selected golden output.
@@ -40,6 +58,14 @@ This command:
 3. Copies the fresh build output into `golden_builds/<case>/`.
 
 Only refresh a golden after confirming the new output is the intended behavior.
+
+Migration snapshots are refreshed separately:
+
+```powershell
+python scripts/run_e2e.py refresh-migration --case baseline
+```
+
+This stages the selected fixture, runs the migration script, then rewrites `golden_toml/<case>/` from the migrated temp workspace's `your_content/`.
 
 ## Test Case Structure
 
@@ -115,4 +141,10 @@ The manifest already has check flags for:
 - `migration`
 - `migrated_build`
 
-Only `build` is implemented today. Migration and migrated-build checks should use the same principles: complete fixture input, explicit manifest inputs, temp workspace execution, and strict golden comparison.
+Harness support exists for all three flags.
+
+- `build`: run `build_site.py` and compare `build/` to `golden_builds/<case>/`
+- `migration`: run the migration script and compare migrated `your_content/` to `golden_toml/<case>/`
+- `migrated_build`: run the migration script, then `build_site.py`, and compare `build/` to `golden_builds/<case>/`
+
+Keep `migration` and `migrated_build` disabled until the engine-side migration script is ready for that case.

@@ -63,3 +63,10 @@ test_cases/theme-overrides/
 - `index.html` contains homepage content from `home page.html`.
 - Fresh build output matches `golden_builds/theme-overrides/` byte-for-byte.
 - The golden can be reviewed by serving `golden_builds/` and opening `/theme-overrides/`.
+
+## Migration Coverage
+
+- Migration output writes `comics/001/info.toml`.
+- Migration deletion removes page-level `comics/001/info.ini`.
+- Root `comic_info.ini` remains until site-level TOML migration is implemented.
+- Migrated-build parity is intentionally disabled until the engine preserves rendered date formatting across legacy and TOML page data.

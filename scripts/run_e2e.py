@@ -13,14 +13,20 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 TEST_CASES_ROOT = ROOT / 'test_cases'
 GOLDEN_BUILDS_ROOT = ROOT / 'golden_builds'
+GOLDEN_TOML_ROOT = ROOT / 'golden_toml'
 DEFAULT_CASE = 'baseline'
 DEFAULT_PYTHON = ROOT / 'venv' / 'Scripts' / 'python.exe'
+DEFAULT_MIGRATION_SCRIPT = Path('src/build/migrate_to_toml.py')
 REQUIRED_BUILD_ENV_VARS = {'GITHUB_REPOSITORY'}
 
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description='Local e2e harness for comic_git_engine')
-    parser.add_argument('command', choices=['refresh-build', 'check-build'], help='Harness command to run.')
+    parser.add_argument(
+        'command',
+        choices=['refresh-build', 'check-build', 'refresh-migration', 'check-migration', 'check-migrated-build'],
+        help='Harness command to run.',
+    )
     parser.add_argument(
         '--case',
         '--scenario',
@@ -28,7 +34,7 @@ def parse_args() -> argparse.Namespace:
         default=None,
         help=f'Test case name under test_cases/. Defaults to {DEFAULT_CASE}. --scenario is accepted as a compatibility alias.',
     )
-    parser.add_argument('--all', action='store_true', help='Run the command for every build-enabled test case.')
+    parser.add_argument('--all', action='store_true', help='Run the command for every enabled test case.')
     parser.add_argument(
         '--github-repository',
         default=None,
@@ -39,6 +45,11 @@ def parse_args() -> argparse.Namespace:
         dest='python_executable',
         default=str(DEFAULT_PYTHON if DEFAULT_PYTHON.exists() else Path(sys.executable)),
         help='Python executable to use when running comic_git_engine.',
+    )
+    parser.add_argument(
+        '--migration-script',
+        default=None,
+        help='Migration script path relative to comic_git_engine/. Defaults to src/build/migrate_to_toml.py.',
     )
     parser.add_argument('--keep-temp', action='store_true', help='Keep the temporary workspace for debugging.')
     return parser.parse_args()
@@ -62,6 +73,10 @@ def test_case_doc_path(case_name: str) -> Path:
 
 def case_golden_build_dir(case_name: str) -> Path:
     return GOLDEN_BUILDS_ROOT / case_name
+
+
+def case_golden_toml_dir(case_name: str) -> Path:
+    return GOLDEN_TOML_ROOT / case_name
 
 
 def selected_case(args: argparse.Namespace) -> str:
@@ -106,17 +121,29 @@ def load_test_case_manifest(case_name: str) -> dict:
 
 
 def build_check_enabled(manifest: dict) -> bool:
+    return check_enabled(manifest, 'build')
+
+
+def migration_check_enabled(manifest: dict) -> bool:
+    return check_enabled(manifest, 'migration')
+
+
+def migrated_build_check_enabled(manifest: dict) -> bool:
+    return check_enabled(manifest, 'migrated_build')
+
+
+def check_enabled(manifest: dict, check_name: str) -> bool:
     if 'checks' not in manifest:
         raise ValueError('manifest must include a [checks] table')
     checks = manifest['checks']
     if not isinstance(checks, dict):
         raise ValueError('checks must be a table')
-    for check_name in ('build', 'migration', 'migrated_build'):
-        if check_name not in checks:
-            raise ValueError(f'checks.{check_name} must be explicitly set')
-        if not isinstance(checks[check_name], bool):
-            raise ValueError(f'checks.{check_name} must be a boolean')
-    return checks['build']
+    for required_check_name in ('build', 'migration', 'migrated_build'):
+        if required_check_name not in checks:
+            raise ValueError(f'checks.{required_check_name} must be explicitly set')
+        if not isinstance(checks[required_check_name], bool):
+            raise ValueError(f'checks.{required_check_name} must be a boolean')
+    return checks[check_name]
 
 
 def build_env_overrides(args: argparse.Namespace, manifest: dict) -> dict[str, str]:
@@ -134,6 +161,20 @@ def build_env_overrides(args: argparse.Namespace, manifest: dict) -> dict[str, s
     if args.github_repository:
         env_overrides['GITHUB_REPOSITORY'] = args.github_repository
     return env_overrides
+
+
+def migration_script_relative_path(args: argparse.Namespace, manifest: dict) -> Path:
+    configured_path = args.migration_script
+    migration_config = manifest.get('migration', {})
+    if migration_config:
+        if not isinstance(migration_config, dict):
+            raise ValueError('migration must be a table when present')
+        manifest_script = migration_config.get('script')
+        if manifest_script is not None:
+            if not isinstance(manifest_script, str):
+                raise ValueError('migration.script must be a string when present')
+            configured_path = manifest_script
+    return Path(configured_path) if configured_path else DEFAULT_MIGRATION_SCRIPT
 
 
 def resolve_engine_target() -> Path:
@@ -157,11 +198,29 @@ def create_engine_junction(workspace: Path, engine_target: Path) -> None:
     )
 
 
-def build_site(workspace: Path, env_overrides: dict[str, str], python_executable: str) -> Path:
+def run_engine_script(
+        workspace: Path,
+        script_relative_path: Path,
+        env_overrides: dict[str, str],
+        python_executable: str,
+        error_label: str,
+        missing_hint: str = '',
+        script_args: list[str] | None = None,
+) -> None:
+    script_path = workspace / 'comic_git_engine' / script_relative_path
+    if not script_path.exists():
+        hint = f'\n{missing_hint}' if missing_hint else ''
+        raise FileNotFoundError(
+            f'{error_label} script is missing: {script_relative_path}\n'
+            f'Expected to find it under comic_git_engine/.{hint}'
+        )
     env = os.environ.copy()
     env.update(env_overrides)
+    command = [python_executable, str(script_path)]
+    if script_args:
+        command.extend(script_args)
     result = subprocess.run(
-        [python_executable, str(workspace / 'comic_git_engine' / 'src' / 'build' / 'build_site.py')],
+        command,
         cwd=workspace,
         env=env,
         text=True,
@@ -174,7 +233,43 @@ def build_site(workspace: Path, env_overrides: dict[str, str], python_executable
     if result.returncode != 0:
         raise subprocess.CalledProcessError(result.returncode, result.args)
     if '============= ERROR =============' in result.stdout:
-        raise RuntimeError('Engine build reported an error. Check build output above.')
+        raise RuntimeError(f'{error_label} reported an error. Check output above.')
+
+
+def run_migration(
+        workspace: Path,
+        env_overrides: dict[str, str],
+        python_executable: str,
+        script_relative_path: Path,
+) -> None:
+    run_engine_script(
+        workspace,
+        script_relative_path,
+        env_overrides,
+        python_executable,
+        'TOML migration',
+        'Pass --migration-script if the script lands elsewhere.',
+        ['--write'],
+    )
+    run_engine_script(
+        workspace,
+        script_relative_path,
+        env_overrides,
+        python_executable,
+        'TOML migration',
+        'Pass --migration-script if the script lands elsewhere.',
+        ['--write', '--delete-legacy'],
+    )
+
+
+def build_site(workspace: Path, env_overrides: dict[str, str], python_executable: str) -> Path:
+    run_engine_script(
+        workspace,
+        Path('src/build/build_site.py'),
+        env_overrides,
+        python_executable,
+        'Engine build',
+    )
     build_dir = workspace / 'build'
     if not build_dir.exists():
         raise RuntimeError('Build did not produce a build/ directory. Check build output above.')
@@ -197,10 +292,13 @@ def refresh_golden_build(source_build: Path, golden_dir: Path) -> None:
             shutil.copy2(child, target)
 
 
-def compare_directories(expected: Path, actual: Path) -> list[str]:
+def compare_directories(expected: Path, actual: Path, ignored_roots: set[str] | None = None) -> list[str]:
     differences: list[str] = []
+    ignored_roots = ignored_roots or set()
 
     def walk(exp: Path, act: Path, rel: Path = Path('.')) -> None:
+        if rel.parts and rel.parts[0] in ignored_roots:
+            return
         expected_entries = {p.name: p for p in exp.iterdir()} if exp.exists() else {}
         actual_entries = {p.name: p for p in act.iterdir()} if act.exists() else {}
         for name in sorted(expected_entries.keys() - actual_entries.keys()):
@@ -326,12 +424,145 @@ def cmd_check_build(args: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_refresh_migration_case(args: argparse.Namespace, case_name: str) -> int:
+    warn_if_missing_test_case_doc(case_name)
+    manifest = load_test_case_manifest(case_name)
+    if not migration_check_enabled(manifest):
+        print(f'Test case {case_name} does not enable migration output checks.', file=sys.stderr)
+        return 2
+    content_source = test_case_content_dir(case_name)
+    env_overrides = build_env_overrides(args, manifest)
+    engine_target = resolve_engine_target()
+    script_relative_path = migration_script_relative_path(args, manifest)
+    golden_dir = case_golden_toml_dir(case_name)
+    with TempWorkspace(args.keep_temp) as workspace:
+        stage_test_case_content(workspace, content_source)
+        create_engine_junction(workspace, engine_target)
+        run_migration(workspace, env_overrides, args.python_executable, script_relative_path)
+        refresh_golden_build(workspace / 'your_content', golden_dir)
+    print(f'Refreshed golden TOML migration output at {golden_dir}')
+    return 0
+
+
+def cmd_refresh_migration(args: argparse.Namespace) -> int:
+    if args.all:
+        print('refresh-migration does not support --all. Refresh one test case at a time.', file=sys.stderr)
+        return 2
+    return cmd_refresh_migration_case(args, selected_case(args))
+
+
+def cmd_check_migration_case(args: argparse.Namespace, case_name: str) -> int:
+    warn_if_missing_test_case_doc(case_name)
+    manifest = load_test_case_manifest(case_name)
+    if not migration_check_enabled(manifest):
+        print(f'Test case {case_name} does not enable migration output checks.', file=sys.stderr)
+        return 2
+    content_source = test_case_content_dir(case_name)
+    env_overrides = build_env_overrides(args, manifest)
+    golden_dir = case_golden_toml_dir(case_name)
+    if not golden_dir.exists():
+        print(f'{golden_dir} does not exist. Run refresh-migration first.', file=sys.stderr)
+        return 2
+    engine_target = resolve_engine_target()
+    script_relative_path = migration_script_relative_path(args, manifest)
+    with TempWorkspace(args.keep_temp) as workspace:
+        stage_test_case_content(workspace, content_source)
+        create_engine_junction(workspace, engine_target)
+        run_migration(workspace, env_overrides, args.python_executable, script_relative_path)
+        differences = compare_directories(golden_dir, workspace / 'your_content')
+    if differences:
+        print(f'Migration output did not match golden TOML output for test case {case_name}:', file=sys.stderr)
+        for diff in differences[:50]:
+            print(f'  - {diff}', file=sys.stderr)
+        if len(differences) > 50:
+            print(f'  ... {len(differences) - 50} more differences', file=sys.stderr)
+        return 1
+    print(f'Migration output matches golden TOML output for test case {case_name}.')
+    return 0
+
+
+def cmd_check_migration(args: argparse.Namespace) -> int:
+    if not args.all:
+        return cmd_check_migration_case(args, selected_case(args))
+    return cmd_check_all(args, migration_check_enabled, cmd_check_migration_case, 'migration output')
+
+
+def cmd_check_migrated_build_case(args: argparse.Namespace, case_name: str) -> int:
+    warn_if_missing_test_case_doc(case_name)
+    manifest = load_test_case_manifest(case_name)
+    if not migrated_build_check_enabled(manifest):
+        print(f'Test case {case_name} does not enable migrated build output checks.', file=sys.stderr)
+        return 2
+    content_source = test_case_content_dir(case_name)
+    env_overrides = build_env_overrides(args, manifest)
+    golden_dir = case_golden_build_dir(case_name)
+    if not golden_dir.exists():
+        print(f'{golden_dir} does not exist. Run refresh-build first.', file=sys.stderr)
+        return 2
+    engine_target = resolve_engine_target()
+    script_relative_path = migration_script_relative_path(args, manifest)
+    with TempWorkspace(args.keep_temp) as workspace:
+        stage_test_case_content(workspace, content_source)
+        create_engine_junction(workspace, engine_target)
+        run_migration(workspace, env_overrides, args.python_executable, script_relative_path)
+        build_dir = build_site(workspace, env_overrides, args.python_executable)
+        differences = compare_directories(golden_dir, build_dir, ignored_roots={'your_content'})
+    if differences:
+        print(f'Migrated build output did not match golden build for test case {case_name}:', file=sys.stderr)
+        for diff in differences[:50]:
+            print(f'  - {diff}', file=sys.stderr)
+        if len(differences) > 50:
+            print(f'  ... {len(differences) - 50} more differences', file=sys.stderr)
+        return 1
+    print(f'Migrated build output matches golden build for test case {case_name}.')
+    return 0
+
+
+def cmd_check_migrated_build(args: argparse.Namespace) -> int:
+    if not args.all:
+        return cmd_check_migrated_build_case(args, selected_case(args))
+    return cmd_check_all(args, migrated_build_check_enabled, cmd_check_migrated_build_case, 'migrated build output')
+
+
+def cmd_check_all(args: argparse.Namespace, is_enabled, run_case, label: str) -> int:
+    case_names = list_test_cases()
+    if not case_names:
+        print(f'No test cases found under {TEST_CASES_ROOT}', file=sys.stderr)
+        return 2
+
+    failures = 0
+    skipped = 0
+    for case_name in case_names:
+        manifest = load_test_case_manifest(case_name)
+        if not is_enabled(manifest):
+            skipped += 1
+            print(f'Skipping test case {case_name}; {label} checks are disabled.')
+            continue
+        print(f'Checking {label} for test case {case_name}...', flush=True)
+        result = run_case(args, case_name)
+        if result != 0:
+            failures += 1
+
+    checked = len(case_names) - skipped
+    if failures:
+        print(f'{label.capitalize()} checks failed for {failures} of {checked} checked test cases.', file=sys.stderr)
+        return 1
+    print(f'{label.capitalize()} checks passed for {checked} test case(s); skipped {skipped}.')
+    return 0
+
+
 def main() -> int:
     args = parse_args()
     if args.command == 'refresh-build':
         return cmd_refresh_build(args)
     if args.command == 'check-build':
         return cmd_check_build(args)
+    if args.command == 'refresh-migration':
+        return cmd_refresh_migration(args)
+    if args.command == 'check-migration':
+        return cmd_check_migration(args)
+    if args.command == 'check-migrated-build':
+        return cmd_check_migrated_build(args)
     raise AssertionError(f'Unhandled command: {args.command}')
 
 

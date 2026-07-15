@@ -44,3 +44,19 @@ That is appropriate for local Windows development, but CI/Linux support will nee
 The engine can write derived files under `your_content/` during a build, such as thumbnails.
 
 This is why the harness stages fixture input into a temp workspace instead of building directly from checked-in `test_cases/` data.
+
+### Migration checks need migration-only dependencies
+
+The migration script may import packages that normal build checks do not need.
+
+Install them into the harness venv before running migration checks:
+
+```powershell
+venv\Scripts\python.exe -m pip install -r comic_git_engine\requirements_migration.txt
+```
+
+### Migrated-build parity ignores copied source files
+
+`check-migrated-build` ignores top-level `build/your_content/` differences.
+
+Migration intentionally changes source files, such as replacing page-level `info.ini` with `info.toml`. The migrated-build parity check is meant to catch rendered site differences, not expected source-layout changes copied into the published output.

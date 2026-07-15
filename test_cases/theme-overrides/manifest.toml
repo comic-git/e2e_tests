@@ -5,7 +5,7 @@ tags = ["legacy-ini", "theme-overrides", "focused", "full-parity"]
 
 [checks]
 build = true
-migration = false
+migration = true
 migrated_build = false
 
 [env]
