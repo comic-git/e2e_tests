@@ -1,0 +1,49 @@
+<?xml version="1.0" ?>
+<rss xmlns:atom="http://www.w3.org/2005/Atom" xmlns:dc="http://purl.org/dc/elements/1.1/" version="2.0">
+    <channel>
+        <atom:link href="https://comic-git.github.io/extra-comics-rss/feed.xml" rel="self" type="application/rss+xml"/>
+        <title>Extra Comics RSS Fixture</title>
+        <description>Main feed for the Extra Comics RSS fixture.</description>
+        <link>https://comic-git.github.io/extra-comics-rss/</link>
+        <dc:creator>Harness Tests</dc:creator>
+        <language>en-us</language>
+        <image>
+            <title>Extra Comics RSS Fixture</title>
+            <link>https://comic-git.github.io/extra-comics-rss/</link>
+            <url>https://comic-git.github.io/extra-comics-rss/your_content/images/banner.png</url>
+            <width>100</width>
+            <height>36</height>
+        </image>
+        <item>
+            <title>[Extra Comics RSS Fixture] Main RSS Page</title>
+            <dc:creator>Harness Tests</dc:creator>
+            <pubDate>Fri, 01 Aug 2025 00:00:00 +0000</pubDate>
+            <link>https://comic-git.github.io/extra-comics-rss/comic/001/</link>
+            <guid isPermaLink="true">https://comic-git.github.io/extra-comics-rss/comic/001/</guid>
+            <category type="storyline"/>
+            <category type="tag">main-rss</category>
+            <description><![CDATA[<p><img src="https://comic-git.github.io/extra-comics-rss/your_content/comics/001/Main RSS Page.png" alt_text="Main comic page for the Extra Comics RSS fixture."></p>
+
+<hr>
+
+<p>This main comic post should appear in the root RSS feed.</p>
+]]></description>
+        </item>
+        <item>
+            <title>Side Story RSS: Combined Side Story Page</title>
+            <dc:creator>Harness Tests</dc:creator>
+            <pubDate>Sat, 02 Aug 2025 00:00:00 +0000</pubDate>
+            <link>https://comic-git.github.io/extra-comics-rss/side-story/comic/101/</link>
+            <guid isPermaLink="true">https://comic-git.github.io/extra-comics-rss/side-story/comic/101/</guid>
+            <category type="storyline"/>
+            <category type="tag">side-story</category>
+            <category type="tag">combined-rss</category>
+            <description><![CDATA[<p><img src="https://comic-git.github.io/extra-comics-rss/your_content/side-story/comics/101/Combined Side Story Page.png" alt_text="Extra Comic page combined into the main RSS feed."></p>
+
+<hr>
+
+<p>This side story post should appear in the root RSS feed instead of a side-story feed.</p>
+]]></description>
+        </item>
+    </channel>
+</rss>

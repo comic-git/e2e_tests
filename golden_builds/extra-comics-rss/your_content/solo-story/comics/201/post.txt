@@ -1,0 +1,1 @@
+This solo story post should appear in solo-story/feed.xml only.

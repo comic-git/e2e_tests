@@ -1,0 +1,12 @@
+name = "extra-comics-rss"
+description = "Focused build parity coverage for Extra Comic discovery and RSS feed routing."
+source_format = "legacy_ini"
+tags = ["legacy-ini", "extra-comics", "rss", "focused", "full-parity"]
+
+[checks]
+build = true
+migration = false
+migrated_build = false
+
+[env]
+GITHUB_REPOSITORY = "comic-git/extra-comics-rss"
