@@ -7,6 +7,17 @@
 
 Run commands from the `e2e_tests` repo root.
 
+For normal validation, run the pytest wrapper suite:
+
+```powershell
+venv\Scripts\python.exe -m pip install -r requirements-dev.txt
+venv\Scripts\python.exe -m pytest
+```
+
+Pytest reports each enabled check for each test case independently. Disabled manifest checks are reported as skipped.
+
+The harness CLI remains available for targeted checks and golden refreshes:
+
 ```powershell
 # Validate the default baseline case
 python scripts/run_e2e.py check-build
