@@ -26,7 +26,11 @@ def harness_args(command: str, case_name: str) -> runner.HarnessOptions:
 def assert_check_passed(result: runner.CheckResult) -> None:
     if result.skipped:
         pytest.skip(result.message)
-    detail = '\n'.join(result.differences)
+    detail = '\n'.join(
+        line
+        for difference in result.differences
+        for line in difference.format_lines()
+    )
     assert result.passed, f'{result.message}\n{detail}'
 
 

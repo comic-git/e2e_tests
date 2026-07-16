@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import argparse
+import difflib
 import filecmp
 import os
 import shutil
@@ -19,6 +20,25 @@ DEFAULT_CASE = 'baseline'
 DEFAULT_PYTHON = ROOT / 'venv' / 'Scripts' / 'python.exe'
 DEFAULT_MIGRATION_SCRIPT = Path('src/build/migrate_to_toml.py')
 REQUIRED_BUILD_ENV_VARS = {'GITHUB_REPOSITORY'}
+MAX_TEXT_DIFF_LINES = 120
+TEXT_FILE_SUFFIXES = {
+    '.css',
+    '.csv',
+    '.html',
+    '.htm',
+    '.ini',
+    '.js',
+    '.json',
+    '.md',
+    '.py',
+    '.svg',
+    '.toml',
+    '.txt',
+    '.xml',
+    '.yaml',
+    '.yml',
+}
+TEXT_ENCODINGS = ('utf-8-sig', 'utf-8', 'cp1252')
 
 
 @dataclass(frozen=True)
@@ -33,12 +53,25 @@ class HarnessOptions:
 
 
 @dataclass(frozen=True)
+class DirectoryDifference:
+    path: Path
+    message: str
+    kind: str
+    diff_lines: tuple[str, ...] = ()
+
+    def format_lines(self) -> tuple[str, ...]:
+        if not self.diff_lines:
+            return (self.message,)
+        return (self.message, *self.diff_lines)
+
+
+@dataclass(frozen=True)
 class CheckResult:
     case_name: str
     check_name: str
     status: str
     message: str
-    differences: tuple[str, ...] = ()
+    differences: tuple[DirectoryDifference, ...] = ()
     exit_code: int = 0
 
     @property
@@ -58,7 +91,7 @@ def failed_result(
         case_name: str,
         check_name: str,
         message: str,
-        differences: list[str] | tuple[str, ...] = (),
+        differences: list[DirectoryDifference] | tuple[DirectoryDifference, ...] = (),
         exit_code: int = 1,
 ) -> CheckResult:
     return CheckResult(case_name, check_name, 'failed', message, tuple(differences), exit_code)
@@ -75,7 +108,10 @@ def print_check_result(result: CheckResult) -> None:
     stream = sys.stderr if not result.skipped else sys.stdout
     print(result.message, file=stream)
     for diff in result.differences[:50]:
-        print(f'  - {diff}', file=stream)
+        lines = diff.format_lines()
+        print(f'  - {lines[0]}', file=stream)
+        for line in lines[1:]:
+            print(f'    {line}', file=stream)
     if len(result.differences) > 50:
         print(f'  ... {len(result.differences) - 50} more differences', file=stream)
 
@@ -361,8 +397,43 @@ def refresh_golden_build(source_build: Path, golden_dir: Path) -> None:
             shutil.copy2(child, target)
 
 
-def compare_directories(expected: Path, actual: Path, ignored_roots: set[str] | None = None) -> list[str]:
-    differences: list[str] = []
+def read_text_file(path: Path) -> str | None:
+    if path.suffix.lower() not in TEXT_FILE_SUFFIXES:
+        return None
+    content = path.read_bytes()
+    if b'\x00' in content:
+        return None
+    for encoding in TEXT_ENCODINGS:
+        try:
+            return content.decode(encoding)
+        except UnicodeDecodeError:
+            continue
+    return None
+
+
+def text_file_diff(expected: Path, actual: Path) -> tuple[str, ...]:
+    expected_text = read_text_file(expected)
+    actual_text = read_text_file(actual)
+    if expected_text is None or actual_text is None:
+        return ()
+
+    diff_lines = tuple(difflib.unified_diff(
+        expected_text.splitlines(),
+        actual_text.splitlines(),
+        fromfile=f'expected: {expected}',
+        tofile=f'actual: {actual}',
+        lineterm='',
+    ))
+    if not diff_lines and expected_text != actual_text:
+        return ('text differs only by line endings or final newline',)
+    if len(diff_lines) <= MAX_TEXT_DIFF_LINES:
+        return diff_lines
+    omitted = len(diff_lines) - MAX_TEXT_DIFF_LINES
+    return (*diff_lines[:MAX_TEXT_DIFF_LINES], f'... {omitted} diff lines omitted')
+
+
+def compare_directories(expected: Path, actual: Path, ignored_roots: set[str] | None = None) -> list[DirectoryDifference]:
+    differences: list[DirectoryDifference] = []
     ignored_roots = ignored_roots or set()
 
     def walk(exp: Path, act: Path, rel: Path = Path('.')) -> None:
@@ -371,9 +442,11 @@ def compare_directories(expected: Path, actual: Path, ignored_roots: set[str] | 
         expected_entries = {p.name: p for p in exp.iterdir()} if exp.exists() else {}
         actual_entries = {p.name: p for p in act.iterdir()} if act.exists() else {}
         for name in sorted(expected_entries.keys() - actual_entries.keys()):
-            differences.append(f'missing in actual: {rel / name}')
+            child_rel = rel / name
+            differences.append(DirectoryDifference(child_rel, f'missing in actual: {child_rel}', 'missing'))
         for name in sorted(actual_entries.keys() - expected_entries.keys()):
-            differences.append(f'unexpected in actual: {rel / name}')
+            child_rel = rel / name
+            differences.append(DirectoryDifference(child_rel, f'unexpected in actual: {child_rel}', 'unexpected'))
         for name in sorted(expected_entries.keys() & actual_entries.keys()):
             exp_child = expected_entries[name]
             act_child = actual_entries[name]
@@ -381,9 +454,14 @@ def compare_directories(expected: Path, actual: Path, ignored_roots: set[str] | 
             if exp_child.is_dir() and act_child.is_dir():
                 walk(exp_child, act_child, child_rel)
             elif exp_child.is_dir() != act_child.is_dir():
-                differences.append(f'type mismatch: {child_rel}')
+                differences.append(DirectoryDifference(child_rel, f'type mismatch: {child_rel}', 'type_mismatch'))
             elif not filecmp.cmp(exp_child, act_child, shallow=False):
-                differences.append(f'content mismatch: {child_rel}')
+                differences.append(DirectoryDifference(
+                    child_rel,
+                    f'content mismatch: {child_rel}',
+                    'content_mismatch',
+                    text_file_diff(exp_child, act_child),
+                ))
 
     walk(expected, actual)
     return differences
