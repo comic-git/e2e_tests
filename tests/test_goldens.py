@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import argparse
 import sys
 from pathlib import Path
 
@@ -15,16 +14,12 @@ if not CASE_NAMES:
     pytest.skip(f'No test cases found under {runner.TEST_CASES_ROOT}', allow_module_level=True)
 
 
-def harness_args(command: str, case_name: str) -> argparse.Namespace:
+def harness_args(command: str, case_name: str) -> runner.HarnessOptions:
     python_executable = runner.DEFAULT_PYTHON if runner.DEFAULT_PYTHON.exists() else Path(sys.executable)
-    return argparse.Namespace(
+    return runner.HarnessOptions(
         command=command,
         case=case_name,
-        all=False,
-        github_repository=None,
         python_executable=str(python_executable),
-        migration_script=None,
-        keep_temp=False,
     )
 
 

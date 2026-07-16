@@ -8,6 +8,7 @@ import subprocess
 import sys
 import tempfile
 import tomllib
+from dataclasses import dataclass
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -20,7 +21,18 @@ DEFAULT_MIGRATION_SCRIPT = Path('src/build/migrate_to_toml.py')
 REQUIRED_BUILD_ENV_VARS = {'GITHUB_REPOSITORY'}
 
 
-def parse_args() -> argparse.Namespace:
+@dataclass(frozen=True)
+class HarnessOptions:
+    command: str
+    case: str | None = None
+    all: bool = False
+    github_repository: str | None = None
+    python_executable: str = str(DEFAULT_PYTHON if DEFAULT_PYTHON.exists() else Path(sys.executable))
+    migration_script: str | None = None
+    keep_temp: bool = False
+
+
+def parse_args() -> HarnessOptions:
     parser = argparse.ArgumentParser(description='Local e2e harness for comic_git_engine')
     parser.add_argument(
         'command',
@@ -52,7 +64,16 @@ def parse_args() -> argparse.Namespace:
         help='Migration script path relative to comic_git_engine/. Defaults to src/build/migrate_to_toml.py.',
     )
     parser.add_argument('--keep-temp', action='store_true', help='Keep the temporary workspace for debugging.')
-    return parser.parse_args()
+    args = parser.parse_args()
+    return HarnessOptions(
+        command=args.command,
+        case=args.case,
+        all=args.all,
+        github_repository=args.github_repository,
+        python_executable=args.python_executable,
+        migration_script=args.migration_script,
+        keep_temp=args.keep_temp,
+    )
 
 
 def test_case_dir(case_name: str) -> Path:
@@ -79,7 +100,7 @@ def case_golden_toml_dir(case_name: str) -> Path:
     return GOLDEN_TOML_ROOT / case_name
 
 
-def selected_case(args: argparse.Namespace) -> str:
+def selected_case(args: HarnessOptions) -> str:
     return args.case or DEFAULT_CASE
 
 
@@ -146,7 +167,7 @@ def check_enabled(manifest: dict, check_name: str) -> bool:
     return checks[check_name]
 
 
-def build_env_overrides(args: argparse.Namespace, manifest: dict) -> dict[str, str]:
+def build_env_overrides(args: HarnessOptions, manifest: dict) -> dict[str, str]:
     if 'env' not in manifest:
         raise ValueError('manifest must include an [env] table')
     env_config = manifest['env']
@@ -163,7 +184,7 @@ def build_env_overrides(args: argparse.Namespace, manifest: dict) -> dict[str, s
     return env_overrides
 
 
-def migration_script_relative_path(args: argparse.Namespace, manifest: dict) -> Path:
+def migration_script_relative_path(args: HarnessOptions, manifest: dict) -> Path:
     configured_path = args.migration_script
     migration_config = manifest.get('migration', {})
     if migration_config:
@@ -339,7 +360,7 @@ class TempWorkspace:
             self._tmp.cleanup()
 
 
-def cmd_refresh_build_case(args: argparse.Namespace, case_name: str) -> int:
+def cmd_refresh_build_case(args: HarnessOptions, case_name: str) -> int:
     warn_if_missing_test_case_doc(case_name)
     manifest = load_test_case_manifest(case_name)
     if not build_check_enabled(manifest):
@@ -358,14 +379,14 @@ def cmd_refresh_build_case(args: argparse.Namespace, case_name: str) -> int:
     return 0
 
 
-def cmd_refresh_build(args: argparse.Namespace) -> int:
+def cmd_refresh_build(args: HarnessOptions) -> int:
     if args.all:
         print('refresh-build does not support --all. Refresh one test case at a time.', file=sys.stderr)
         return 2
     return cmd_refresh_build_case(args, selected_case(args))
 
 
-def cmd_check_build_case(args: argparse.Namespace, case_name: str) -> int:
+def cmd_check_build_case(args: HarnessOptions, case_name: str) -> int:
     warn_if_missing_test_case_doc(case_name)
     manifest = load_test_case_manifest(case_name)
     if not build_check_enabled(manifest):
@@ -394,7 +415,7 @@ def cmd_check_build_case(args: argparse.Namespace, case_name: str) -> int:
     return 0
 
 
-def cmd_check_build(args: argparse.Namespace) -> int:
+def cmd_check_build(args: HarnessOptions) -> int:
     if not args.all:
         return cmd_check_build_case(args, selected_case(args))
 
@@ -424,7 +445,7 @@ def cmd_check_build(args: argparse.Namespace) -> int:
     return 0
 
 
-def cmd_refresh_migration_case(args: argparse.Namespace, case_name: str) -> int:
+def cmd_refresh_migration_case(args: HarnessOptions, case_name: str) -> int:
     warn_if_missing_test_case_doc(case_name)
     manifest = load_test_case_manifest(case_name)
     if not migration_check_enabled(manifest):
@@ -444,14 +465,14 @@ def cmd_refresh_migration_case(args: argparse.Namespace, case_name: str) -> int:
     return 0
 
 
-def cmd_refresh_migration(args: argparse.Namespace) -> int:
+def cmd_refresh_migration(args: HarnessOptions) -> int:
     if args.all:
         print('refresh-migration does not support --all. Refresh one test case at a time.', file=sys.stderr)
         return 2
     return cmd_refresh_migration_case(args, selected_case(args))
 
 
-def cmd_check_migration_case(args: argparse.Namespace, case_name: str) -> int:
+def cmd_check_migration_case(args: HarnessOptions, case_name: str) -> int:
     warn_if_missing_test_case_doc(case_name)
     manifest = load_test_case_manifest(case_name)
     if not migration_check_enabled(manifest):
@@ -481,13 +502,13 @@ def cmd_check_migration_case(args: argparse.Namespace, case_name: str) -> int:
     return 0
 
 
-def cmd_check_migration(args: argparse.Namespace) -> int:
+def cmd_check_migration(args: HarnessOptions) -> int:
     if not args.all:
         return cmd_check_migration_case(args, selected_case(args))
     return cmd_check_all(args, migration_check_enabled, cmd_check_migration_case, 'migration output')
 
 
-def cmd_check_migrated_build_case(args: argparse.Namespace, case_name: str) -> int:
+def cmd_check_migrated_build_case(args: HarnessOptions, case_name: str) -> int:
     warn_if_missing_test_case_doc(case_name)
     manifest = load_test_case_manifest(case_name)
     if not migrated_build_check_enabled(manifest):
@@ -518,13 +539,13 @@ def cmd_check_migrated_build_case(args: argparse.Namespace, case_name: str) -> i
     return 0
 
 
-def cmd_check_migrated_build(args: argparse.Namespace) -> int:
+def cmd_check_migrated_build(args: HarnessOptions) -> int:
     if not args.all:
         return cmd_check_migrated_build_case(args, selected_case(args))
     return cmd_check_all(args, migrated_build_check_enabled, cmd_check_migrated_build_case, 'migrated build output')
 
 
-def cmd_check_all(args: argparse.Namespace, is_enabled, run_case, label: str) -> int:
+def cmd_check_all(args: HarnessOptions, is_enabled, run_case, label: str) -> int:
     case_names = list_test_cases()
     if not case_names:
         print(f'No test cases found under {TEST_CASES_ROOT}', file=sys.stderr)
