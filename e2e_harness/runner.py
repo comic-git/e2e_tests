@@ -32,6 +32,54 @@ class HarnessOptions:
     keep_temp: bool = False
 
 
+@dataclass(frozen=True)
+class CheckResult:
+    case_name: str
+    check_name: str
+    status: str
+    message: str
+    differences: tuple[str, ...] = ()
+    exit_code: int = 0
+
+    @property
+    def passed(self) -> bool:
+        return self.status == 'passed'
+
+    @property
+    def skipped(self) -> bool:
+        return self.status == 'skipped'
+
+
+def passed_result(case_name: str, check_name: str, message: str) -> CheckResult:
+    return CheckResult(case_name, check_name, 'passed', message)
+
+
+def failed_result(
+        case_name: str,
+        check_name: str,
+        message: str,
+        differences: list[str] | tuple[str, ...] = (),
+        exit_code: int = 1,
+) -> CheckResult:
+    return CheckResult(case_name, check_name, 'failed', message, tuple(differences), exit_code)
+
+
+def skipped_result(case_name: str, check_name: str, message: str) -> CheckResult:
+    return CheckResult(case_name, check_name, 'skipped', message, exit_code=2)
+
+
+def print_check_result(result: CheckResult) -> None:
+    if result.passed:
+        print(result.message)
+        return
+    stream = sys.stderr if not result.skipped else sys.stdout
+    print(result.message, file=stream)
+    for diff in result.differences[:50]:
+        print(f'  - {diff}', file=stream)
+    if len(result.differences) > 50:
+        print(f'  ... {len(result.differences) - 50} more differences', file=stream)
+
+
 def parse_args() -> HarnessOptions:
     parser = argparse.ArgumentParser(description='Local e2e harness for comic_git_engine')
     parser.add_argument(
@@ -386,18 +434,16 @@ def cmd_refresh_build(args: HarnessOptions) -> int:
     return cmd_refresh_build_case(args, selected_case(args))
 
 
-def cmd_check_build_case(args: HarnessOptions, case_name: str) -> int:
+def check_build_case(args: HarnessOptions, case_name: str) -> CheckResult:
     warn_if_missing_test_case_doc(case_name)
     manifest = load_test_case_manifest(case_name)
     if not build_check_enabled(manifest):
-        print(f'Test case {case_name} does not enable build output checks.', file=sys.stderr)
-        return 2
+        return skipped_result(case_name, 'build', f'Test case {case_name} does not enable build output checks.')
     content_source = test_case_content_dir(case_name)
     env_overrides = build_env_overrides(args, manifest)
     golden_dir = case_golden_build_dir(case_name)
     if not golden_dir.exists():
-        print(f'{golden_dir} does not exist. Run refresh-build first.', file=sys.stderr)
-        return 2
+        return failed_result(case_name, 'build', f'{golden_dir} does not exist. Run refresh-build first.', exit_code=2)
     engine_target = resolve_engine_target()
     with TempWorkspace(args.keep_temp) as workspace:
         stage_test_case_content(workspace, content_source)
@@ -405,14 +451,19 @@ def cmd_check_build_case(args: HarnessOptions, case_name: str) -> int:
         build_dir = build_site(workspace, env_overrides, args.python_executable)
         differences = compare_directories(golden_dir, build_dir)
     if differences:
-        print(f'Build output did not match golden build for test case {case_name}:', file=sys.stderr)
-        for diff in differences[:50]:
-            print(f'  - {diff}', file=sys.stderr)
-        if len(differences) > 50:
-            print(f'  ... {len(differences) - 50} more differences', file=sys.stderr)
-        return 1
-    print(f'Build output matches golden build for test case {case_name}.')
-    return 0
+        return failed_result(
+            case_name,
+            'build',
+            f'Build output did not match golden build for test case {case_name}:',
+            differences,
+        )
+    return passed_result(case_name, 'build', f'Build output matches golden build for test case {case_name}.')
+
+
+def cmd_check_build_case(args: HarnessOptions, case_name: str) -> int:
+    result = check_build_case(args, case_name)
+    print_check_result(result)
+    return result.exit_code
 
 
 def cmd_check_build(args: HarnessOptions) -> int:
@@ -472,18 +523,16 @@ def cmd_refresh_migration(args: HarnessOptions) -> int:
     return cmd_refresh_migration_case(args, selected_case(args))
 
 
-def cmd_check_migration_case(args: HarnessOptions, case_name: str) -> int:
+def check_migration_case(args: HarnessOptions, case_name: str) -> CheckResult:
     warn_if_missing_test_case_doc(case_name)
     manifest = load_test_case_manifest(case_name)
     if not migration_check_enabled(manifest):
-        print(f'Test case {case_name} does not enable migration output checks.', file=sys.stderr)
-        return 2
+        return skipped_result(case_name, 'migration', f'Test case {case_name} does not enable migration output checks.')
     content_source = test_case_content_dir(case_name)
     env_overrides = build_env_overrides(args, manifest)
     golden_dir = case_golden_toml_dir(case_name)
     if not golden_dir.exists():
-        print(f'{golden_dir} does not exist. Run refresh-migration first.', file=sys.stderr)
-        return 2
+        return failed_result(case_name, 'migration', f'{golden_dir} does not exist. Run refresh-migration first.', exit_code=2)
     engine_target = resolve_engine_target()
     script_relative_path = migration_script_relative_path(args, manifest)
     with TempWorkspace(args.keep_temp) as workspace:
@@ -492,14 +541,19 @@ def cmd_check_migration_case(args: HarnessOptions, case_name: str) -> int:
         run_migration(workspace, env_overrides, args.python_executable, script_relative_path)
         differences = compare_directories(golden_dir, workspace / 'your_content')
     if differences:
-        print(f'Migration output did not match golden TOML output for test case {case_name}:', file=sys.stderr)
-        for diff in differences[:50]:
-            print(f'  - {diff}', file=sys.stderr)
-        if len(differences) > 50:
-            print(f'  ... {len(differences) - 50} more differences', file=sys.stderr)
-        return 1
-    print(f'Migration output matches golden TOML output for test case {case_name}.')
-    return 0
+        return failed_result(
+            case_name,
+            'migration',
+            f'Migration output did not match golden TOML output for test case {case_name}:',
+            differences,
+        )
+    return passed_result(case_name, 'migration', f'Migration output matches golden TOML output for test case {case_name}.')
+
+
+def cmd_check_migration_case(args: HarnessOptions, case_name: str) -> int:
+    result = check_migration_case(args, case_name)
+    print_check_result(result)
+    return result.exit_code
 
 
 def cmd_check_migration(args: HarnessOptions) -> int:
@@ -508,18 +562,16 @@ def cmd_check_migration(args: HarnessOptions) -> int:
     return cmd_check_all(args, migration_check_enabled, cmd_check_migration_case, 'migration output')
 
 
-def cmd_check_migrated_build_case(args: HarnessOptions, case_name: str) -> int:
+def check_migrated_build_case(args: HarnessOptions, case_name: str) -> CheckResult:
     warn_if_missing_test_case_doc(case_name)
     manifest = load_test_case_manifest(case_name)
     if not migrated_build_check_enabled(manifest):
-        print(f'Test case {case_name} does not enable migrated build output checks.', file=sys.stderr)
-        return 2
+        return skipped_result(case_name, 'migrated_build', f'Test case {case_name} does not enable migrated build output checks.')
     content_source = test_case_content_dir(case_name)
     env_overrides = build_env_overrides(args, manifest)
     golden_dir = case_golden_build_dir(case_name)
     if not golden_dir.exists():
-        print(f'{golden_dir} does not exist. Run refresh-build first.', file=sys.stderr)
-        return 2
+        return failed_result(case_name, 'migrated_build', f'{golden_dir} does not exist. Run refresh-build first.', exit_code=2)
     engine_target = resolve_engine_target()
     script_relative_path = migration_script_relative_path(args, manifest)
     with TempWorkspace(args.keep_temp) as workspace:
@@ -529,14 +581,19 @@ def cmd_check_migrated_build_case(args: HarnessOptions, case_name: str) -> int:
         build_dir = build_site(workspace, env_overrides, args.python_executable)
         differences = compare_directories(golden_dir, build_dir, ignored_roots={'your_content'})
     if differences:
-        print(f'Migrated build output did not match golden build for test case {case_name}:', file=sys.stderr)
-        for diff in differences[:50]:
-            print(f'  - {diff}', file=sys.stderr)
-        if len(differences) > 50:
-            print(f'  ... {len(differences) - 50} more differences', file=sys.stderr)
-        return 1
-    print(f'Migrated build output matches golden build for test case {case_name}.')
-    return 0
+        return failed_result(
+            case_name,
+            'migrated_build',
+            f'Migrated build output did not match golden build for test case {case_name}:',
+            differences,
+        )
+    return passed_result(case_name, 'migrated_build', f'Migrated build output matches golden build for test case {case_name}.')
+
+
+def cmd_check_migrated_build_case(args: HarnessOptions, case_name: str) -> int:
+    result = check_migrated_build_case(args, case_name)
+    print_check_result(result)
+    return result.exit_code
 
 
 def cmd_check_migrated_build(args: HarnessOptions) -> int:

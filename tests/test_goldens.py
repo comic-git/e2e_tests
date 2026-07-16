@@ -23,34 +23,29 @@ def harness_args(command: str, case_name: str) -> runner.HarnessOptions:
     )
 
 
-def skip_if_disabled(case_name: str, is_enabled, label: str) -> None:
-    manifest = runner.load_test_case_manifest(case_name)
-    if not is_enabled(manifest):
-        pytest.skip(f'{label} checks are disabled for {case_name}')
+def assert_check_passed(result: runner.CheckResult) -> None:
+    if result.skipped:
+        pytest.skip(result.message)
+    detail = '\n'.join(result.differences)
+    assert result.passed, f'{result.message}\n{detail}'
 
 
 @pytest.mark.parametrize('case_name', CASE_NAMES, ids=CASE_NAMES)
 def test_build_output_matches_golden(case_name: str) -> None:
-    skip_if_disabled(case_name, runner.build_check_enabled, 'build output')
+    result = runner.check_build_case(harness_args('check-build', case_name), case_name)
 
-    result = runner.cmd_check_build_case(harness_args('check-build', case_name), case_name)
-
-    assert result == 0
+    assert_check_passed(result)
 
 
 @pytest.mark.parametrize('case_name', CASE_NAMES, ids=CASE_NAMES)
 def test_migration_output_matches_golden(case_name: str) -> None:
-    skip_if_disabled(case_name, runner.migration_check_enabled, 'migration output')
+    result = runner.check_migration_case(harness_args('check-migration', case_name), case_name)
 
-    result = runner.cmd_check_migration_case(harness_args('check-migration', case_name), case_name)
-
-    assert result == 0
+    assert_check_passed(result)
 
 
 @pytest.mark.parametrize('case_name', CASE_NAMES, ids=CASE_NAMES)
 def test_migrated_build_output_matches_golden(case_name: str) -> None:
-    skip_if_disabled(case_name, runner.migrated_build_check_enabled, 'migrated build output')
+    result = runner.check_migrated_build_case(harness_args('check-migrated-build', case_name), case_name)
 
-    result = runner.cmd_check_migrated_build_case(harness_args('check-migrated-build', case_name), case_name)
-
-    assert result == 0
+    assert_check_passed(result)
