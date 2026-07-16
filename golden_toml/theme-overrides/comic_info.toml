@@ -1,0 +1,37 @@
+links = [
+    { name = "Home", url = "/" },
+    { name = "Archive", url = "/archive/" },
+]
+pages = [
+    { template_name = "index", title = "Theme Override Home" },
+    { template_name = "latest", title = "" },
+    { template_name = "archive", title = "Archive" },
+    { template_name = "404", title = "Page Not Found" },
+]
+
+[comic]
+name = "Theme Override Fixture"
+author = "Harness Tests"
+description = "A small fixture that verifies configured theme overrides."
+
+[site]
+theme = "focused-theme"
+date_format = "%Y-%m-%d"
+timezone = "US/Pacific"
+
+[archive]
+date_format = "%m/%d/%Y"
+use_thumbnails = false
+
+[transcripts]
+enabled = false
+
+[image_processing]
+create_thumbnails = false
+overwrite_existing_images = false
+
+[rss]
+build = false
+
+[legacy."Comic Settings"]
+"Engine version" = "master"

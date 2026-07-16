@@ -69,5 +69,5 @@ test_cases/theme-overrides/
 
 - Migration output writes `comics/001/info.toml`.
 - Migration deletion removes page-level `comics/001/info.ini`.
-- Root `comic_info.ini` remains until site-level TOML migration is implemented.
+- Migration output writes `comic_info.toml` and deletes root `comic_info.ini`.
 - Migrated-build parity is intentionally disabled until TOML pages without page-level social metadata preserve default social metadata.
