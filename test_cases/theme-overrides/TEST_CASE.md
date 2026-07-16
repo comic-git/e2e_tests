@@ -9,7 +9,7 @@ This should protect the user-owned presentation layer: configured theme selectio
 ## Inputs
 
 - Source format: legacy INI
-- Check: build output parity
+- Checks: build output parity, migration output parity, migrated-build parity
 - Env: `GITHUB_REPOSITORY=comic-git/theme-overrides`
 - Date format: `%Y-%m-%d`
 - Theme: `focused-theme`
@@ -70,4 +70,4 @@ test_cases/theme-overrides/
 - Migration output writes `comics/001/info.toml`.
 - Migration deletion removes page-level `comics/001/info.ini`.
 - Migration output writes `comic_info.toml` and deletes root `comic_info.ini`.
-- Migrated-build parity is intentionally disabled until TOML pages without page-level social metadata preserve default social metadata.
+- Migrated-build parity verifies that TOML pages without page-level social metadata preserve default social metadata.

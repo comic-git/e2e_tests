@@ -6,7 +6,7 @@ tags = ["legacy-ini", "theme-overrides", "focused", "full-parity"]
 [checks]
 build = true
 migration = true
-migrated_build = false
+migrated_build = true
 
 [env]
 GITHUB_REPOSITORY = "comic-git/theme-overrides"
