@@ -395,14 +395,46 @@ def refresh_golden_build(source_build: Path, golden_dir: Path) -> None:
             shutil.copytree(child, target)
         else:
             shutil.copy2(child, target)
+    normalize_text_line_endings(golden_dir)
+
+
+def is_supported_text_file(path: Path) -> bool:
+    if path.suffix.lower() not in TEXT_FILE_SUFFIXES:
+        return False
+    content = path.read_bytes()
+    if b'\x00' in content:
+        return False
+    for encoding in TEXT_ENCODINGS:
+        try:
+            content.decode(encoding)
+        except UnicodeDecodeError:
+            continue
+        return True
+    return False
+
+
+def normalize_text_file_line_endings(path: Path) -> None:
+    if not is_supported_text_file(path):
+        return
+    content = path.read_bytes()
+    normalized = content.replace(b'\r\n', b'\n').replace(b'\r', b'\n')
+    if normalized != content:
+        path.write_bytes(normalized)
+
+
+def normalize_text_line_endings(root: Path) -> None:
+    if root.is_file():
+        normalize_text_file_line_endings(root)
+        return
+    for path in root.rglob('*'):
+        if path.is_file():
+            normalize_text_file_line_endings(path)
 
 
 def read_text_file(path: Path) -> str | None:
-    if path.suffix.lower() not in TEXT_FILE_SUFFIXES:
+    if not is_supported_text_file(path):
         return None
     content = path.read_bytes()
-    if b'\x00' in content:
-        return None
     for encoding in TEXT_ENCODINGS:
         try:
             return content.decode(encoding)
@@ -432,6 +464,18 @@ def text_file_diff(expected: Path, actual: Path) -> tuple[str, ...]:
     return (*diff_lines[:MAX_TEXT_DIFF_LINES], f'... {omitted} diff lines omitted')
 
 
+def normalized_line_endings(text: str) -> str:
+    return text.replace('\r\n', '\n').replace('\r', '\n')
+
+
+def text_files_match_after_line_ending_normalization(expected: Path, actual: Path) -> bool:
+    expected_text = read_text_file(expected)
+    actual_text = read_text_file(actual)
+    if expected_text is None or actual_text is None:
+        return False
+    return normalized_line_endings(expected_text) == normalized_line_endings(actual_text)
+
+
 def compare_directories(expected: Path, actual: Path, ignored_roots: set[str] | None = None) -> list[DirectoryDifference]:
     differences: list[DirectoryDifference] = []
     ignored_roots = ignored_roots or set()
@@ -456,6 +500,8 @@ def compare_directories(expected: Path, actual: Path, ignored_roots: set[str] | 
             elif exp_child.is_dir() != act_child.is_dir():
                 differences.append(DirectoryDifference(child_rel, f'type mismatch: {child_rel}', 'type_mismatch'))
             elif not filecmp.cmp(exp_child, act_child, shallow=False):
+                if text_files_match_after_line_ending_normalization(exp_child, act_child):
+                    continue
                 differences.append(DirectoryDifference(
                     child_rel,
                     f'content mismatch: {child_rel}',
@@ -527,6 +573,7 @@ def check_build_case(args: HarnessOptions, case_name: str) -> CheckResult:
         stage_test_case_content(workspace, content_source)
         create_engine_junction(workspace, engine_target)
         build_dir = build_site(workspace, env_overrides, args.python_executable)
+        normalize_text_line_endings(build_dir)
         differences = compare_directories(golden_dir, build_dir)
     if differences:
         return failed_result(
@@ -617,6 +664,7 @@ def check_migration_case(args: HarnessOptions, case_name: str) -> CheckResult:
         stage_test_case_content(workspace, content_source)
         create_engine_junction(workspace, engine_target)
         run_migration(workspace, env_overrides, args.python_executable, script_relative_path)
+        normalize_text_line_endings(workspace / 'your_content')
         differences = compare_directories(golden_dir, workspace / 'your_content')
     if differences:
         return failed_result(
@@ -657,6 +705,7 @@ def check_migrated_build_case(args: HarnessOptions, case_name: str) -> CheckResu
         create_engine_junction(workspace, engine_target)
         run_migration(workspace, env_overrides, args.python_executable, script_relative_path)
         build_dir = build_site(workspace, env_overrides, args.python_executable)
+        normalize_text_line_endings(build_dir)
         differences = compare_directories(golden_dir, build_dir, ignored_roots={'your_content'})
     if differences:
         return failed_result(
