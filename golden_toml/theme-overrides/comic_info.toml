@@ -9,6 +9,9 @@ pages = [
     { template_name = "404", title = "Page Not Found" },
 ]
 
+[engine]
+version = "master"
+
 [comic]
 name = "Theme Override Fixture"
 author = "Harness Tests"
@@ -32,6 +35,3 @@ overwrite_existing_images = false
 
 [rss]
 build = false
-
-[legacy."Comic Settings"]
-"Engine version" = "master"
