@@ -14,15 +14,16 @@ This repo is not intended to be a normal `comic_git` host repo. Checked-in fixtu
 
 ## Components
 
-| Component           | Location                                      | Responsibility                                                                                 |
-|---------------------|-----------------------------------------------|------------------------------------------------------------------------------------------------|
-| Runner              | [`scripts/run_e2e.py`](../scripts/run_e2e.py) | Creates temp host workspaces, stages fixtures, runs the engine, refreshes or compares goldens. |
-| Test cases          | [`test_cases/`](../test_cases/)               | Complete independent fixture inputs and per-case metadata.                                     |
-| Case manifest       | `test_cases/<case>/manifest.toml`             | Machine-readable inputs: case name, source format, check flags, tags, and environment variables. |
-| Case documentation  | `test_cases/<case>/TEST_CASE.md`              | Human-readable intent, coverage, and expected behavior. Not parsed by the runner.              |
-| Golden builds       | [`golden_builds/`](../golden_builds/)         | Expected full `build/` output, grouped by test case.                                           |
-| TOML goldens        | `golden_toml/`                                | Expected migrated `your_content/` output grouped by test case.                                 |
-| Local engine link   | `comic_git_engine/`                           | Local symlink or junction to the engine repo under test.                                       |
+| Component             | Location                                            | Responsibility                                                                                   |
+|-----------------------|-----------------------------------------------------|--------------------------------------------------------------------------------------------------|
+| Runner implementation | [`e2e_harness/runner.py`](../e2e_harness/runner.py) | Creates temp host workspaces, stages fixtures, runs the engine, refreshes or compares goldens.   |
+| Runner CLI wrapper    | [`scripts/run_e2e.py`](../scripts/run_e2e.py)       | Preserves the existing command-line entry point while the harness internals remain importable.   |
+| Test cases            | [`test_cases/`](../test_cases/)                     | Complete independent fixture inputs and per-case metadata.                                       |
+| Case manifest         | `test_cases/<case>/manifest.toml`                   | Machine-readable inputs: case name, source format, check flags, tags, and environment variables. |
+| Case documentation    | `test_cases/<case>/TEST_CASE.md`                    | Human-readable intent, coverage, and expected behavior. Not parsed by the runner.                |
+| Golden builds         | [`golden_builds/`](../golden_builds/)               | Expected full `build/` output, grouped by test case.                                             |
+| TOML goldens          | `golden_toml/`                                      | Expected migrated `your_content/` output grouped by test case.                                   |
+| Local engine link     | `comic_git_engine/`                                 | Local symlink or junction to the engine repo under test.                                         |
 
 ## Test Case Model
 
