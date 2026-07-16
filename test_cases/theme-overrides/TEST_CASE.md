@@ -11,6 +11,7 @@ This should protect the user-owned presentation layer: configured theme selectio
 - Source format: legacy INI
 - Check: build output parity
 - Env: `GITHUB_REPOSITORY=comic-git/theme-overrides`
+- Date format: `%Y-%m-%d`
 - Theme: `focused-theme`
 - Template override: `themes/focused-theme/templates/index.tpl`
 - Theme CSS: `themes/focused-theme/css/*.css`
@@ -69,4 +70,4 @@ test_cases/theme-overrides/
 - Migration output writes `comics/001/info.toml`.
 - Migration deletion removes page-level `comics/001/info.ini`.
 - Root `comic_info.ini` remains until site-level TOML migration is implemented.
-- Migrated-build parity is intentionally disabled until the engine preserves rendered date formatting across legacy and TOML page data.
+- Migrated-build parity is intentionally disabled until TOML pages without page-level social metadata preserve default social metadata.
