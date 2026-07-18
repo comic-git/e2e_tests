@@ -67,6 +67,7 @@ This command:
 1. Builds the selected case in a temp host repo.
 2. Deletes `golden_builds/<case>/`.
 3. Copies the fresh build output into `golden_builds/<case>/`.
+4. Normalizes recognized text files in the refreshed golden to LF line endings.
 
 Only refresh a golden after confirming the new output is the intended behavior.
 
@@ -77,6 +78,8 @@ python scripts/run_e2e.py refresh-migration --case baseline
 ```
 
 This stages the selected fixture, runs the migration script, then rewrites `golden_toml/<case>/` from the migrated temp workspace's `your_content/`.
+
+Migration goldens use the same text line-ending normalization as build goldens.
 
 ## Test Case Structure
 
@@ -93,8 +96,8 @@ test_cases/
 Rules:
 
 - Keep all engine-facing fixture input under `your_content/`.
-- Keep `manifest.toml` machine-readable and explicit.
-- Keep `TEST_CASE.md` human-readable; do not encode behavior there.
+- Keep `manifest.toml` machine-readable and explicit; this is executable test input.
+- Keep `TEST_CASE.md` human-readable; do not encode behavior there or treat it as test data.
 - Keep focused cases small rather than using subset comparisons.
 - For local review, any non-empty base subdirectory must match the test case name.
 - Do not rely on root-level `your_content/`; it is ignored and only for local manual runs.
@@ -107,7 +110,7 @@ Rules:
 4. Run `python scripts/run_e2e.py refresh-build --case <case>`.
 5. Inspect `golden_builds/<case>/`.
 6. Run `python scripts/run_e2e.py check-build --case <case>`.
-7. Run `python scripts/run_e2e.py check-build --all`.
+7. Run `venv\Scripts\python.exe -m pytest`.
 
 ## Baseline Case
 

@@ -10,21 +10,28 @@ It validates real engine behavior by staging realistic `your_content/` fixtures 
 
 ## Quick Start
 
+Install the harness dev dependencies, then run the pytest wrapper suite:
+
 ```powershell
-python scripts/run_e2e.py check-build
+venv\Scripts\python.exe -m pip install -r requirements-dev.txt
+venv\Scripts\python.exe -m pytest
 ```
 
-The default case is `baseline`. To run or refresh a specific case:
+Pytest runs each enabled manifest check independently and reports disabled checks as skipped.
+
+The lower-level harness CLI is available for targeted checks and golden refreshes. To run or refresh a specific case:
 
 ```powershell
 python scripts/run_e2e.py check-build --case baseline
 python scripts/run_e2e.py refresh-build --case baseline
 ```
 
-To run every build-enabled case:
+The harness has three check lanes:
 
 ```powershell
 python scripts/run_e2e.py check-build --all
+python scripts/run_e2e.py check-migration --all
+python scripts/run_e2e.py check-migrated-build --all
 ```
 
 See [`docs/testing.md`](docs/testing.md) for the full harness workflow.
@@ -50,5 +57,9 @@ See [`docs/testing.md`](docs/testing.md) for the full harness workflow.
 | `specs/`                           | Ignored scratch plans and temporary agent notes               |
 
 Root-level `your_content/` and `build/` are ignored local artifacts. Checked-in fixture input belongs under `test_cases/<case>/your_content/`.
+
+For each test case, `manifest.toml` and `your_content/` define the executable input. `TEST_CASE.md` is required human reference material, but it is not parsed by the runner.
+
+Text files in refreshed goldens are normalized to LF line endings for cross-platform stability. Binary files remain strict byte-for-byte comparison targets.
 
 Golden builds are directly viewable with a local static server. For normal non-empty subdirectory cases, serve `golden_builds/` and open `/<case>/`. Blank-subdirectory cases are the exception; serve that case's golden folder directly and open `/`.

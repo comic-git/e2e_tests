@@ -12,6 +12,8 @@ The harness validates real engine behavior by staging complete fixture inputs in
 
 This repo is not intended to be a normal `comic_git` host repo. Checked-in fixture inputs live under `test_cases/`, and root-level `your_content/` is ignored so local manual runs are not committed accidentally.
 
+The normal developer entry point is the pytest wrapper suite. The runner CLI remains the lower-level tool for targeted checks and deliberate golden refreshes.
+
 ## Components
 
 | Component             | Location                                            | Responsibility                                                                                   |
@@ -85,9 +87,10 @@ Build output validation follows this flow:
 4. Copy `test_cases/<case>/your_content/` into the temp workspace as root `your_content/`.
 5. Create a local `comic_git_engine/` junction in the temp workspace.
 6. Run `comic_git_engine/src/build/build_site.py` from the temp workspace root.
-7. Compare the produced `build/` tree against `golden_builds/<case>/` byte-for-byte.
+7. Normalize recognized text files in the produced `build/` tree to LF line endings.
+8. Compare the produced `build/` tree against `golden_builds/<case>/`.
 
-Refresh follows the same build flow, then fully wipes and rewrites `golden_builds/<case>/`.
+Refresh follows the same build flow, then fully wipes and rewrites `golden_builds/<case>/`, normalizing recognized text files to LF in the refreshed golden.
 
 Migration output validation follows this flow:
 
@@ -95,7 +98,8 @@ Migration output validation follows this flow:
 2. Create a temporary workspace and stage `your_content/`.
 3. Create the local `comic_git_engine/` junction.
 4. Run the migration script from the temp workspace root.
-5. Compare the migrated temp workspace `your_content/` tree against `golden_toml/<case>/` byte-for-byte.
+5. Normalize recognized text files in the migrated temp workspace `your_content/` tree to LF line endings.
+6. Compare the migrated temp workspace `your_content/` tree against `golden_toml/<case>/`.
 
 Migrated-build validation follows the migration flow, then runs `comic_git_engine/src/build/build_site.py` in the migrated temp workspace and compares the produced `build/` tree against `golden_builds/<case>/`.
 
@@ -138,6 +142,12 @@ This keeps the test boundary clear: the engine can only observe the files that a
 The harness compares full build output for each case. Focused tests should stay focused by using small fixture inputs, not by weakening comparison scope.
 
 This makes refresh behavior simple: `refresh-build` always rewrites the complete golden output for the selected case.
+
+### Stable text line endings
+
+Refreshed goldens store recognized text files with LF line endings. Check commands also normalize temporary actual output before comparing.
+
+This prevents Windows and Linux line-ending differences from creating noisy failures while keeping binary files strict. If an existing checked-in text golden differs only by line endings, the comparison treats it as matching.
 
 ### Migrated builds compare against existing build goldens
 

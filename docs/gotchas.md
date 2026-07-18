@@ -21,6 +21,12 @@ Behavior comes from `manifest.toml`, `your_content/`, and the matching golden ou
 
 Review refreshed output carefully before committing because golden changes redefine the expected engine contract.
 
+### Text line endings are normalized in goldens
+
+Refreshed build and migration goldens normalize recognized text files to LF.
+
+Line-ending-only differences in recognized text files are ignored during checks. Binary files are still compared strictly.
+
 ### Local review depends on the URL mount point
 
 The engine output tree does not change when a base subdirectory is configured. The same files are written at the build root.
