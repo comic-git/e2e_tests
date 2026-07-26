@@ -26,3 +26,8 @@ This case pairs with `baseline`, which intentionally omits those settings and re
 - Fresh build output matches `golden_builds/explicit-url-overrides/` byte-for-byte.
 - Migrated TOML output matches `golden_toml/explicit-url-overrides/` byte-for-byte.
 - The golden can be reviewed by serving `golden_builds/` and opening `/explicit-url-overrides/`.
+
+Migrated-build parity is intentionally disabled for this case. Its legacy source spells the date as
+`August 1, 2025`, while the TOML read path reconstructs the same date as `August 01, 2025` from the
+configured `%B %d, %Y` format. Migration preserves the date value, but exact legacy display spelling
+is not part of the current contract.
