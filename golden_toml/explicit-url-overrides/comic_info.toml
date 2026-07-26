@@ -1,0 +1,38 @@
+links = [
+    { name = "Home", url = "/" },
+    { name = "Archive", url = "/archive/" },
+]
+pages = [
+    { template_name = "index", title = "Explicit URL Override" },
+    { template_name = "latest", title = "" },
+    { template_name = "archive", title = "Archive" },
+    { template_name = "404", title = "Page Not Found" },
+]
+
+[engine]
+version = "master"
+
+[comic]
+name = "Explicit URL Override Fixture"
+author = "Harness Tests"
+description = "A small fixture that verifies explicit URL settings override GitHub repository inference."
+
+[site]
+date_format = "%B %d, %Y"
+timezone = "US/Pacific"
+comic_domain = "example.test"
+comic_subdirectory = "explicit-url-overrides"
+
+[archive]
+date_format = "%m/%d/%Y"
+use_thumbnails = false
+
+[transcripts]
+enabled = false
+
+[image_processing]
+create_thumbnails = false
+overwrite_existing_images = false
+
+[rss]
+build = false
