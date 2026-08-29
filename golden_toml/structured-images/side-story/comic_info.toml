@@ -1,0 +1,18 @@
+pages = [
+    { template_name = "index", title = "Structured Side Story Home" },
+    { template_name = "latest", title = "" },
+    { template_name = "archive", title = "Structured Side Story Archive" },
+]
+
+[comic]
+name = "Structured Side Story"
+description = "Extra Comic identity collision fixture."
+
+[archive]
+entry_mode = "Pages"
+use_thumbnails = true
+
+[rss]
+title_format = "{comic_title}: {page_title}"
+build = true
+combine_with_main = false

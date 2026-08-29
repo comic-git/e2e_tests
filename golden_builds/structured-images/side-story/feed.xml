@@ -1,0 +1,33 @@
+<?xml version="1.0" ?>
+<rss xmlns:atom="http://www.w3.org/2005/Atom" xmlns:dc="http://purl.org/dc/elements/1.1/" version="2.0">
+    <channel>
+        <atom:link href="https://comic-git.github.io/structured-images/side-story/feed.xml" rel="self" type="application/rss+xml"/>
+        <title>Structured Side Story</title>
+        <description>Structured image feed fixture.</description>
+        <link>https://comic-git.github.io/structured-images/</link>
+        <dc:creator>Harness Tests</dc:creator>
+        <language>en-us</language>
+        <image>
+            <title>Structured Side Story</title>
+            <link>https://comic-git.github.io/structured-images/</link>
+            <url>https://comic-git.github.io/structured-images/your_content/images/banner.png</url>
+            <width>100</width>
+            <height>36</height>
+        </image>
+        <item>
+            <title>Structured Side Story: Side Story Shared Identity</title>
+            <dc:creator>Harness Tests</dc:creator>
+            <pubDate>Fri, 01 Aug 2025 00:00:00 +0000</pubDate>
+            <link>https://comic-git.github.io/structured-images/side-story/comic/001/</link>
+            <guid isPermaLink="true">https://comic-git.github.io/structured-images/side-story/comic/001/</guid>
+            <category type="tag">structured-images</category>
+            <category type="tag">extra-comic</category>
+            <description><![CDATA[<p><img src="https://comic-git.github.io/structured-images/your_content/side-story/comics/001/shared.png" alt="Extra Comic image with a textually colliding page and filename."></p>
+
+<hr>
+
+<p>Extra Comic post text for collision-safe identity coverage.</p>
+]]></description>
+        </item>
+    </channel>
+</rss>

@@ -1,0 +1,119 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://comic-git.github.io/schemas/page_info_list.schema.json",
+  "title": "comic_git page metadata",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "comic_git_engine_version",
+    "comic",
+    "scheduled_post_count",
+    "pages"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": 1
+    },
+    "comic_git_engine_version": {
+      "type": "string"
+    },
+    "comic": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "name"],
+      "properties": {
+        "id": {"type": "string", "minLength": 1},
+        "name": {"type": "string"}
+      }
+    },
+    "scheduled_post_count": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "pages": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/page"}
+    }
+  },
+  "$defs": {
+    "nullableUrl": {
+      "type": ["string", "null"]
+    },
+    "image": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "filename",
+        "url",
+        "anchor_id",
+        "title",
+        "alt_text",
+        "thumbnail_url"
+      ],
+      "properties": {
+        "id": {"type": "string", "minLength": 1},
+        "filename": {"type": "string", "minLength": 1},
+        "url": {"type": "string", "minLength": 1},
+        "anchor_id": {
+          "type": "string",
+          "pattern": "^comic-image-[0-9a-f]{64}$"
+        },
+        "title": {"type": "string"},
+        "alt_text": {"type": "string"},
+        "thumbnail_url": {"$ref": "#/$defs/nullableUrl"}
+      }
+    },
+    "page": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "page_name",
+        "url",
+        "title",
+        "post_date",
+        "thumbnail_url",
+        "storyline",
+        "characters",
+        "tags",
+        "transcript_languages",
+        "images",
+        "extra"
+      ],
+      "properties": {
+        "id": {"type": "string", "minLength": 1},
+        "page_name": {"type": "string", "minLength": 1},
+        "url": {"type": "string", "minLength": 1},
+        "title": {"type": "string"},
+        "post_date": {
+          "type": "string",
+          "format": "date"
+        },
+        "thumbnail_url": {"$ref": "#/$defs/nullableUrl"},
+        "storyline": {"type": "string"},
+        "characters": {
+          "type": "array",
+          "items": {"type": "string"}
+        },
+        "tags": {
+          "type": "array",
+          "items": {"type": "string"}
+        },
+        "transcript_languages": {
+          "type": "array",
+          "items": {"type": "string"}
+        },
+        "images": {
+          "type": "array",
+          "items": {"$ref": "#/$defs/image"}
+        },
+        "extra": {
+          "type": "object",
+          "additionalProperties": true
+        }
+      }
+    }
+  }
+}

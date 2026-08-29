@@ -10,7 +10,7 @@ This validates site-level overrides, page-level overrides, fallback behavior, an
 
 - Provides a site-level `your_content/social_media.json`.
 - Provides a page-level `social_media.json` for comic page `002`.
-- Includes two comic pages so fallback and override behavior can both be observed.
+- Includes three comic pages so thumbnail, site-preview fallback, and page override behavior can all be observed.
 - Includes a standard `your_content/images/preview_image.png`.
 
 ## Coverage Goals
@@ -19,6 +19,8 @@ This validates site-level overrides, page-level overrides, fallback behavior, an
 - Comic page `001` emits article-like preview metadata from the site-level `comic` template.
 - Comic page `002` uses page-local `social_media.json` instead of the site-level `comic` template.
 - Preview image URLs include the correct case subdirectory.
+- Default comic previews use the resolved page thumbnail and first image alt text.
+- A page without a usable thumbnail would fall back to `your_content/images/preview_image.png`.
 - Metadata remains present on home, latest, archive, and comic pages where expected.
 
 ## Fixture Shape
@@ -36,6 +38,7 @@ test_cases/social-media/
       001/
       002/
         social_media.json
+      003/
 ```
 
 ## Implementation Notes
@@ -50,6 +53,8 @@ test_cases/social-media/
 - `index.html` uses site-level metadata from `your_content/social_media.json`.
 - `comic/001/index.html` uses comic-level fallback metadata, including post text and generated thumbnail URL.
 - `comic/002/index.html` uses page-local override values from `comics/002/social_media.json`.
+- `comic/003/index.html` uses comic-level metadata and the site preview image because the no-image page
+  explicitly disables its page thumbnail.
 - Generated preview image and thumbnail URLs include `/social-media/`.
 - Fresh build output matches `golden_builds/social-media/` byte-for-byte.
 - The golden can be reviewed by serving `golden_builds/` and opening `/social-media/`.

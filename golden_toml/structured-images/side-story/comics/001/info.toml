@@ -1,0 +1,13 @@
+post_date = "2025-08-01"
+title = "Side Story Shared Identity"
+alt_text = "Extra Comic image with a textually colliding page and filename."
+tags = [
+    "structured-images",
+    "extra-comic",
+]
+post_text = """
+Extra Comic post text for collision-safe identity coverage.
+"""
+images = [
+    { filename = "shared.png" },
+]

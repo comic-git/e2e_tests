@@ -1,0 +1,48 @@
+links = [
+    { name = "Home", url = "/" },
+    { name = "Archive", url = "/archive/" },
+    { name = "Infinite Scroll", url = "/infinite_scroll/" },
+]
+pages = [
+    { template_name = "index", title = "Structured Images Home" },
+    { template_name = "latest", title = "" },
+    { template_name = "archive", title = "Structured Image Archive" },
+    { template_name = "infinite_scroll", title = "Infinite Scroll" },
+    { template_name = "404", title = "Page Not Found" },
+]
+
+[engine]
+version = "master"
+
+[comic]
+name = "Structured Images Fixture"
+author = "Harness Tests"
+description = "Structured page and image coverage across build outputs."
+
+[site]
+date_format = "%B %d, %Y"
+timezone = "US/Pacific"
+extra_comics = [
+    "side-story",
+]
+
+[archive]
+date_format = "%m/%d/%Y"
+entry_mode = "Images"
+image_title_fallback = "Page title"
+use_thumbnails = true
+
+[image_processing]
+thumbnail_size = "10%"
+create_thumbnails = true
+overwrite_existing_images = false
+
+[rss]
+title_format = "{page_title}"
+build = true
+
+[transcripts]
+enabled = false
+
+[legacy."RSS Feed"]
+Description = "Structured image feed fixture."

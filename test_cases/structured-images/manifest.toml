@@ -1,0 +1,12 @@
+name = "structured-images"
+description = "Focused parity and semantic coverage for structured page images, metadata, archives, RSS, and migration."
+source_format = "mixed_legacy_ini_toml"
+tags = ["structured-images", "legacy-ini", "toml", "extra-comics", "rss", "migration", "full-parity"]
+
+[checks]
+build = true
+migration = true
+migrated_build = true
+
+[env]
+GITHUB_REPOSITORY = "comic-git/structured-images"

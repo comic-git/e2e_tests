@@ -1,0 +1,11 @@
+post_date = "2025-08-03"
+title = "Text Only Interlude"
+alt_text = "This page intentionally has no comic image."
+storyline = "Structured Chapter"
+tags = [
+    "structured-images",
+    "no-image",
+]
+post_text = """
+This no-image page remains visible in the archive and RSS feed.
+"""

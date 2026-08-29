@@ -34,7 +34,7 @@ python scripts/run_e2e.py check-build --case baseline --keep-temp
 
 `python` launches the harness script. The harness then defaults engine execution to `venv/Scripts/python.exe` when that venv exists.
 
-Migration commands are available, but should stay disabled in manifests until the engine migration script exists:
+Migration commands are available for cases whose manifests enable them:
 
 ```powershell
 # Compare migrated your_content/ against golden_toml/<case>/
@@ -161,4 +161,14 @@ Harness support exists for all three flags.
 - `migration`: run the migration script and compare migrated `your_content/` to `golden_toml/<case>/`
 - `migrated_build`: run the migration script, then `build_site.py`, and compare `build/` to `golden_builds/<case>/`
 
-Keep `migration` and `migrated_build` disabled until the engine-side migration script is ready for that case.
+Enable `migration` and `migrated_build` only when a case has reviewed TOML and build goldens.
+
+## Structured Images Case
+
+`structured-images` exercises flat and sectioned legacy page metadata, native TOML
+`[[images]]`, image/page archive modes, Extra Comic identity, RSS, schema validation,
+and migration parity.
+
+In addition to byte-for-byte goldens, `tests/test_structured_images.py` validates every
+generated `page_info_list.json` against the schema deployed in the matching build and
+asserts the cross-output structured-image semantics.

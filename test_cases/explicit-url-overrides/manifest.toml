@@ -6,7 +6,7 @@ tags = ["legacy-ini", "url-overrides", "focused", "full-parity"]
 [checks]
 build = true
 migration = true
-migrated_build = false
+migrated_build = true
 
 [env]
 GITHUB_REPOSITORY = "ignored/example-repo"

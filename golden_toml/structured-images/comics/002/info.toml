@@ -1,0 +1,18 @@
+post_date = "2025-08-02"
+title = "Sectioned Legacy Page"
+alt_text = "Sectioned page inherited alt text."
+storyline = "Structured Chapter"
+characters = [
+    "Bob",
+]
+tags = [
+    "structured-images",
+    "sectioned-legacy",
+]
+post_text = """
+Sectioned legacy post text preserving declared image order.
+"""
+images = [
+    { filename = "ordered-b.png", title = "", alt_text = "", thumbnail = "" },
+    { filename = "ordered-a.png" },
+]

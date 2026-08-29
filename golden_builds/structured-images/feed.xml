@@ -1,0 +1,84 @@
+<?xml version="1.0" ?>
+<rss xmlns:atom="http://www.w3.org/2005/Atom" xmlns:dc="http://purl.org/dc/elements/1.1/" version="2.0">
+    <channel>
+        <atom:link href="https://comic-git.github.io/structured-images/feed.xml" rel="self" type="application/rss+xml"/>
+        <title>Structured Images Fixture</title>
+        <description>Structured image feed fixture.</description>
+        <link>https://comic-git.github.io/structured-images/</link>
+        <dc:creator>Harness Tests</dc:creator>
+        <language>en-us</language>
+        <image>
+            <title>Structured Images Fixture</title>
+            <link>https://comic-git.github.io/structured-images/</link>
+            <url>https://comic-git.github.io/structured-images/your_content/images/banner.png</url>
+            <width>100</width>
+            <height>36</height>
+        </image>
+        <item>
+            <title>Flat Legacy Page</title>
+            <dc:creator>Harness Tests</dc:creator>
+            <pubDate>Fri, 01 Aug 2025 00:00:00 +0000</pubDate>
+            <link>https://comic-git.github.io/structured-images/comic/001/</link>
+            <guid isPermaLink="true">https://comic-git.github.io/structured-images/comic/001/</guid>
+            <category type="storyline">Structured Chapter</category>
+            <category type="character">Alice</category>
+            <category type="tag">structured-images</category>
+            <category type="tag">flat-legacy</category>
+            <description><![CDATA[<p><img src="https://comic-git.github.io/structured-images/your_content/comics/001/shared.png" alt="Flat page inherited alt text."></p>
+<p><img src="https://comic-git.github.io/structured-images/your_content/comics/001/flat-second.png" alt="Flat page inherited alt text."></p>
+
+<hr>
+
+<p>Flat legacy post text with two ordered images.</p>
+]]></description>
+        </item>
+        <item>
+            <title>Sectioned Legacy Page</title>
+            <dc:creator>Harness Tests</dc:creator>
+            <pubDate>Sat, 02 Aug 2025 00:00:00 +0000</pubDate>
+            <link>https://comic-git.github.io/structured-images/comic/002/</link>
+            <guid isPermaLink="true">https://comic-git.github.io/structured-images/comic/002/</guid>
+            <category type="storyline">Structured Chapter</category>
+            <category type="character">Bob</category>
+            <category type="tag">structured-images</category>
+            <category type="tag">sectioned-legacy</category>
+            <description><![CDATA[<p><img src="https://comic-git.github.io/structured-images/your_content/comics/002/ordered-b.png" alt=""></p>
+<p><img src="https://comic-git.github.io/structured-images/your_content/comics/002/ordered-a.png" alt="Sectioned page inherited alt text."></p>
+
+<hr>
+
+<p>Sectioned legacy post text preserving declared image order.</p>
+]]></description>
+        </item>
+        <item>
+            <title>Text Only Interlude</title>
+            <dc:creator>Harness Tests</dc:creator>
+            <pubDate>Sun, 03 Aug 2025 00:00:00 +0000</pubDate>
+            <link>https://comic-git.github.io/structured-images/comic/003/</link>
+            <guid isPermaLink="true">https://comic-git.github.io/structured-images/comic/003/</guid>
+            <category type="storyline">Structured Chapter</category>
+            <category type="tag">structured-images</category>
+            <category type="tag">no-image</category>
+            <description><![CDATA[<p>This no-image page remains visible in the archive and RSS feed.</p>
+]]></description>
+        </item>
+        <item>
+            <title>Native TOML Page</title>
+            <dc:creator>Harness Tests</dc:creator>
+            <pubDate>Mon, 04 Aug 2025 00:00:00 +0000</pubDate>
+            <link>https://comic-git.github.io/structured-images/comic/004/</link>
+            <guid isPermaLink="true">https://comic-git.github.io/structured-images/comic/004/</guid>
+            <category type="storyline">Structured Chapter</category>
+            <category type="character">Carol</category>
+            <category type="tag">structured-images</category>
+            <category type="tag">native-toml</category>
+            <description><![CDATA[<p><img src="https://comic-git.github.io/structured-images/your_content/comics/004/toml-first.png" alt="Explicit TOML image alt text."></p>
+<p><img src="https://comic-git.github.io/structured-images/your_content/comics/004/toml-second.png" alt="TOML page inherited alt text."></p>
+
+<hr>
+
+<p>Native TOML post text with structured image tables.</p>
+]]></description>
+        </item>
+    </channel>
+</rss>

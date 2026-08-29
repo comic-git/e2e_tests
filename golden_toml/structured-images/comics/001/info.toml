@@ -1,0 +1,19 @@
+post_date = "2025-08-01"
+title = "Flat Legacy Page"
+alt_text = "Flat page inherited alt text."
+thumbnail = "custom-page-thumb.png"
+storyline = "Structured Chapter"
+characters = [
+    "Alice",
+]
+tags = [
+    "structured-images",
+    "flat-legacy",
+]
+post_text = """
+Flat legacy post text with two ordered images.
+"""
+images = [
+    { filename = "shared.png" },
+    { filename = "flat-second.png" },
+]
