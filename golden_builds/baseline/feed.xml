@@ -27,7 +27,7 @@
             <category type="tag">Tag 1</category>
             <category type="tag">Tag 2</category>
             <category type="tag">Tag 3</category>
-            <description><![CDATA[<p><img src="https://comic-git.github.io/baseline/your_content/comics/001/Page 1.png" alt_text="This is where your first comic page will go!"></p>
+            <description><![CDATA[<p><img src="https://comic-git.github.io/baseline/your_content/comics/001/Page 1.png" alt="This is where your first comic page will go!"></p>
 
 <hr>
 
@@ -63,7 +63,7 @@
             <category type="character">Bob</category>
             <category type="tag">happy-path</category>
             <category type="tag">metadata</category>
-            <description><![CDATA[<p><img src="https://comic-git.github.io/baseline/your_content/comics/002/Page 2.png" alt_text="A page that exercises the common metadata fields."></p>
+            <description><![CDATA[<p><img src="https://comic-git.github.io/baseline/your_content/comics/002/Page 2.png" alt="A page that exercises the common metadata fields."></p>
 
 <hr>
 
@@ -80,8 +80,8 @@
             <category type="character">Alice</category>
             <category type="tag">happy-path</category>
             <category type="tag">image-order</category>
-            <description><![CDATA[<p><img src="https://comic-git.github.io/baseline/your_content/comics/003/panel-b.png" alt_text="Two images rendered in explicit order."></p>
-<p><img src="https://comic-git.github.io/baseline/your_content/comics/003/panel-a.png" alt_text="Two images rendered in explicit order."></p>
+            <description><![CDATA[<p><img src="https://comic-git.github.io/baseline/your_content/comics/003/panel-b.png" alt="Two images rendered in explicit order."></p>
+<p><img src="https://comic-git.github.io/baseline/your_content/comics/003/panel-a.png" alt="Two images rendered in explicit order."></p>
 
 <hr>
 
@@ -98,8 +98,8 @@
             <category type="character">Bob</category>
             <category type="tag">edge-case</category>
             <category type="tag">auto-discovery</category>
-            <description><![CDATA[<p><img src="https://comic-git.github.io/baseline/your_content/comics/004/alpha.png" alt_text="Images on this page are discovered automatically."></p>
-<p><img src="https://comic-git.github.io/baseline/your_content/comics/004/beta.png" alt_text="Images on this page are discovered automatically."></p>
+            <description><![CDATA[<p><img src="https://comic-git.github.io/baseline/your_content/comics/004/alpha.png" alt="Images on this page are discovered automatically."></p>
+<p><img src="https://comic-git.github.io/baseline/your_content/comics/004/beta.png" alt="Images on this page are discovered automatically."></p>
 
 <hr>
 
@@ -116,7 +116,7 @@
             <category type="character">Eve</category>
             <category type="tag">happy-path</category>
             <category type="tag">post-text</category>
-            <description><![CDATA[<p><img src="https://comic-git.github.io/baseline/your_content/comics/005/cover.png" alt_text="This page uses the singular Filename field."></p>
+            <description><![CDATA[<p><img src="https://comic-git.github.io/baseline/your_content/comics/005/cover.png" alt="This page uses the singular Filename field."></p>
 
 <hr>
 
@@ -136,7 +136,7 @@
             <category type="character">Eve</category>
             <category type="tag">edge-case</category>
             <category type="tag">transcripts</category>
-            <description><![CDATA[<p><img src="https://comic-git.github.io/baseline/your_content/comics/006/Page 6.png" alt_text="This page has multiple transcript files."></p>
+            <description><![CDATA[<p><img src="https://comic-git.github.io/baseline/your_content/comics/006/Page 6.png" alt="This page has multiple transcript files."></p>
 
 <hr>
 
@@ -154,7 +154,7 @@
             <category type="character">Eve</category>
             <category type="tag">edge-case</category>
             <category type="tag">social-media</category>
-            <description><![CDATA[<p><img src="https://comic-git.github.io/baseline/your_content/comics/007/Page 7.png" alt_text="This page defines custom social metadata."></p>
+            <description><![CDATA[<p><img src="https://comic-git.github.io/baseline/your_content/comics/007/Page 7.png" alt="This page defines custom social metadata."></p>
 
 <hr>
 
@@ -173,7 +173,7 @@
             <category type="character">Eve</category>
             <category type="tag">edge-case</category>
             <category type="tag">extra-fields</category>
-            <description><![CDATA[<p><img src="https://comic-git.github.io/baseline/your_content/comics/008/Page 8.png" alt_text="This page carries custom metadata for hooks and templates."></p>
+            <description><![CDATA[<p><img src="https://comic-git.github.io/baseline/your_content/comics/008/Page 8.png" alt="This page carries custom metadata for hooks and templates."></p>
 
 <hr>
 
@@ -190,7 +190,7 @@
             <category type="character">Alice</category>
             <category type="tag">edge-case</category>
             <category type="tag">external-transcripts</category>
-            <description><![CDATA[<p><img src="https://comic-git.github.io/baseline/your_content/comics/009/Page 9.png" alt_text="This page loads transcripts from the configured transcripts folder."></p>
+            <description><![CDATA[<p><img src="https://comic-git.github.io/baseline/your_content/comics/009/Page 9.png" alt="This page loads transcripts from the configured transcripts folder."></p>
 
 <hr>
 

@@ -1,9 +1,9 @@
 post_date = "2025-08-01"
-images = [
-    "Override Page.png",
-]
 title = "Override URL Page"
 alt_text = "A single-page fixture for explicit URL overrides."
 tags = [
     "url-overrides",
+]
+images = [
+    { filename = "Override Page.png" },
 ]

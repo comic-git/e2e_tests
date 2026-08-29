@@ -20,9 +20,8 @@
             <pubDate>Fri, 01 Aug 2025 00:00:00 +0000</pubDate>
             <link>https://comic-git.github.io/extra-comics-rss/comic/001/</link>
             <guid isPermaLink="true">https://comic-git.github.io/extra-comics-rss/comic/001/</guid>
-            <category type="storyline"/>
             <category type="tag">main-rss</category>
-            <description><![CDATA[<p><img src="https://comic-git.github.io/extra-comics-rss/your_content/comics/001/Main RSS Page.png" alt_text="Main comic page for the Extra Comics RSS fixture."></p>
+            <description><![CDATA[<p><img src="https://comic-git.github.io/extra-comics-rss/your_content/comics/001/Main RSS Page.png" alt="Main comic page for the Extra Comics RSS fixture."></p>
 
 <hr>
 
@@ -35,10 +34,9 @@
             <pubDate>Sat, 02 Aug 2025 00:00:00 +0000</pubDate>
             <link>https://comic-git.github.io/extra-comics-rss/side-story/comic/101/</link>
             <guid isPermaLink="true">https://comic-git.github.io/extra-comics-rss/side-story/comic/101/</guid>
-            <category type="storyline"/>
             <category type="tag">side-story</category>
             <category type="tag">combined-rss</category>
-            <description><![CDATA[<p><img src="https://comic-git.github.io/extra-comics-rss/your_content/side-story/comics/101/Combined Side Story Page.png" alt_text="Extra Comic page combined into the main RSS feed."></p>
+            <description><![CDATA[<p><img src="https://comic-git.github.io/extra-comics-rss/your_content/side-story/comics/101/Combined Side Story Page.png" alt="Extra Comic page combined into the main RSS feed."></p>
 
 <hr>
 

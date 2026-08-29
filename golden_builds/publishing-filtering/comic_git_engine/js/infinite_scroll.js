@@ -11,11 +11,9 @@ let loading_more_pages = false;
 let viewed_page_top_margin_percentage = 0.30;
 let load_next_pages_threshold = 1000;
 let comic_base_dir = null;
-let content_base_dir = null;
 
-export async function load_page(local_comic_base_dir, local_content_base_dir) {
+export async function load_page(local_comic_base_dir) {
     comic_base_dir = local_comic_base_dir;
-    content_base_dir = local_content_base_dir;
     initializing = true;
     await fetch_all_json_data();
     // If no pages to load, end early.
@@ -61,7 +59,7 @@ async function fetch_all_json_data() {
         console.error(response.text());
         throw e;
     }
-    page_info_json = json["page_info_list"];
+    page_info_json = json["pages"];
 }
 
 function load_and_go_to_page() {
@@ -76,11 +74,12 @@ function get_starting_page() {
     if (!window.location.href.includes("#")) {
         return;
     }
-    let page_name = decodeURIComponent(window.location.href.split("#")[1]);
-    console.log("Loading page named " + page_name);
+    let fragment = decodeURIComponent(window.location.href.split("#")[1]);
+    console.log("Loading fragment " + fragment);
     for (let i=0; i < page_info_json.length; i++) {
         console.log(page_info_json[i].page_name);
-        if (page_info_json[i].page_name === page_name) {
+        let image_match = page_info_json[i].images.some(image => image.anchor_id === fragment);
+        if (page_info_json[i].page_name === fragment || image_match) {
             console.log("Starting on page " + i);
             if (i !== 0) {
                 document.getElementById("load-older").hidden = false;
@@ -90,7 +89,7 @@ function get_starting_page() {
             return;
         }
     }
-    console.log("Couldn't find page named " + page_name);
+    console.log("Couldn't find page or image fragment named " + fragment);
 }
 
 function build_comic_div(page) {
@@ -98,16 +97,17 @@ function build_comic_div(page) {
     node.className = "infinite-page";
     node.id = page["page_name"];
 
-    // Make a link and image node for each file in the list of image_file_names
-    for (let image_filename of page["image_file_names"]) {
+    for (let image of page["images"]) {
         let link_node = document.createElement("a");
-        link_node.href = `${comic_base_dir}/comic/${page["page_name"]}/`;
+        link_node.href = `${page["url"]}#${image["anchor_id"]}`;
+        link_node.id = image["anchor_id"];
 
         let image_node = document.createElement("img");
         image_node.className = "infinite-page-image";
         console.log("Adding div for page " + page["page_name"]);
-        image_node.src = `${content_base_dir}/comics/${page["page_name"]}/${image_filename}`;
-        image_node.title = page["Alt text"];
+        image_node.src = image["url"];
+        image_node.alt = image["alt_text"];
+        image_node.title = image["title"];
 
         link_node.appendChild(image_node);
         node.appendChild(link_node);

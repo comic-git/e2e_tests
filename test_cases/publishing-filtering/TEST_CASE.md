@@ -20,7 +20,8 @@ Baseline already covers several of these paths, but this case keeps the same ris
 - Auto-discovery includes expected images.
 - Auto-discovery excludes hidden `_` image files.
 - Explicit filenames override auto-discovery.
-- Generated page order and `page_info_list.json` stay stable.
+- Generated page order and the versioned `pages[*].images` metadata hierarchy stay stable.
+- Generated metadata validates against the JSON Schema deployed by the same build.
 - Private or internal metadata filtering remains correct.
 
 ## Fixture Shape
@@ -51,7 +52,8 @@ test_cases/publishing-filtering/
 - `comic/001/index.html` is generated for the explicit `Filename` page.
 - `comic/002/index.html` is generated for the auto-discovery page.
 - `comic/003/index.html` is absent because page `003` is future-dated.
-- `comic/page_info_list.json` contains pages `001` and `002` in stable order.
+- `comic/page_info_list.json` contains structured pages `001` and `002` in stable order,
+  including resolved image IDs, URLs, titles, alt text, and anchors.
 - `comic/page_info_list.json` does not contain private `!` metadata.
 - Page `002` renders `alpha.png` and `beta.png`, but not `_hidden.png`.
 - `_hidden.png` and future page source content remain in copied `your_content/`.

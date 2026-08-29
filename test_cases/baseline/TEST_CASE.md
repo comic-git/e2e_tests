@@ -31,5 +31,8 @@ This case is intended to catch broad rendering regressions and preserve the curr
 - GitHub Pages base URL and `/baseline` subdirectory are inferred from `GITHUB_REPOSITORY`.
 - `Comic subdirectory` and `Comic domain` are omitted from `comic_info.ini`.
 - Future-dated page source content remains part of copied content, but no public comic page is emitted for it.
+- Multi-image pages render ordered structured images with resolved alt text and stable image anchors.
+- `comic/page_info_list.json` uses the versioned page/image hierarchy and validates against
+  `comic_git_engine/schemas/page_info_list.schema.json` from the same build.
 - Fresh build output matches `golden_builds/baseline/` byte-for-byte.
 - The golden can be reviewed by serving `golden_builds/` and opening `/baseline/`.
