@@ -25,3 +25,18 @@ This case exists to verify the local-review exception where the generated site i
 - Build logs report `https://example.test` with an empty base subdirectory.
 - Fresh build output matches `golden_builds/blank-subdirectory/` byte-for-byte.
 - The golden can be reviewed by serving `golden_builds/blank-subdirectory/` and opening `/`.
+
+## Manual Visual Review
+
+This case is the mount-point exception. Serve its own golden folder, not the shared `golden_builds/` folder:
+
+```powershell
+cd golden_builds/blank-subdirectory
+python -m http.server 8001
+# Open http://localhost:8001/
+```
+
+- [ ] The root homepage is fully styled and all images, CSS, JavaScript, and favicon assets load.
+- [ ] Home, archive, latest, and comic links work from `/`.
+- [ ] Generated links do not contain `/blank-subdirectory/` or `/example-repo/`.
+- [ ] The single comic image and its archive entry render without broken paths.

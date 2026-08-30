@@ -27,3 +27,18 @@ This case pairs with `baseline`, which intentionally omits those settings and re
 - Migrated TOML output matches `golden_toml/explicit-url-overrides/` byte-for-byte.
 - Building the migrated content matches `golden_builds/explicit-url-overrides/` byte-for-byte.
 - The golden can be reviewed by serving `golden_builds/` and opening `/explicit-url-overrides/`.
+
+## Manual Visual Review
+
+From the repository root, serve the shared golden-build root:
+
+```powershell
+cd golden_builds
+python -m http.server 8000
+# Open http://localhost:8000/explicit-url-overrides/
+```
+
+- [ ] Home, archive, latest, and comic pages are styled and navigable.
+- [ ] Local links and assets use `/explicit-url-overrides/`, never the ignored `/example-repo/` path.
+- [ ] The single comic image and archive entry load correctly.
+- [ ] Page-source canonical and Open Graph URLs use `https://example.test/explicit-url-overrides`.

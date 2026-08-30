@@ -59,3 +59,20 @@ test_cases/publishing-filtering/
 - `_hidden.png` and future page source content remain in copied `your_content/`.
 - Fresh build output matches `golden_builds/publishing-filtering/` byte-for-byte.
 - The golden can be reviewed by serving `golden_builds/` and opening `/publishing-filtering/`.
+
+## Manual Visual Review
+
+From the repository root, serve the shared golden-build root:
+
+```powershell
+cd golden_builds
+python -m http.server 8000
+# Open http://localhost:8000/publishing-filtering/
+```
+
+- [ ] Only pages `001` and `002` appear in navigation, latest, and archive output.
+- [ ] Page `001` renders its explicitly configured image.
+- [ ] Page `002` renders `alpha.png` followed by `beta.png`.
+- [ ] `_hidden.png` does not appear as a comic image or archive entry.
+- [ ] Page `003`, scheduled for 2999, has no generated public comic page.
+- [ ] Archive and image-fragment links land on the expected page or image without broken entries.

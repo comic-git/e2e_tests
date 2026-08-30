@@ -54,3 +54,22 @@ test_cases/webring/
 - The next link points to `https://next.example.test/` and renders an image from `https://next.example.test/icon.png`.
 - Fresh build output matches `golden_builds/webring/` byte-for-byte.
 - The golden can be reviewed by serving `golden_builds/` and opening `/webring/`.
+
+## Manual Visual Review
+
+From the repository root, serve the shared golden-build root:
+
+```powershell
+cd golden_builds
+python -m http.server 8000
+# Open http://localhost:8000/webring/
+```
+
+- [ ] Home and comic page both show the `Harness Webring` section.
+- [ ] Previous is a text link to `https://previous.example.test/`.
+- [ ] Home is a text link to `https://example.test/webring/`.
+- [ ] Next is an image link to `https://next.example.test/` with image URL `https://next.example.test/icon.png`.
+- [ ] The current member is not incorrectly rendered as previous or next.
+- [ ] Normal site navigation and comic rendering remain unaffected by the webring.
+
+The intentionally fake external next-image host may not resolve during local review. Confirm the generated `<img>` URL in browser developer tools rather than treating that network failure as a golden-build failure.

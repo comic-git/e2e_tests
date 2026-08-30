@@ -65,3 +65,22 @@ test_cases/extra-comics-rss/
 - `solo-story/feed.xml` contains `Solo Story RSS: Standalone Solo Story Page`.
 - Fresh build output matches `golden_builds/extra-comics-rss/` byte-for-byte.
 - The golden can be reviewed by serving `golden_builds/` and opening `/extra-comics-rss/`.
+
+## Manual Visual Review
+
+From the repository root, serve the shared golden-build root:
+
+```powershell
+cd golden_builds
+python -m http.server 8000
+# Open http://localhost:8000/extra-comics-rss/
+```
+
+- [ ] The main comic page at `comic/001/` loads with working site navigation.
+- [ ] `side-story/comic/101/` displays the side-story page and keeps its links under `/side-story/`.
+- [ ] `solo-story/comic/201/` displays the solo-story page and keeps its links under `/solo-story/`.
+- [ ] Root `feed.xml` is readable XML containing both the main and combined side-story items.
+- [ ] The combined side-story feed item links to `/extra-comics-rss/side-story/comic/101/`.
+- [ ] `side-story/feed.xml` is absent.
+- [ ] `solo-story/feed.xml` contains the standalone solo-story item and correct comic URL.
+- [ ] RSS descriptions contain their comic images and post content without malformed markup.

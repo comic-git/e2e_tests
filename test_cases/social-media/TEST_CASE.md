@@ -58,3 +58,21 @@ test_cases/social-media/
 - Generated preview image and thumbnail URLs include `/social-media/`.
 - Fresh build output matches `golden_builds/social-media/` byte-for-byte.
 - The golden can be reviewed by serving `golden_builds/` and opening `/social-media/`.
+
+## Manual Visual Review
+
+From the repository root, serve the shared golden-build root. Use page source or browser developer tools to inspect `<head>` metadata that is not visible in the rendered page:
+
+```powershell
+cd golden_builds
+python -m http.server 8000
+# Open http://localhost:8000/social-media/
+```
+
+- [ ] Home and archive are styled and list all three comic pages.
+- [ ] Page `001` displays its comic normally and uses its generated thumbnail and first-image alt text in Open Graph metadata.
+- [ ] Page `002` displays normally and its `<head>` contains the distinctive page-local title, description, site name, and image alt text.
+- [ ] Page `003` is intentionally text-only and does not show a broken comic image.
+- [ ] Page `003` and latest use `your_content/images/preview_image.png` as `og:image`.
+- [ ] Home uses the site-level `Social Fixture Site` metadata and site preview image.
+- [ ] All generated preview and thumbnail URLs include `/social-media/`.

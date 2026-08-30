@@ -85,3 +85,27 @@ resolved title/alt/thumbnail values, no-image visibility, and collision safety.
 - Migrated content matches `golden_toml/structured-images/` byte-for-byte.
 - Building the migrated content matches `golden_builds/structured-images/` byte-for-byte.
 - The golden can be reviewed by serving `golden_builds/` and opening `/structured-images/`.
+
+## Manual Visual Review
+
+From the repository root, serve the shared golden-build root:
+
+```powershell
+cd golden_builds
+python -m http.server 8000
+# Open http://localhost:8000/structured-images/
+```
+
+- [ ] Page `001` renders `shared.png` followed by `flat-second.png`.
+- [ ] Page `002` renders `ordered-b.png` followed by `ordered-a.png`; the first image intentionally has blank title and alt text.
+- [ ] Page `003` is text-only but retains post content and working navigation.
+- [ ] Page `004` renders `toml-first.png` followed by `toml-second.png`.
+- [ ] Image overlays work, and each image has a stable fragment target.
+- [ ] The main archive has seven ordered entries: two each for pages `001`, `002`, and `004`, plus one text-only entry for page `003`.
+- [ ] Archive image entries link directly to the correct image fragment.
+- [ ] The explicitly blank thumbnail for `ordered-b.png` produces a deliberate text-only archive entry rather than a broken image.
+- [ ] Other archive entries show their explicit, conventional, or generated thumbnails.
+- [ ] `side-story/archive/` contains one page-level thumbnail entry, not one entry per image.
+- [ ] `side-story/comic/001/` uses the side-story path and image without colliding with main page `001`.
+- [ ] Infinite scroll renders structured images in source order and image-fragment URLs start on the owning page.
+- [ ] Root `feed.xml` has four page items, including the text-only page, and `side-story/feed.xml` has one side-story item.

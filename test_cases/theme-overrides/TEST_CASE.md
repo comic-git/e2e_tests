@@ -71,3 +71,20 @@ test_cases/theme-overrides/
 - Migration deletion removes page-level `comics/001/info.ini`.
 - Migration output writes `comic_info.toml` and deletes root `comic_info.ini`.
 - Migrated-build parity verifies that TOML pages without page-level social metadata preserve default social metadata.
+
+## Manual Visual Review
+
+From the repository root, serve the shared golden-build root:
+
+```powershell
+cd golden_builds
+python -m http.server 8000
+# Open http://localhost:8000/theme-overrides/
+```
+
+- [ ] The homepage says `Focused Theme Index Override` and includes the configured homepage content.
+- [ ] The custom homepage section has the focused theme's green top border.
+- [ ] The non-default theme remains active on archive, latest, 404, and comic pages.
+- [ ] Engine layout CSS and focused-theme CSS layer without an unstyled or badly shifted page.
+- [ ] Theme stylesheets load from `/theme-overrides/your_content/themes/focused-theme/css/`, and the expected pale green background, green borders, and image outline are visible.
+- [ ] The comic page and its navigation render normally under the custom theme.
