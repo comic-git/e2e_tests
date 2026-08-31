@@ -60,6 +60,7 @@ See [`docs/testing.md`](docs/testing.md) for the full harness workflow.
 | [`test_cases/`](test_cases/)       | Checked-in fixture inputs, manifests, and case docs           |
 | [`golden_builds/`](golden_builds/) | Expected full built site output grouped by test case          |
 | `golden_toml/`                     | Expected migrated `your_content/` output grouped by test case |
+| [`tests/generated_site_contracts/`](tests/generated_site_contracts/) | Semantic public-contract checks over generated sites |
 | [`scripts/`](scripts/)             | Local harness scripts                                         |
 | `specs/`                           | Ignored scratch plans and temporary agent notes               |
 

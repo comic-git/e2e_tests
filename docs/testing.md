@@ -16,6 +16,17 @@ venv\Scripts\python.exe -m pytest
 
 Pytest reports each enabled check for each test case independently. Disabled manifest checks are reported as skipped.
 
+Generated-site public contracts can be run independently:
+
+```powershell
+venv\Scripts\python.exe -m pytest tests\generated_site_contracts
+```
+
+These tests validate semantic relationships across committed generated artifacts,
+including deployed schema conformance and agreement between metadata, HTML,
+archives, feeds, and social values. See
+`tests/generated_site_contracts/README.md` for the category boundary.
+
 The harness CLI remains available for targeted checks and golden refreshes:
 
 ```powershell
@@ -173,6 +184,6 @@ Enable `migration` and `migrated_build` only when a case has reviewed TOML and b
 `[[images]]`, image/page archive modes, Extra Comic identity, RSS, schema validation,
 and migration parity.
 
-In addition to byte-for-byte goldens, `tests/test_structured_images.py` validates every
-generated `page_info_list.json` against the schema deployed in the matching build and
-asserts the cross-output structured-image semantics.
+In addition to byte-for-byte goldens, the generated-site contract suite validates
+every `page_info_list.json` against the schema deployed in the matching build and
+asserts cross-output structured-image semantics.

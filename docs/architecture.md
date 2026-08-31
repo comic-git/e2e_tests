@@ -25,6 +25,7 @@ The normal developer entry point is the pytest wrapper suite. The runner CLI rem
 | Case documentation    | `test_cases/<case>/TEST_CASE.md`                    | Human-readable intent, coverage, and expected behavior. Not parsed by the runner.                |
 | Golden builds         | [`golden_builds/`](../golden_builds/)               | Expected full `build/` output, grouped by test case.                                             |
 | TOML goldens          | `golden_toml/`                                      | Expected migrated `your_content/` output grouped by test case.                                   |
+| Site contract tests   | [`tests/generated_site_contracts/`](../tests/generated_site_contracts/) | Validate semantic public contracts across generated artifacts.                    |
 | Local engine link     | `comic_git_engine/`                                 | Local symlink or junction to the engine repo under test.                                         |
 
 ## Test Case Model
@@ -142,6 +143,18 @@ This keeps the test boundary clear: the engine can only observe the files that a
 The harness compares full build output for each case. Focused tests should stay focused by using small fixture inputs, not by weakening comparison scope.
 
 This makes refresh behavior simple: `refresh-build` always rewrites the complete golden output for each selected case.
+
+### Generated-site contracts complement golden parity
+
+Byte-for-byte comparisons detect any output drift until a golden is deliberately
+refreshed. Tests under `tests/generated_site_contracts/` validate relationships
+within the refreshed output, such as schema conformance and agreement between
+metadata, rendered links, feeds, and social values. They protect public semantic
+contracts from being accepted accidentally during snapshot review.
+
+Engine implementation details remain the responsibility of `comic_git_engine`
+tests; generated-site contract tests operate only on public artifacts checked in
+by this harness.
 
 ### Stable text line endings
 
