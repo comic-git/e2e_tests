@@ -44,22 +44,15 @@
       "type": "object",
       "additionalProperties": false,
       "required": [
-        "id",
         "filename",
         "url",
-        "anchor_id",
         "title",
         "alt_text",
         "thumbnail_url"
       ],
       "properties": {
-        "id": {"type": "string", "minLength": 1},
         "filename": {"type": "string", "minLength": 1},
         "url": {"type": "string", "minLength": 1},
-        "anchor_id": {
-          "type": "string",
-          "pattern": "^comic-image-[0-9a-f]{64}$"
-        },
         "title": {"type": "string"},
         "alt_text": {"type": "string"},
         "thumbnail_url": {"$ref": "#/$defs/nullableUrl"}

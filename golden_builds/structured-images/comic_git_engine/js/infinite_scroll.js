@@ -2,12 +2,13 @@ let page_info_json;
 let infinite_scroll_div;
 let earliest_comic_loaded = null;
 let latest_comic_loaded = null;
-let current_page = null;
+let current_image = null;
+let starting_anchor = null;
 let num_pages_to_load = 5;
 let initializing = true;
 let loading_more_pages = false;
-// If a page is within these many pixels of the top of the viewport (by percentage of current viewport height),
-// it counts as being "viewed" for the purposes of determining what the current viewed page is.
+// If an image is within these many pixels of the top of the viewport (by percentage of current viewport height),
+// it counts as being "viewed" for the purposes of determining the current image.
 let viewed_page_top_margin_percentage = 0.30;
 let load_next_pages_threshold = 1000;
 let comic_base_dir = null;
@@ -18,7 +19,7 @@ export async function load_page(local_comic_base_dir) {
     await fetch_all_json_data();
     // If no pages to load, end early.
     if (page_info_json.length === 0) {
-        document.getElementById("loading-infinite-scroll").innerHTML = "<h2>No comics have been published yet.</h2>";
+        document.getElementById("loading-infinite-scroll").innerHTML = "<h2>No comic images have been published yet.</h2>";
         document.getElementById("jump-to").hidden = true;
         document.getElementById("load-newer").hidden = true;
         return;
@@ -28,11 +29,6 @@ export async function load_page(local_comic_base_dir) {
     document.getElementById("load-older-button").onclick = load_older_pages;
     document.getElementById("load-newer-button").onclick = load_newer_pages;
     window.onscroll = on_scroll;
-    // document.addEventListener("keydown", event => {
-    //     if (event.code === "KeyL") {
-    //         set_current_page(get_current_page(current_page, true));
-    //     }
-    // });
     for (let link of document.getElementsByClassName("chapter-links")) {
         link.addEventListener("click", function () {
             let url = this.getAttribute("href");
@@ -59,10 +55,15 @@ async function fetch_all_json_data() {
         console.error(response.text());
         throw e;
     }
-    page_info_json = json["pages"];
+    page_info_json = json["pages"].filter(page => page["images"].length > 0);
+}
+
+function image_fragment(page_name, image_index) {
+    return `${page_name}_${String(image_index + 1).padStart(2, "0")}`;
 }
 
 function load_and_go_to_page() {
+    current_image = null;
     get_starting_page();
     load_newer_pages();
     go_to_anchor();
@@ -71,6 +72,7 @@ function load_and_go_to_page() {
 function get_starting_page() {
     earliest_comic_loaded = 0;
     latest_comic_loaded = -1;
+    starting_anchor = null;
     if (!window.location.href.includes("#")) {
         return;
     }
@@ -78,7 +80,9 @@ function get_starting_page() {
     console.log("Loading fragment " + fragment);
     for (let i=0; i < page_info_json.length; i++) {
         console.log(page_info_json[i].page_name);
-        let image_match = page_info_json[i].images.some(image => image.anchor_id === fragment);
+        let image_match = page_info_json[i].images.some(
+            (_image, index) => image_fragment(page_info_json[i].page_name, index) === fragment
+        );
         if (page_info_json[i].page_name === fragment || image_match) {
             console.log("Starting on page " + i);
             if (i !== 0) {
@@ -86,6 +90,9 @@ function get_starting_page() {
             }
             earliest_comic_loaded = i;
             latest_comic_loaded = i - 1;
+            starting_anchor = page_info_json[i].page_name === fragment
+                ? image_fragment(page_info_json[i].page_name, 0)
+                : fragment;
             return;
         }
     }
@@ -97,10 +104,11 @@ function build_comic_div(page) {
     node.className = "infinite-page";
     node.id = page["page_name"];
 
-    for (let image of page["images"]) {
+    page["images"].forEach((image, index) => {
         let link_node = document.createElement("a");
-        link_node.href = `${page["url"]}#${image["anchor_id"]}`;
-        link_node.id = image["anchor_id"];
+        link_node.className = "infinite-image-link";
+        link_node.href = `${page["url"]}#comic-image-${index + 1}`;
+        link_node.id = image_fragment(page["page_name"], index);
 
         let image_node = document.createElement("img");
         image_node.className = "infinite-page-image";
@@ -111,7 +119,7 @@ function build_comic_div(page) {
 
         link_node.appendChild(image_node);
         node.appendChild(link_node);
-    }
+    });
     return node;
 }
 
@@ -126,10 +134,12 @@ function load_older_pages() {
     try {
         for (let i = 0; i < num_pages_to_load; i++) {
             earliest_comic_loaded--;
-            current_page++;
 
             let node = build_comic_div(page_info_json[earliest_comic_loaded]);
             infinite_scroll_div.insertBefore(node, infinite_scroll_div.firstChild);
+            if (current_image !== null) {
+                current_image += page_info_json[earliest_comic_loaded].images.length;
+            }
 
             if (earliest_comic_loaded <= 0) {
                 // No more pages to display
@@ -175,36 +185,38 @@ function go_to_anchor() {
     if (!window.location.href.includes("#")) {
         return;
     }
-    let anchor = window.location.href.split("#")[1];
-    let top = document.getElementById(decodeURI(anchor)).offsetTop;
+    let anchor = starting_anchor || decodeURIComponent(window.location.href.split("#")[1]);
+    let target = document.getElementById(anchor);
+    if (target === null) {
+        return;
+    }
+    let top = target.offsetTop;
     window.scrollTo(0, top);
 }
 
-function get_current_page(start_at_page, show_logs=false) {
-    if (start_at_page === null) {
-        start_at_page = 0;
-    }
-    let child_nodes = infinite_scroll_div.childNodes;
+function get_current_image(show_logs=false) {
+    let image_nodes = infinite_scroll_div.querySelectorAll(".infinite-image-link");
     let threshold = viewed_page_top_margin_percentage * window.innerHeight;
     if (show_logs) {
-        console.log("childNodes length: " + child_nodes.length);
+        console.log("imageNodes length: " + image_nodes.length);
         console.log(threshold);
     }
-    for (let i=start_at_page; i < child_nodes.length; i++) {
-        let rect = child_nodes[i].getBoundingClientRect();
+    for (let i=0; i < image_nodes.length; i++) {
+        let rect = image_nodes[i].getBoundingClientRect();
         if (show_logs)
-            console.log("id=" + child_nodes[i].id + ", top=" + rect.top);
+            console.log("id=" + image_nodes[i].id + ", top=" + rect.top);
         if (rect.top >= threshold) {
             return Math.max(0, i - 1);
         }
     }
-    return child_nodes.length - 1;
+    return image_nodes.length - 1;
 }
 
-function set_current_page(new_current_page) {
-    current_page = new_current_page;
-    console.log("Current page: " + current_page);
-    let anchor = infinite_scroll_div.childNodes[current_page].id;
+function set_current_image(new_current_image) {
+    current_image = new_current_image;
+    console.log("Current image: " + current_image);
+    let image_nodes = infinite_scroll_div.querySelectorAll(".infinite-image-link");
+    let anchor = image_nodes[current_image].id;
     console.log("Anchor: " + anchor);
     let new_url = window.location.href.split("#")[0] + "#" + anchor;
     window.history.replaceState(null, null, new_url);
@@ -218,8 +230,8 @@ function on_scroll(event) {
         load_newer_pages();
     }
 
-    let new_current_page = get_current_page(current_page);
-    if (current_page !== new_current_page) {
-        set_current_page(new_current_page);
+    let new_current_image = get_current_image();
+    if (current_image !== new_current_image) {
+        set_current_image(new_current_image);
     }
 }
