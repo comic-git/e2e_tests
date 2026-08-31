@@ -15,9 +15,9 @@ The runner warns if `TEST_CASE.md` is missing, but never parses it.
 
 Behavior comes from `manifest.toml`, `your_content/`, and the matching golden output. Keep the doc accurate, but do not treat it as a source of truth.
 
-### Refresh rewrites the whole selected golden
+### Refresh rewrites every selected golden
 
-`refresh-build` fully deletes and rewrites `golden_builds/<case>/`.
+`refresh-build` fully deletes and rewrites `golden_builds/<case>/`. With `--all`, it does this for every build-enabled case.
 
 Review refreshed output carefully before committing because golden changes redefine the expected engine contract.
 

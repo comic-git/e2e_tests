@@ -552,10 +552,33 @@ def cmd_refresh_build_case(args: HarnessOptions, case_name: str) -> int:
 
 
 def cmd_refresh_build(args: HarnessOptions) -> int:
-    if args.all:
-        print('refresh-build does not support --all. Refresh one test case at a time.', file=sys.stderr)
+    if not args.all:
+        return cmd_refresh_build_case(args, selected_case(args))
+
+    case_names = list_test_cases()
+    if not case_names:
+        print(f'No test cases found under {TEST_CASES_ROOT}', file=sys.stderr)
         return 2
-    return cmd_refresh_build_case(args, selected_case(args))
+
+    failures = 0
+    skipped = 0
+    for case_name in case_names:
+        manifest = load_test_case_manifest(case_name)
+        if not build_check_enabled(manifest):
+            skipped += 1
+            print(f'Skipping test case {case_name}; build output checks are disabled.')
+            continue
+        print(f'Refreshing build golden for test case {case_name}...', flush=True)
+        result = cmd_refresh_build_case(args, case_name)
+        if result != 0:
+            failures += 1
+
+    refreshed = len(case_names) - skipped
+    if failures:
+        print(f'Build golden refresh failed for {failures} of {refreshed} test cases.', file=sys.stderr)
+        return 1
+    print(f'Refreshed build goldens for {refreshed} test case(s); skipped {skipped}.')
+    return 0
 
 
 def check_build_case(args: HarnessOptions, case_name: str) -> CheckResult:

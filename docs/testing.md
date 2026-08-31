@@ -54,22 +54,26 @@ venv\Scripts\python.exe -m pip install -r comic_git_engine\requirements_migratio
 
 ## Refreshing Goldens
 
-Refresh is deliberate and destructive for the selected golden output.
+Refresh is deliberate and destructive for the selected golden output or outputs.
 
 ```powershell
+# Refresh one case
 python scripts/run_e2e.py refresh-build --case baseline
+
+# Refresh every build-enabled case
+python scripts/run_e2e.py refresh-build --all
 ```
 
-Refresh one case at a time. `refresh-build --all` is intentionally unsupported so broad golden rewrites stay deliberate.
+Use `--all` when reviewing how an engine change affects every generated site. Because the goldens are tracked, review the resulting `git diff -- golden_builds` before committing.
 
 This command:
 
-1. Builds the selected case in a temp host repo.
-2. Deletes `golden_builds/<case>/`.
+1. Builds each selected, build-enabled case in a temp host repo.
+2. Deletes its `golden_builds/<case>/`.
 3. Copies the fresh build output into `golden_builds/<case>/`.
-4. Normalizes recognized text files in the refreshed golden to LF line endings.
+4. Normalizes recognized text files in each refreshed golden to LF line endings.
 
-Only refresh a golden after confirming the new output is the intended behavior.
+Only refresh goldens after confirming the new output is the intended behavior.
 
 Migration snapshots are refreshed separately:
 

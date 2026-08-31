@@ -26,6 +26,13 @@ python scripts/run_e2e.py check-build --case baseline
 python scripts/run_e2e.py refresh-build --case baseline
 ```
 
+To deliberately refresh every build-enabled golden and review the aggregate engine changes with Git:
+
+```powershell
+python scripts/run_e2e.py refresh-build --all
+git diff -- golden_builds
+```
+
 The harness has three check lanes:
 
 ```powershell

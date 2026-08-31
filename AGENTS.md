@@ -21,7 +21,7 @@ This repo is a harness repo, not a normal `comic_git` host repo. Root-level `you
 - Keep `TEST_CASE.md` human-readable. Do not parse it or treat it as behavior source of truth.
 - Source of truth for behavior is `manifest.toml`, `your_content/`, and the matching golden output.
 - Run builds and migrations in temporary workspaces, not directly from checked-in fixture data.
-- `refresh-build` fully rewrites the selected golden. Review refreshed output before committing.
+- `refresh-build` fully rewrites every selected golden. Review refreshed output before committing.
 
 ## Key Docs
 

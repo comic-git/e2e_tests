@@ -107,7 +107,7 @@ The migrated-build comparison ignores the copied top-level `build/your_content/`
 
 The default migration script path is `comic_git_engine/src/build/migrate_to_toml.py`. It can be overridden with `--migration-script` or a manifest `[migration].script` value.
 
-`check-build --all`, `check-migration --all`, and `check-migrated-build --all` run every manifest-backed test case with the matching `[checks]` flag enabled. Refresh commands intentionally operate on one case at a time.
+`check-build --all`, `check-migration --all`, and `check-migrated-build --all` run every manifest-backed test case with the matching `[checks]` flag enabled. `refresh-build --all` likewise refreshes every build-enabled golden; migration refreshes still operate on one case at a time.
 
 ## Local Static Review
 
@@ -141,7 +141,7 @@ This keeps the test boundary clear: the engine can only observe the files that a
 
 The harness compares full build output for each case. Focused tests should stay focused by using small fixture inputs, not by weakening comparison scope.
 
-This makes refresh behavior simple: `refresh-build` always rewrites the complete golden output for the selected case.
+This makes refresh behavior simple: `refresh-build` always rewrites the complete golden output for each selected case.
 
 ### Stable text line endings
 
