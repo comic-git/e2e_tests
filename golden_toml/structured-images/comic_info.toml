@@ -39,10 +39,8 @@ overwrite_existing_images = false
 
 [rss]
 title_format = "{page_title}"
+channel_description = "Structured image feed fixture."
 build = true
 
 [transcripts]
 enabled = false
-
-[legacy."RSS Feed"]
-Description = "Structured image feed fixture."

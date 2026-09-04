@@ -9,8 +9,11 @@ def test_structured_feeds_preserve_page_scope_order_and_text_content(
 ) -> None:
     feed = ET.parse(structured_build / "feed.xml").getroot()
     side_feed = ET.parse(structured_build / "side-story" / "feed.xml").getroot()
+    channel = feed.find("./channel")
     items = feed.findall("./channel/item")
 
+    assert channel is not None
+    assert channel.findtext("description") == "Structured image feed fixture."
     assert len(items) == 4
     assert len(side_feed.findall("./channel/item")) == 1
     assert "ordered-b.png" in (items[1].findtext("description") or "")
