@@ -1,5 +1,10 @@
 from __future__ import annotations
 
+import subprocess
+from pathlib import Path
+
+import pytest
+
 from e2e_harness import runner
 
 
@@ -65,3 +70,25 @@ def test_refresh_build_all_reports_when_there_are_no_cases(monkeypatch, capsys) 
 
     assert result == 2
     assert f'No test cases found under {runner.TEST_CASES_ROOT}' in capsys.readouterr().err
+
+
+def test_run_engine_script_detects_error_marker_on_stderr(monkeypatch, tmp_path: Path) -> None:
+    script_path = tmp_path / 'comic_git_engine' / 'src' / 'build' / 'build_site.py'
+    script_path.parent.mkdir(parents=True)
+    script_path.write_text('', encoding='utf-8')
+    completed = subprocess.CompletedProcess(
+        args=['python', str(script_path)],
+        returncode=0,
+        stdout='',
+        stderr='============= ERROR =============\nBuild failed\n',
+    )
+    monkeypatch.setattr(runner.subprocess, 'run', lambda *args, **kwargs: completed)
+
+    with pytest.raises(RuntimeError, match='Engine build reported an error'):
+        runner.run_engine_script(
+            tmp_path,
+            Path('src/build/build_site.py'),
+            {},
+            'python',
+            'Engine build',
+        )

@@ -337,7 +337,7 @@ def run_engine_script(
         print(result.stderr, end='', file=sys.stderr)
     if result.returncode != 0:
         raise subprocess.CalledProcessError(result.returncode, result.args)
-    if '============= ERROR =============' in result.stdout:
+    if '============= ERROR =============' in result.stdout + result.stderr:
         raise RuntimeError(f'{error_label} reported an error. Check output above.')
 
 
