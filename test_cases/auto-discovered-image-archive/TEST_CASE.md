@@ -15,7 +15,7 @@ one separately in the Archive.
 
 ## Expected Behavior
 
-- Both SVG files are auto-discovered in filename order.
+- Both PNG files are auto-discovered in filename order.
 - The Archive contains two entries linking to the two positional image anchors.
 - Archive titles are `First image` and `Second image`.
 - A conventional `_thumbnail.jpg` and one short identity-derived thumbnail are generated.
