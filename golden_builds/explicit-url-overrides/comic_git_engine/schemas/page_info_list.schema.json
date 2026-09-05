@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://comic-git.github.io/schemas/page_info_list.schema.json",
+  "$id": "https://raw.githubusercontent.com/comic-git/comic_git_engine/latest/schemas/page_info_list.schema.json",
   "title": "comic_git page metadata",
   "type": "object",
   "additionalProperties": false,
@@ -82,7 +82,12 @@
         "title": {"type": "string"},
         "post_date": {
           "type": "string",
-          "format": "date"
+          "anyOf": [
+            {"format": "date"},
+            {
+              "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d+)?(?:Z|[+-]\\d{2}:\\d{2})?$"
+            }
+          ]
         },
         "thumbnail_url": {"$ref": "#/$defs/nullableUrl"},
         "storyline": {"type": "string"},

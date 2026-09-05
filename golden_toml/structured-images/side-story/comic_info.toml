@@ -8,11 +8,11 @@ pages = [
 name = "Structured Side Story"
 description = "Extra Comic identity collision fixture."
 
-[archive]
-entry_mode = "Pages"
-use_thumbnails = true
-
 [rss]
 title_format = "{comic_title}: {page_title}"
 build = true
 combine_with_main = false
+
+[archive]
+use_thumbnails = true
+list_images_separately = false

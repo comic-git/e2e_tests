@@ -28,9 +28,9 @@ extra_comics = [
 
 [archive]
 date_format = "%m/%d/%Y"
-entry_mode = "Images"
 image_title_fallback = "Page title"
 use_thumbnails = true
+list_images_separately = true
 
 [image_processing]
 thumbnail_size = "10%"

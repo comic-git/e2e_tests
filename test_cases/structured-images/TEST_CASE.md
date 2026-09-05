@@ -14,8 +14,8 @@ validation all need to agree.
 - Source formats: flat legacy INI, sectioned legacy INI, and TOML `[[images]]`
 - Checks: build output parity, migration output parity, and migrated-build parity
 - Env: `GITHUB_REPOSITORY=comic-git/structured-images`
-- Main archive: `Entry mode = Images`, `Use thumbnails = True`
-- Extra Comic archive: `Entry mode = Pages`, `Use thumbnails = True`
+- Main archive: `List images separately = True`, `Use thumbnails = True`
+- Extra Comic archive: `List images separately = False`, `Use thumbnails = True`
 - Main and Extra Comic deliberately reuse a page folder and image filename
 
 ## Fixture Shape
@@ -53,15 +53,15 @@ Use real image files. Include:
 - Explicit blank image title, alt text, and thumbnail suppress inheritance.
 - Page/image identity includes the owning comic and normalized page-relative filename.
 - Main and Extra Comic images with the same page folder and filename have different IDs and anchors.
-- Reordering images would not alter filename-based identity or SHA-256-derived anchors.
+- Reordering images preserves filename-based internal identity but intentionally changes positional anchors.
 - Page `_thumbnail.jpg` remains the first-image fallback.
 - Explicit thumbnails remain user-owned and are not overwritten.
 - Additional image thumbnails use deterministic identity-derived filenames.
 - Main archive image mode emits one ordered thumbnail entry per image and links directly to image anchors.
 - Main no-image pages remain visible as one page-only archive entry.
 - Extra Comic page mode emits one thumbnail entry per page.
-- Keeping thumbnails enabled across both archives proves entry mode varies independently.
-- Comic HTML uses real `alt` attributes and stable image element IDs.
+- Keeping thumbnails enabled across both archives proves image listing varies independently.
+- Comic HTML uses real `alt` attributes and one-based positional image element IDs.
 - Infinite scroll consumes supplied page/image URLs, alt text, page fragments, and image fragments.
 - RSS remains one item per page, renders every image with its resolved alt text, and keeps no-image post content.
 - Social previews use the resolved page thumbnail and first image alt text.
