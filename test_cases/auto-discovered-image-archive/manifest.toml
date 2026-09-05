@@ -1,0 +1,12 @@
+name = "auto-discovered-image-archive"
+description = "Focused build coverage for separate Archive entries from legacy INI image auto-discovery."
+source_format = "legacy_ini"
+tags = ["legacy-ini", "image-auto-discovery", "archive", "focused", "full-parity"]
+
+[checks]
+build = true
+migration = false
+migrated_build = false
+
+[env]
+GITHUB_REPOSITORY = "comic-git/auto-discovered-image-archive"

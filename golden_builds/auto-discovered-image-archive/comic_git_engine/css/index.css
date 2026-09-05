@@ -1,0 +1,40 @@
+#home-page {
+    margin: 7px;
+}
+
+.infobox {
+    display: block;
+    padding: 10px 15px;
+    border-radius: 0.2em;
+    background-color: #ECF7FB;
+}
+
+#comic-git-logo {
+    width: 100%;
+}
+
+.right-column-layout, .left-column-layout {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(15em, 1fr));
+    grid-gap: 1rem;
+    grid-template-rows: auto 1fr auto;
+}
+
+.right-column-layout .left-column, .left-column-layout .right-column {
+    align-self: center;
+    justify-self: center;
+    grid-column: span 1;
+}
+
+.right-column-layout .right-column, .left-column-layout .left-column {
+    align-self: center;
+    justify-self: center;
+    grid-column: span 2;
+}
+
+/* Media Queries for responsive layouts */
+@media screen and (max-width: 875px) {
+    .right-column-layout .right-column, .left-column-layout .left-column {
+        grid-column: span 1;
+    }
+}

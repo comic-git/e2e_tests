@@ -48,6 +48,23 @@ def test_page_mode_archive_links_each_page_to_its_primary_content(
     ]
 
 
+def test_auto_discovered_images_are_listed_separately_in_archive(
+    golden_builds_root: Path,
+) -> None:
+    build = golden_builds_root / "auto-discovered-image-archive"
+    archive = (build / "archive" / "index.html").read_text(encoding="utf-8")
+
+    assert re.findall(r'<a href="([^"]+/comic/[^"]+)">', archive) == [
+        "/auto-discovered-image-archive/comic/001/#comic-image-1",
+        "/auto-discovered-image-archive/comic/001/#comic-image-2",
+    ]
+    assert re.findall(r'<div class="archive-thumbnail-title">([^<]+)</div>', archive) == [
+        "First image",
+        "Second image",
+    ]
+    assert re.findall(r'_thumbnail_[0-9a-f]{8}\.jpg', archive)
+
+
 def test_extra_comic_archive_uses_its_own_page_and_thumbnail_urls(
     structured_build: Path,
     load_json_document: JsonDocumentLoader,
