@@ -1,0 +1,12 @@
+pages = [
+    { template_name = "index", title = "Side Story Home" },
+    { template_name = "latest", title = "" },
+    { template_name = "archive", title = "Side Story Archive" },
+]
+
+[comic]
+name = "CMS Side Story"
+description = "Extra Comic CMS collection coverage."
+
+[rss]
+build = false

@@ -1,0 +1,15 @@
+post_date = 2026-09-03
+title = "Two Images"
+post_text = "The image order in this page is intentional."
+characters = ["Ada"]
+tags = ["cms"]
+
+[[images]]
+filename = "first.svg"
+title = "First image"
+alt_text = "The first numbered test image."
+
+[[images]]
+filename = "second.svg"
+title = "Second image"
+alt_text = "The second numbered test image."

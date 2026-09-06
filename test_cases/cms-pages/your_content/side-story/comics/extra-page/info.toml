@@ -1,0 +1,6 @@
+post_date = 2026-09-05
+title = "Extra Page"
+
+[[images]]
+filename = "extra.svg"
+alt_text = "The Extra Comic test image."

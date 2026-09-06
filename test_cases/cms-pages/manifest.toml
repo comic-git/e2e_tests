@@ -1,0 +1,12 @@
+name = "cms-pages"
+description = "Focused build coverage for generated Decap CMS administration of TOML comic pages."
+source_format = "toml"
+tags = ["toml", "cms", "extra-comics", "focused", "full-parity"]
+
+[checks]
+build = true
+migration = false
+migrated_build = false
+
+[env]
+GITHUB_REPOSITORY = "comic-git/cms-pages"
