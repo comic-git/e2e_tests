@@ -32,11 +32,13 @@ collections:
         fields:
           - {label: "Image", name: "filename", widget: "image", allow_multiple: false}
           - {label: "Title", name: "title", widget: "string", required: false}
-          - {label: "Alt text", name: "alt_text", widget: "text", required: false}
+          - {label: "Hover text", name: "alt_text", widget: "text", required: false}
+          - {label: "Screen reader text", name: "screen_reader_text", widget: "text", required: false}
           - {label: "Thumbnail", name: "thumbnail", widget: "image", required: false, allow_multiple: false}
       - {label: "Post date", name: "post_date", widget: "datetime", format: "YYYY-MM-DD", date_format: "YYYY-MM-DD", time_format: false}
       - {label: "Post text", name: "post_text", widget: "markdown", required: false}
-      - {label: "Alt text", name: "alt_text", widget: "text", required: false}
+      - {label: "Hover text", name: "alt_text", widget: "text", required: false}
+      - {label: "Screen reader text", name: "screen_reader_text", widget: "text", required: false}
       - {label: "Page thumbnail", name: "thumbnail", widget: "image", required: false, allow_multiple: false}
       - {label: "Storyline", name: "storyline", widget: "string", required: false}
       - label: "Characters"
@@ -71,11 +73,13 @@ collections:
         fields:
           - {label: "Image", name: "filename", widget: "image", allow_multiple: false}
           - {label: "Title", name: "title", widget: "string", required: false}
-          - {label: "Alt text", name: "alt_text", widget: "text", required: false}
+          - {label: "Hover text", name: "alt_text", widget: "text", required: false}
+          - {label: "Screen reader text", name: "screen_reader_text", widget: "text", required: false}
           - {label: "Thumbnail", name: "thumbnail", widget: "image", required: false, allow_multiple: false}
       - {label: "Post date", name: "post_date", widget: "datetime", format: "YYYY-MM-DD", date_format: "YYYY-MM-DD", time_format: false}
       - {label: "Post text", name: "post_text", widget: "markdown", required: false}
-      - {label: "Alt text", name: "alt_text", widget: "text", required: false}
+      - {label: "Hover text", name: "alt_text", widget: "text", required: false}
+      - {label: "Screen reader text", name: "screen_reader_text", widget: "text", required: false}
       - {label: "Page thumbnail", name: "thumbnail", widget: "image", required: false, allow_multiple: false}
       - {label: "Storyline", name: "storyline", widget: "string", required: false}
       - label: "Characters"
