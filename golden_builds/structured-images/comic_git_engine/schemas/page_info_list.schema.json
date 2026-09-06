@@ -55,6 +55,7 @@
         "url": {"type": "string", "minLength": 1},
         "title": {"type": "string"},
         "alt_text": {"type": "string"},
+        "screen_reader_text": {"type": "string"},
         "thumbnail_url": {"$ref": "#/$defs/nullableUrl"}
       }
     },

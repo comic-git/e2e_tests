@@ -114,8 +114,8 @@ function build_comic_div(page) {
         image_node.className = "infinite-page-image";
         console.log("Adding div for page " + page["page_name"]);
         image_node.src = image["url"];
-        image_node.alt = image["alt_text"];
-        image_node.title = image["title"];
+        image_node.alt = image["screen_reader_text"] ?? image["alt_text"];
+        image_node.title = image["alt_text"];
 
         link_node.appendChild(image_node);
         node.appendChild(link_node);

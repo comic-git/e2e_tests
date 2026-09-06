@@ -69,13 +69,29 @@ def test_structured_metadata_preserves_resolution_and_public_image_shape(
     assert no_image["images"] == []
     assert no_image["thumbnail_url"] is None
     assert toml["images"][0]["thumbnail_url"].endswith("/toml-image-thumb.png")
+    assert toml["images"][0]["alt_text"] == "Explicit TOML image alt text."
+    assert (
+        toml["images"][0]["screen_reader_text"]
+        == "Explicit TOML image screen reader text."
+    )
     assert toml["images"][1]["title"] == "Native TOML Page"
     assert toml["images"][1]["alt_text"] == "TOML page inherited alt text."
+    assert (
+        toml["images"][1]["screen_reader_text"]
+        == "TOML page inherited screen reader text."
+    )
     assert toml["extra"] == {"Review": "public custom metadata"}
 
     main_shared = flat["images"][0]
     side_shared = side["pages"][0]["images"][0]
-    public_image_fields = {"filename", "url", "title", "alt_text", "thumbnail_url"}
+    public_image_fields = {
+        "filename",
+        "url",
+        "title",
+        "alt_text",
+        "screen_reader_text",
+        "thumbnail_url",
+    }
     assert all(
         set(image) == public_image_fields
         for page in [*main["pages"], *side["pages"]]
