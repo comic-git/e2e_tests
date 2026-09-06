@@ -27,6 +27,8 @@ def test_cms_admin_uses_pinned_bundle_and_expected_collections(cms_build: Path) 
     assert 'path: "{{slug}}/info"' in config
     assert "delete: false" in config
     assert 'summary: "{{fields.filename}}"' in config
+    assert config.count('label: "Hover text", name: "alt_text"') == 4
+    assert config.count('label: "Screen reader text", name: "screen_reader_text"') == 4
 
 
 def test_cms_fixture_remains_valid_normal_site_input(
