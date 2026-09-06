@@ -22,18 +22,23 @@ collections:
     media_folder: ""
     public_folder: ""
     identifier_field: "title"
+    summary: "{{post_date}} — {{title}}"
+    sortable_fields:
+      - {field: "post_date", default_sort: "desc"}
+      - "title"
     fields:
       - {label: "Title", name: "title", widget: "string"}
       - label: "Images"
         name: "images"
         widget: "list"
         required: false
-        summary: "{{fields.filename}}"
+        collapsed: false
+        summary: "{{fields.title | default('Image')}}"
         fields:
           - {label: "Image", name: "filename", widget: "image", allow_multiple: false}
           - {label: "Title", name: "title", widget: "string", required: false}
-          - {label: "Hover text", name: "alt_text", widget: "text", required: false}
-          - {label: "Screen reader text", name: "screen_reader_text", widget: "text", required: false}
+          - {label: "Hover text", name: "alt_text", widget: "string", required: false}
+          - {label: "Screen reader text", name: "screen_reader_text", widget: "string", required: false}
           - {label: "Thumbnail", name: "thumbnail", widget: "image", required: false, allow_multiple: false}
       - {label: "Post date", name: "post_date", widget: "datetime", format: "YYYY-MM-DD", date_format: "YYYY-MM-DD", time_format: false}
       - {label: "Post text", name: "post_text", widget: "markdown", required: false}
@@ -45,12 +50,10 @@ collections:
         name: "characters"
         widget: "list"
         required: false
-        field: {label: "Character", name: "character", widget: "string"}
       - label: "Tags"
         name: "tags"
         widget: "list"
         required: false
-        field: {label: "Tag", name: "tag", widget: "string"}
   - name: "extra_comic_1_side_story"
     label: "CMS Side Story Pages"
     label_singular: "Comic Page"
@@ -63,18 +66,23 @@ collections:
     media_folder: ""
     public_folder: ""
     identifier_field: "title"
+    summary: "{{post_date}} — {{title}}"
+    sortable_fields:
+      - {field: "post_date", default_sort: "desc"}
+      - "title"
     fields:
       - {label: "Title", name: "title", widget: "string"}
       - label: "Images"
         name: "images"
         widget: "list"
         required: false
-        summary: "{{fields.filename}}"
+        collapsed: false
+        summary: "{{fields.title | default('Image')}}"
         fields:
           - {label: "Image", name: "filename", widget: "image", allow_multiple: false}
           - {label: "Title", name: "title", widget: "string", required: false}
-          - {label: "Hover text", name: "alt_text", widget: "text", required: false}
-          - {label: "Screen reader text", name: "screen_reader_text", widget: "text", required: false}
+          - {label: "Hover text", name: "alt_text", widget: "string", required: false}
+          - {label: "Screen reader text", name: "screen_reader_text", widget: "string", required: false}
           - {label: "Thumbnail", name: "thumbnail", widget: "image", required: false, allow_multiple: false}
       - {label: "Post date", name: "post_date", widget: "datetime", format: "YYYY-MM-DD", date_format: "YYYY-MM-DD", time_format: false}
       - {label: "Post text", name: "post_text", widget: "markdown", required: false}
@@ -86,9 +94,7 @@ collections:
         name: "characters"
         widget: "list"
         required: false
-        field: {label: "Character", name: "character", widget: "string"}
       - label: "Tags"
         name: "tags"
         widget: "list"
         required: false
-        field: {label: "Tag", name: "tag", widget: "string"}
