@@ -21,6 +21,11 @@ def structured_build(golden_builds_root: Path) -> Path:
 
 
 @pytest.fixture(scope="session")
+def cms_build(golden_builds_root: Path) -> Path:
+    return golden_builds_root / "cms-pages"
+
+
+@pytest.fixture(scope="session")
 def load_json_document() -> JsonDocumentLoader:
     def load(path: Path) -> dict:
         return json.loads(path.read_text(encoding="utf-8"))
