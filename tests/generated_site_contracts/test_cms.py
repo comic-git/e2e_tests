@@ -26,9 +26,24 @@ def test_cms_admin_uses_pinned_bundle_and_expected_collections(cms_build: Path) 
     assert 'folder: "your_content/side-story/comics"' in config
     assert 'path: "{{slug}}/info"' in config
     assert "delete: false" in config
-    assert 'summary: "{{fields.filename}}"' in config
+    assert config.count('summary: "{{fields.title | default(\'Image\')}}"') == 2
+    assert config.count('collapsed: false') == 2
+    assert (
+        config.count('label: "Hover text", name: "alt_text", widget: "string"') == 2
+    )
+    assert (
+        config.count(
+            'label: "Screen reader text", name: "screen_reader_text", widget: "string"'
+        )
+        == 2
+    )
+    assert config.count('summary: "{{post_date}} — {{title}}"') == 2
+    assert config.count('{field: "post_date", default_sort: "desc"}') == 2
+    assert config.count('      - "title"') == 2
     assert config.count('label: "Hover text", name: "alt_text"') == 4
     assert config.count('label: "Screen reader text", name: "screen_reader_text"') == 4
+    assert 'field: {label: "Character"' not in config
+    assert 'field: {label: "Tag"' not in config
 
 
 def test_cms_fixture_remains_valid_normal_site_input(
