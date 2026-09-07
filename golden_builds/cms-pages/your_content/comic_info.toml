@@ -1,6 +1,7 @@
 links = [
     { name = "Home", url = "/" },
-    { name = "Archive", url = "/archive/" },
+    { name = "Archive", url = "/archive/", open_in_new_tab = true },
+    { image_url = "example.com/support.svg", url = "https://example.test/support", open_in_new_tab = true },
 ]
 pages = [
     { template_name = "index", title = "CMS Pages Home" },

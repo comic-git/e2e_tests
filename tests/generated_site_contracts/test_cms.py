@@ -19,6 +19,17 @@ def test_cms_admin_uses_pinned_bundle_and_expected_collections(cms_build: Path) 
     assert "  name: github" in config
     assert '  repo: "comic-git/cms-pages"' in config
     assert '  base_url: "https://auth.example.test"' in config
+    assert config.index('name: "comic_settings"') < config.index(
+        'name: "main_comic_pages"'
+    )
+    assert 'name: "main_comic_settings"' in config
+    assert 'file: "your_content/comic_info.toml"' in config
+    assert 'label: "Comic Details"' in config
+    assert 'label: "Website"' in config
+    assert 'label: "Links"' in config
+    assert 'label: "Custom Pages"' in config
+    assert 'summary: "{{fields.template_name}} — {{fields.title}}"' in config
+    assert config.count("collapsed: true") == 9
     assert config.index('name: "main_comic_pages"') < config.index(
         'name: "extra_comic_1_side_story"'
     )
@@ -27,7 +38,7 @@ def test_cms_admin_uses_pinned_bundle_and_expected_collections(cms_build: Path) 
     assert 'path: "{{slug}}/info"' in config
     assert "delete: false" in config
     assert config.count('summary: "{{fields.title | default(\'Image\')}}"') == 2
-    assert config.count('collapsed: false') == 2
+    assert config.count('collapsed: false') == 4
     assert (
         config.count('label: "Hover text", name: "alt_text", widget: "string"') == 2
     )

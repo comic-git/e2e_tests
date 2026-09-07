@@ -10,6 +10,175 @@ public_folder: "/your_content/images"
 editor:
   preview: false
 collections:
+  - name: "comic_settings"
+    label: "Comic Settings"
+    files:
+      - name: "main_comic_settings"
+        label: "Comic Settings"
+        file: "your_content/comic_info.toml"
+        format: "toml"
+        fields:
+          - label: "Comic Details"
+            name: "comic"
+            widget: "object"
+            collapsed: false
+            hint: "Need help with an option? See the [full Comic Settings documentation](https://comic-git.gitbook.io/documentation/basic-editing/editing-your-comic-info)."
+            fields:
+              - {label: "Comic name", name: "name", widget: "string"}
+              - {label: "Author", name: "author", widget: "string"}
+              - {label: "Description", name: "description", widget: "text"}
+          - label: "Website"
+            name: "site"
+            widget: "object"
+            collapsed: false
+            fields:
+              - {label: "Banner image", name: "banner_image", widget: "image", required: false, allow_multiple: false}
+              - {label: "Theme", name: "theme", widget: "string", required: false, default: "default"}
+              - {label: "Displayed date format", name: "date_format", widget: "string", hint: "Uses strftime formatting, such as %B %d, %Y."}
+              - {label: "Timezone", name: "timezone", widget: "string", hint: "Use an IANA timezone name, such as America/Los_Angeles or UTC."}
+              - label: "When a comic image is clicked"
+                name: "on_comic_click"
+                widget: "select"
+                required: false
+                default: "Next comic"
+                options: ["Next comic", "Overlay", "Open image", "Open image window"]
+              - {label: "Comic domain", name: "comic_domain", widget: "string", required: false, hint: "Advanced: normally inferred from GitHub Pages."}
+              - {label: "Comic subdirectory", name: "comic_subdirectory", widget: "string", required: false, hint: "Advanced: normally inferred from GitHub Pages."}
+              - label: "Extra Comic folders"
+                name: "extra_comics"
+                widget: "list"
+                required: false
+                hint: "Folder paths under your_content, separated by commas."
+              - label: "Markdown extensions"
+                name: "markdown_extras"
+                widget: "list"
+                required: false
+                hint: "Advanced markdown2 extras, separated by commas."
+          - label: "Links"
+            name: "links"
+            widget: "list"
+            required: false
+            default: []
+            label_singular: "Link"
+            summary: "{{fields.name | default('Image link')}}"
+            fields:
+              - {label: "Text", name: "name", widget: "string", required: false, hint: "Use either Text or Link image, not both."}
+              - {label: "Link image", name: "image_url", widget: "image", required: false, allow_multiple: false, hint: "Use either Link image or Text, not both."}
+              - {label: "Destination", name: "url", widget: "string"}
+              - {label: "Open in a new tab", name: "open_in_new_tab", widget: "boolean", required: false, default: false}
+          - label: "Custom Pages"
+            name: "pages"
+            widget: "list"
+            required: false
+            default: []
+            label_singular: "Page"
+            summary: "{{fields.template_name}} — {{fields.title}}"
+            fields:
+              - {label: "Template filename", name: "template_name", widget: "string", hint: "Enter the filename without .tpl, such as about."}
+              - {label: "Page title", name: "title", widget: "string", required: false}
+          - label: "Archive"
+            name: "archive"
+            widget: "object"
+            required: false
+            collapsed: true
+            fields:
+              - {label: "Date format", name: "date_format", widget: "string", required: false, hint: "Leave blank to use the website date format."}
+              - {label: "Use thumbnails", name: "use_thumbnails", widget: "boolean", required: false, default: true}
+              - {label: "Show uncategorized comics", name: "show_uncategorized_comics", widget: "boolean", required: false, default: true}
+              - {label: "List images separately", name: "list_images_separately", widget: "boolean", required: false, default: false}
+              - {label: "Show text-only posts", name: "show_text_only_posts", widget: "boolean", required: false, default: true, hint: "Applies when images are listed separately."}
+              - label: "Image title fallback"
+                name: "image_title_fallback"
+                widget: "select"
+                required: false
+                default: "page_title"
+                options:
+                  - {label: "Page title", value: "page_title"}
+                  - {label: "Filename", value: "filename"}
+          - label: "Navigation"
+            name: "navigation"
+            widget: "object"
+            required: false
+            collapsed: true
+            fields:
+              - {label: "Use navigation images", name: "use_images", widget: "boolean", required: false, default: false}
+              - {label: "Show above comic", name: "above_comic", widget: "boolean", required: false, default: false}
+              - {label: "Show below comic", name: "below_comic", widget: "boolean", required: false, default: true}
+              - {label: "Show below page text", name: "below_blurb", widget: "boolean", required: false, default: false}
+          - label: "Transcripts"
+            name: "transcripts"
+            widget: "object"
+            required: false
+            collapsed: true
+            fields:
+              - {label: "Enable transcripts", name: "enabled", widget: "boolean", required: false, default: false}
+              - {label: "Load transcripts from comic folders", name: "load_from_comic_folder", widget: "boolean", required: false, default: true}
+              - {label: "Shared transcripts folder", name: "folder", widget: "string", required: false}
+              - {label: "Default language", name: "default_language", widget: "string", required: false, default: "English"}
+          - label: "Thumbnails"
+            name: "image_processing"
+            widget: "object"
+            required: false
+            collapsed: true
+            fields:
+              - {label: "Create thumbnails", name: "create_thumbnails", widget: "boolean", required: false, default: false}
+              - {label: "Overwrite generated thumbnails", name: "overwrite_existing_images", widget: "boolean", required: false, default: false}
+              - {label: "Thumbnail size", name: "thumbnail_size", widget: "string", required: false, default: "100w", hint: "Examples: 100w, 100h, 10%, or 100,200."}
+          - label: "RSS Feed"
+            name: "rss"
+            widget: "object"
+            required: false
+            collapsed: true
+            fields:
+              - {label: "Build RSS feed", name: "build", widget: "boolean", required: false, default: false}
+              - {label: "List newest pages first", name: "newest_first", widget: "boolean", required: false, default: false}
+              - {label: "Language", name: "language", widget: "string", required: false, default: "en-us"}
+              - {label: "Feed image", name: "image", widget: "image", required: false, allow_multiple: false}
+              - {label: "Feed image width", name: "image_width", widget: "string", required: false, default: "100"}
+              - {label: "Feed image height", name: "image_height", widget: "string", required: false, default: "36"}
+              - {label: "Item title format", name: "title_format", widget: "string", required: false}
+              - {label: "Feed description", name: "channel_description", widget: "text", required: false, hint: "Leave blank to use the comic description."}
+              - {label: "Include in the main comic feed", name: "combine_with_main", widget: "boolean", required: false, default: false, hint: "Used by Extra Comics."}
+          - label: "Webring"
+            name: "webring"
+            widget: "object"
+            required: false
+            collapsed: true
+            fields:
+              - {label: "Enable webring", name: "enabled", widget: "boolean", required: false, default: false}
+              - {label: "Member list endpoint", name: "endpoint", widget: "string", required: false}
+              - {label: "This comic's member ID", name: "id", widget: "string", required: false}
+              - {label: "Show all members", name: "show_all_members", widget: "boolean", required: false, default: false}
+              - {label: "Exclude this comic from the member list", name: "exclude_own_comic_from_members", widget: "boolean", required: false, default: false}
+          - label: "Analytics"
+            name: "analytics"
+            widget: "object"
+            required: false
+            collapsed: true
+            hint: "Legacy Google Analytics support is pending modernization."
+            fields:
+              - {label: "Google Analytics ID", name: "google_analytics_id", widget: "string", required: false}
+          - label: "CMS Connection"
+            name: "cms"
+            widget: "object"
+            required: false
+            collapsed: true
+            hint: "Advanced. Turning off CMS output removes the admin pages on the next build."
+            fields:
+              - {label: "Enable CMS output", name: "enabled", widget: "boolean", required: false, default: false}
+              - {label: "Use editorial workflow", name: "editorial_workflow", widget: "boolean", required: false, default: false}
+              - {label: "GitHub repository", name: "repository", widget: "string", required: false, hint: "owner/repository; normally inferred during GitHub builds."}
+              - {label: "Git branch", name: "branch", widget: "string", required: false, default: "master"}
+              - {label: "Authentication service URL", name: "backend_base_url", widget: "string", required: false}
+              - {label: "Authentication endpoint", name: "backend_auth_endpoint", widget: "string", required: false, default: "auth"}
+          - label: "Engine"
+            name: "engine"
+            widget: "object"
+            required: false
+            collapsed: true
+            hint: "Advanced. This selects the comic_git_engine release used to build the site."
+            fields:
+              - {label: "Engine version", name: "version", widget: "string", required: false}
   - name: "main_comic_pages"
     label: "Main Comic Pages"
     label_singular: "Comic Page"
