@@ -27,7 +27,7 @@ Baseline already covers several of these paths, but this case keeps the same ris
 ## Fixture Shape
 
 ```text
-test_cases/publishing-filtering/
+test_cases/build/publishing-filtering/
   manifest.toml
   TEST_CASE.md
   your_content/

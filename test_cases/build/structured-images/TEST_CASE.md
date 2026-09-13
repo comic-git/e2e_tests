@@ -21,7 +21,7 @@ validation all need to agree.
 ## Fixture Shape
 
 ```text
-test_cases/structured-images/
+test_cases/build/structured-images/
   manifest.toml
   TEST_CASE.md
   your_content/

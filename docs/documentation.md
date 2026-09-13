@@ -22,8 +22,11 @@ docs/
   roadmap.md            - durable future work
   documentation.md      - this guide
 
-test_cases/<case>/
-  TEST_CASE.md          - human-readable case intent and coverage
+test_cases/build/<case>/
+  TEST_CASE.md          - golden-backed case intent and coverage
+
+test_cases/browser/<case>/
+  TEST_CASE.md          - mutable browser case intent and known behavior
 
 specs/
   ...                   - ignored scratch plans and temporary design notes
@@ -37,7 +40,8 @@ specs/
 | How to run or add harness cases         | `docs/testing.md`                |
 | Sharp edges and confusing behavior      | `docs/gotchas.md`                |
 | Future work that should remain visible  | `docs/roadmap.md`                |
-| Case-specific intent and coverage       | `test_cases/<case>/TEST_CASE.md` |
+| Build case intent and coverage          | `test_cases/build/<case>/TEST_CASE.md` |
+| Browser case intent and coverage        | `test_cases/browser/<case>/TEST_CASE.md` |
 | Temporary agent plans and drafts        | `specs/`                         |
 
 ## Format

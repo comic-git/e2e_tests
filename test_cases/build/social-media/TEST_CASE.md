@@ -26,7 +26,7 @@ This validates site-level overrides, page-level overrides, fallback behavior, an
 ## Fixture Shape
 
 ```text
-test_cases/social-media/
+test_cases/build/social-media/
   manifest.toml
   TEST_CASE.md
   your_content/

@@ -36,7 +36,7 @@ This should protect the user-owned presentation layer: configured theme selectio
 ## Fixture Shape
 
 ```text
-test_cases/theme-overrides/
+test_cases/build/theme-overrides/
   manifest.toml
   TEST_CASE.md
   your_content/

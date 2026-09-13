@@ -8,6 +8,8 @@
 - Add focused independent test cases for additional high-value build behavior, such as RSS settings, transcript settings, future-page filtering, and theme overrides.
 - Keep each focused fixture small enough that full golden comparison remains practical.
 - Add `TEST_CASE.md` for every new case.
+- Expand the opt-in Decap browser lane from its smoke, stable-folder, and known-collision coverage to image upload and ordering workflows.
+- Replace the known title-collision expected failure with a passing product contract after the CMS-side guard is designed.
 
 ## Migration And TOML
 

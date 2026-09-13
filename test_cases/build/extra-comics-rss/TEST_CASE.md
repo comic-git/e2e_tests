@@ -29,7 +29,7 @@ This case protects feature boundaries that commonly interact during refactors: m
 ## Fixture Shape
 
 ```text
-test_cases/extra-comics-rss/
+test_cases/build/extra-comics-rss/
   manifest.toml
   TEST_CASE.md
   your_content/
