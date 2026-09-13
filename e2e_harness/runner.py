@@ -13,7 +13,7 @@ from dataclasses import dataclass
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-TEST_CASES_ROOT = ROOT / 'test_cases'
+TEST_CASES_ROOT = ROOT / 'test_cases' / 'build'
 GOLDEN_BUILDS_ROOT = ROOT / 'golden_builds'
 GOLDEN_TOML_ROOT = ROOT / 'golden_toml'
 DEFAULT_CASE = 'baseline'
@@ -128,7 +128,7 @@ def parse_args() -> HarnessOptions:
         '--scenario',
         dest='case',
         default=None,
-        help=f'Test case name under test_cases/. Defaults to {DEFAULT_CASE}. --scenario is accepted as a compatibility alias.',
+        help=f'Test case name under test_cases/build/. Defaults to {DEFAULT_CASE}. --scenario is accepted as a compatibility alias.',
     )
     parser.add_argument('--all', action='store_true', help='Run the command for every enabled test case.')
     parser.add_argument(
