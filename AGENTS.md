@@ -8,18 +8,18 @@
 
 `e2e_tests` is a local end-to-end harness for `comic_git_engine`.
 
-It stages checked-in fixture inputs from `test_cases/<case>/your_content/` into minimal temporary host repos, runs the real engine, and compares generated output against checked-in goldens.
+It stages checked-in fixture inputs from `test_cases/build/<case>/your_content/` into minimal temporary host repos, runs the real engine, and compares generated output against checked-in goldens. Opt-in browser tests stage mutable fixtures from `test_cases/browser/` and exercise the generated Decap CMS against its local proxy.
 
 This repo is a harness repo, not a normal `comic_git` host repo. Root-level `your_content/` and `build/` are disposable ignored artifacts.
 
 ## Behavioral Guardrails
 
-- Keep checked-in engine-facing user content under `test_cases/<case>/your_content/`.
+- Keep golden-backed engine inputs under `test_cases/build/<case>/your_content/` and mutable browser inputs under `test_cases/browser/<case>/your_content/`.
 - Treat each test case `your_content/` like real user content, not mock-only data.
 - Do not change fixture content casually; fixture changes redefine the golden contract.
 - Keep test cases independent and explicit. Do not add fixture inheritance unless there is a concrete maintenance problem.
 - Keep `TEST_CASE.md` human-readable. Do not parse it or treat it as behavior source of truth.
-- Source of truth for behavior is `manifest.toml`, `your_content/`, and the matching golden output.
+- Source of truth for build behavior is `manifest.toml`, `your_content/`, and the matching golden output. Browser cases use semantic assertions instead of goldens.
 - Run builds and migrations in temporary workspaces, not directly from checked-in fixture data.
 - `refresh-build` fully rewrites every selected golden. Review refreshed output before committing.
 
@@ -36,9 +36,9 @@ This repo is a harness repo, not a normal `comic_git` host repo. Root-level `you
 ## Current Baseline
 
 - test case: `baseline`
-- input fixture: `test_cases/baseline/your_content/`
-- manifest: `test_cases/baseline/manifest.toml`
-- case docs: `test_cases/baseline/TEST_CASE.md`
+- input fixture: `test_cases/build/baseline/your_content/`
+- manifest: `test_cases/build/baseline/manifest.toml`
+- case docs: `test_cases/build/baseline/TEST_CASE.md`
 - golden build: `golden_builds/baseline/`
 
 The baseline case exercises GitHub Pages inference by omitting `Comic subdirectory` and `Comic domain` from `comic_info.ini` and setting `GITHUB_REPOSITORY` in the manifest.

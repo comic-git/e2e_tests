@@ -8,7 +8,7 @@
 
 `e2e_tests` is a local end-to-end harness for `comic_git_engine`.
 
-The harness validates real engine behavior by staging complete fixture inputs into a temporary host repo, running the real engine entry point, and comparing the produced `build/` tree against checked-in golden output.
+The harness validates real engine behavior by staging complete fixture inputs into a temporary host repo and running the real engine entry point. Build cases compare the produced `build/` tree against checked-in golden output. Opt-in browser cases drive the generated Decap CMS and assert mutations to staged source plus rebuilt output semantically.
 
 This repo is not intended to be a normal `comic_git` host repo. Checked-in fixture inputs live under `test_cases/`, and root-level `your_content/` is ignored so local manual runs are not committed accidentally.
 
@@ -20,13 +20,16 @@ The normal developer entry point is the pytest wrapper suite. The runner CLI rem
 |-----------------------|-----------------------------------------------------|--------------------------------------------------------------------------------------------------|
 | Runner implementation | [`e2e_harness/runner.py`](../e2e_harness/runner.py) | Creates temp host workspaces, stages fixtures, runs the engine, refreshes or compares goldens.   |
 | Runner CLI wrapper    | [`scripts/run_e2e.py`](../scripts/run_e2e.py)       | Preserves the existing command-line entry point while the harness internals remain importable.   |
-| Test cases            | [`test_cases/`](../test_cases/)                     | Complete independent fixture inputs and per-case metadata.                                       |
-| Case manifest         | `test_cases/<case>/manifest.toml`                   | Machine-readable inputs: case name, source format, check flags, tags, and environment variables. |
-| Case documentation    | `test_cases/<case>/TEST_CASE.md`                    | Human-readable intent, coverage, and expected behavior. Not parsed by the runner.                |
+| Build test cases      | [`test_cases/build/`](../test_cases/build/)         | Golden-backed independent fixture inputs and per-case metadata.                                  |
+| Browser test cases    | [`test_cases/browser/`](../test_cases/browser/)     | Mutable CMS fixtures copied into a fresh workspace for every browser test.                        |
+| Case manifest         | `test_cases/<type>/<case>/manifest.toml`            | Machine-readable case inputs and environment variables.                                          |
+| Case documentation    | `test_cases/<type>/<case>/TEST_CASE.md`             | Human-readable intent, coverage, and expected behavior. Not parsed by the harness.                |
 | Golden builds         | [`golden_builds/`](../golden_builds/)               | Expected full `build/` output, grouped by test case.                                             |
 | TOML goldens          | `golden_toml/`                                      | Expected migrated `your_content/` output grouped by test case.                                   |
 | Site contract tests   | [`tests/generated_site_contracts/`](../tests/generated_site_contracts/) | Validate semantic public contracts across generated artifacts.                    |
 | Local engine link     | `comic_git_engine/`                                 | Local symlink or junction to the engine repo under test.                                         |
+| Browser harness       | [`e2e_harness/cms_browser.py`](../e2e_harness/cms_browser.py) | Builds local CMS output and owns static/proxy process lifecycle.                    |
+| Browser artifacts     | `artifacts/browser/`                                | Ignored screenshots, HTML, logs, and staged text sources captured on failure.                     |
 
 ## Test Case Model
 
@@ -34,21 +37,30 @@ Each test case is independent and explicit.
 
 ```text
 test_cases/
-  baseline/
-    manifest.toml
-    TEST_CASE.md
-    your_content/
+  build/
+    baseline/
+      manifest.toml
+      TEST_CASE.md
+      your_content/
+  browser/
+    cms/
+      manifest.toml
+      TEST_CASE.md
+      your_content/
 ```
 
-The source of truth for behavior is:
+The source of truth for build-case behavior is:
 
 - `manifest.toml`
 - `your_content/`
 - the matching `golden_*` output
 
+Browser-case behavior is defined by its manifest, mutable `your_content/`
+fixture, and semantic tests. Browser cases do not use goldens.
+
 `TEST_CASE.md` explains the case for humans. It should summarize what the fixture is intended to cover, but it must not be treated as executable configuration or parsed by the runner.
 
-## Manifest Contract
+## Build Manifest Contract
 
 Manifests should list all behavior-relevant inputs explicitly.
 
@@ -67,7 +79,7 @@ migrated_build = false
 GITHUB_REPOSITORY = "comic-git/baseline"
 ```
 
-The runner currently requires:
+The build runner currently requires:
 
 - `name`
 - `source_format`
@@ -78,14 +90,18 @@ The runner currently requires:
 
 The runner warns if `TEST_CASE.md` is missing, but the warning does not fail the test.
 
+Browser manifests currently require a matching `name` and an `[env]` table of
+string build environment overrides. Add browser-specific manifest fields only
+when multiple fixtures need data-driven differences.
+
 ## Data Flow
 
 Build output validation follows this flow:
 
-1. Load `test_cases/<case>/manifest.toml`.
-2. Warn if `test_cases/<case>/TEST_CASE.md` is missing.
+1. Load `test_cases/build/<case>/manifest.toml`.
+2. Warn if `test_cases/build/<case>/TEST_CASE.md` is missing.
 3. Create a temporary workspace.
-4. Copy `test_cases/<case>/your_content/` into the temp workspace as root `your_content/`.
+4. Copy `test_cases/build/<case>/your_content/` into the temp workspace as root `your_content/`.
 5. Create a local `comic_git_engine/` junction in the temp workspace.
 6. Run `comic_git_engine/src/build/build_site.py` from the temp workspace root.
 7. Normalize recognized text files in the produced `build/` tree to LF line endings.
@@ -95,7 +111,7 @@ Refresh follows the same build flow, then fully wipes and rewrites `golden_build
 
 Migration output validation follows this flow:
 
-1. Load `test_cases/<case>/manifest.toml`.
+1. Load `test_cases/build/<case>/manifest.toml`.
 2. Create a temporary workspace and stage `your_content/`.
 3. Create the local `comic_git_engine/` junction.
 4. Run the migration script from the temp workspace root.
@@ -107,6 +123,16 @@ Migrated-build validation follows the migration flow, then runs `comic_git_engin
 The migrated-build comparison ignores the copied top-level `build/your_content/` tree. Migration intentionally changes source files there, such as replacing page-level `info.ini` with `info.toml`; the parity contract for this check is the rendered site output.
 
 The default migration script path is `comic_git_engine/src/build/migrate_to_toml.py`. It can be overridden with `--migration-script` or a manifest `[migration].script` value.
+
+Browser validation follows a separate flow:
+
+1. Copy `test_cases/browser/<case>/your_content/` into a fresh temporary workspace.
+2. Junction the current engine checkout and build with `--cms-local-backend`.
+3. Replace the generated CDN script only in temporary output with the pinned local npm bundle.
+4. Serve the build on an ephemeral port and start `decap-server` from the workspace on port 8081.
+5. Use Playwright to mutate staged source through the generated admin UI.
+6. Assert source paths and TOML values, then rebuild when rendered behavior matters.
+7. Stop both servers before deleting the workspace. Capture ignored diagnostic artifacts on failure.
 
 `check-build --all`, `check-migration --all`, and `check-migrated-build --all` run every manifest-backed test case with the matching `[checks]` flag enabled. `refresh-build --all` likewise refreshes every build-enabled golden; migration refreshes still operate on one case at a time.
 

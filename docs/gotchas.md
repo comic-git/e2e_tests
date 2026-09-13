@@ -5,7 +5,8 @@
 
 ### Root `your_content/` is not checked-in fixture data
 
-Fixture inputs live under `test_cases/<case>/your_content/`.
+Build fixture inputs live under `test_cases/build/<case>/your_content/`. Browser
+fixture inputs live under `test_cases/browser/<case>/your_content/`.
 
 Root-level `your_content/` is ignored. If you create one during manual testing, the harness will not use it.
 
@@ -14,6 +15,9 @@ Root-level `your_content/` is ignored. If you create one during manual testing, 
 The runner warns if `TEST_CASE.md` is missing, but never parses it.
 
 Behavior comes from `manifest.toml`, `your_content/`, and the matching golden output. Keep the doc accurate, but do not treat it as a source of truth.
+
+Browser cases are the exception to the golden-output portion: their source files
+and semantic browser assertions define the contract.
 
 ### Refresh rewrites every selected golden
 
@@ -50,6 +54,20 @@ That is appropriate for local Windows development, but CI/Linux support will nee
 The engine can write derived files under `your_content/` during a build, such as thumbnails.
 
 This is why the harness stages fixture input into a temp workspace instead of building directly from checked-in `test_cases/` data.
+
+### Browser tests own Decap port 8081
+
+`decap-server` uses port 8081. Stop any manually running proxy before starting
+the browser suite, and do not parallelize browser tests. The harness checks the
+port before launch and reports a focused error rather than connecting to another
+workspace's proxy.
+
+### Browser tests patch only temporary admin output
+
+Production builds retain the engine-generated pinned CDN URL. Browser tests copy
+the exact pinned npm bundle into the temporary build and rewrite that temporary
+`admin/index.html` so repeated local tests do not need the CDN. Generated-site
+contract tests separately assert the complete production script URL.
 
 ### Migration checks need migration-only dependencies
 

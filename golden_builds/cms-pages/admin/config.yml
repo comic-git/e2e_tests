@@ -196,7 +196,12 @@ collections:
       - {field: "post_date", default_sort: "desc"}
       - "title"
     fields:
-      - {label: "Title", name: "title", widget: "string"}
+      - label: "Title"
+        name: "title"
+        widget: "string"
+        required: true
+        pattern: ['.*\S.*', "Enter a title before adding images or saving the page."]
+        hint: "New pages use this title to create their folder name. The CMS keeps that folder name if the title changes later. To reuse an existing title, first save with a unique title, then change the title."
       - label: "Images"
         name: "images"
         widget: "list"
@@ -240,7 +245,12 @@ collections:
       - {field: "post_date", default_sort: "desc"}
       - "title"
     fields:
-      - {label: "Title", name: "title", widget: "string"}
+      - label: "Title"
+        name: "title"
+        widget: "string"
+        required: true
+        pattern: ['.*\S.*', "Enter a title before adding images or saving the page."]
+        hint: "New pages use this title to create their folder name. The CMS keeps that folder name if the title changes later. To reuse an existing title, first save with a unique title, then change the title."
       - label: "Images"
         name: "images"
         widget: "list"

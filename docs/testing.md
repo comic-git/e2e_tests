@@ -14,6 +14,26 @@ venv\Scripts\python.exe -m pip install -r requirements-dev.txt
 venv\Scripts\python.exe -m pytest
 ```
 
+Normal pytest runs exclude tests marked `browser`. Run the browser lane explicitly
+after installing its pinned Node packages and Chromium:
+
+```powershell
+npm install
+venv\Scripts\python.exe -m playwright install chromium
+venv\Scripts\python.exe -m pytest -m browser
+```
+
+The browser harness serves the locally installed Decap bundle by default. Use
+`--decap-bundle <path-or-url>` or `COMIC_GIT_DECAP_BUNDLE` to exercise another
+exact bundle, such as an upgrade candidate, upstream patch, or maintained fork.
+Pass its `dist` directory instead of one file when a local build has lazy-loaded
+JavaScript or WASM assets; source maps are not staged.
+Use `--runxfail` with a patched Decap bundle when evaluating whether a candidate
+fix satisfies the collision-prevention cases that stock Decap is expected to
+fail.
+Use `--keep-browser-temp` to retain a failed test's staged host repository.
+Failure artifacts are written under ignored `artifacts/browser/`.
+
 Pytest reports each enabled check for each test case independently. Disabled manifest checks are reported as skipped.
 
 Generated-site public contracts can be run independently:
@@ -102,30 +122,51 @@ Each case is self-contained.
 
 ```text
 test_cases/
-  <case>/
-    manifest.toml
-    TEST_CASE.md
-    your_content/
+  build/
+    <case>/
+      manifest.toml
+      TEST_CASE.md
+      your_content/
+  browser/
+    <case>/
+      manifest.toml
+      TEST_CASE.md
+      your_content/
 ```
 
 Rules:
 
-- Keep all engine-facing fixture input under `your_content/`.
+- Keep all engine-facing fixture input under a case's `your_content/`.
 - Keep `manifest.toml` machine-readable and explicit; this is executable test input.
 - Keep `TEST_CASE.md` human-readable; do not encode behavior there or treat it as test data.
-- Keep focused cases small rather than using subset comparisons.
+- Keep focused build cases small rather than using subset comparisons.
+- Browser cases are copied for every test and may be mutated only in their staged temporary workspace.
+- Browser cases use semantic source and rebuild assertions; they do not have golden outputs.
 - For local review, any non-empty base subdirectory must match the test case name.
 - Do not rely on root-level `your_content/`; it is ignored and only for local manual runs.
 
 ## Adding A Test Case
 
-1. Create `test_cases/<case>/manifest.toml`.
-2. Create `test_cases/<case>/TEST_CASE.md`.
-3. Add a complete `test_cases/<case>/your_content/` fixture.
+1. Create `test_cases/build/<case>/manifest.toml`.
+2. Create `test_cases/build/<case>/TEST_CASE.md`.
+3. Add a complete `test_cases/build/<case>/your_content/` fixture.
 4. Run `python scripts/run_e2e.py refresh-build --case <case>`.
 5. Inspect `golden_builds/<case>/`.
 6. Run `python scripts/run_e2e.py check-build --case <case>`.
 7. Run `venv\Scripts\python.exe -m pytest`.
+
+## Adding A Browser Case
+
+1. Create an independent fixture under `test_cases/browser/<case>/`.
+2. Document its mutable behavior in `TEST_CASE.md`.
+3. Add tests under `tests/browser/` and mark them `browser`.
+4. Assert staged source files and rebuilt output semantically rather than creating goldens.
+5. Run `venv\Scripts\python.exe -m pytest -m browser`.
+
+Each browser test gets a fresh temporary host repository, a real local-backend
+engine build, an ephemeral static-site port, and a Decap proxy on port 8081.
+The proxy is intentionally per-test for isolation, so browser tests must not run
+in parallel.
 
 ## Baseline Case
 

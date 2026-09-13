@@ -1,0 +1,43 @@
+links = [
+    { name = "Home", url = "/" },
+    { name = "Archive", url = "/archive/" },
+]
+pages = [
+    { template_name = "index", title = "CMS Browser Home" },
+    { template_name = "latest", title = "" },
+    { template_name = "archive", title = "Archive" },
+    { template_name = "404", title = "Page Not Found" },
+]
+
+[engine]
+version = "master"
+
+[comic]
+name = "CMS Browser Fixture"
+author = "Harness Tests"
+description = "A mutable fixture for Decap browser tests."
+
+[site]
+date_format = "%B %d, %Y"
+timezone = "US/Pacific"
+comic_domain = "localhost"
+comic_subdirectory = ""
+
+[archive]
+date_format = "%m/%d/%Y"
+use_thumbnails = false
+
+[transcripts]
+enabled = false
+
+[image_processing]
+create_thumbnails = false
+overwrite_existing_images = false
+
+[rss]
+build = false
+
+[cms]
+enabled = true
+branch = "master"
+backend_base_url = "http://localhost"

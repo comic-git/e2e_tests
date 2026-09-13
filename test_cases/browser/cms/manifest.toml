@@ -1,0 +1,7 @@
+name = "cms"
+description = "Focused mutable source fixture for Decap CMS browser behavior."
+source_format = "toml"
+tags = ["browser", "cms", "decap"]
+
+[env]
+GITHUB_REPOSITORY = "comic-git/cms-browser"

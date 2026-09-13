@@ -19,6 +19,14 @@ venv\Scripts\python.exe -m pytest
 
 Pytest runs each enabled manifest check independently and reports disabled checks as skipped.
 
+Browser tests are opt-in and use pinned local Decap packages:
+
+```powershell
+npm install
+venv\Scripts\python.exe -m playwright install chromium
+venv\Scripts\python.exe -m pytest -m browser
+```
+
 The lower-level harness CLI is available for targeted checks and golden refreshes. To run or refresh a specific case:
 
 ```powershell
@@ -57,14 +65,15 @@ See [`docs/testing.md`](docs/testing.md) for the full harness workflow.
 
 | Folder                             | Contents                                                      |
 |------------------------------------|---------------------------------------------------------------|
-| [`test_cases/`](test_cases/)       | Checked-in fixture inputs, manifests, and case docs           |
+| [`test_cases/build/`](test_cases/build/) | Golden-backed fixture inputs, manifests, and case docs  |
+| [`test_cases/browser/`](test_cases/browser/) | Mutable browser fixtures tested with semantic assertions |
 | [`golden_builds/`](golden_builds/) | Expected full built site output grouped by test case          |
 | `golden_toml/`                     | Expected migrated `your_content/` output grouped by test case |
 | [`tests/generated_site_contracts/`](tests/generated_site_contracts/) | Semantic public-contract checks over generated sites |
 | [`scripts/`](scripts/)             | Local harness scripts                                         |
 | `specs/`                           | Ignored scratch plans and temporary agent notes               |
 
-Root-level `your_content/` and `build/` are ignored local artifacts. Checked-in fixture input belongs under `test_cases/<case>/your_content/`.
+Root-level `your_content/` and `build/` are ignored local artifacts. Checked-in fixture input belongs under the appropriate `test_cases/build/` or `test_cases/browser/` case.
 
 For each test case, `manifest.toml` and `your_content/` define the executable input. `TEST_CASE.md` is required human reference material, but it is not parsed by the runner.
 

@@ -367,13 +367,21 @@ def run_migration(
     )
 
 
-def build_site(workspace: Path, env_overrides: dict[str, str], python_executable: str) -> Path:
+def build_site(
+        workspace: Path,
+        env_overrides: dict[str, str],
+        python_executable: str,
+        *,
+        cms_local_backend: bool = False,
+) -> Path:
+    script_args = ['--cms-local-backend'] if cms_local_backend else None
     run_engine_script(
         workspace,
         Path('src/build/build_site.py'),
         env_overrides,
         python_executable,
         'Engine build',
+        script_args=script_args,
     )
     build_dir = workspace / 'build'
     if not build_dir.exists():

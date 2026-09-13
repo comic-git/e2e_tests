@@ -27,7 +27,7 @@ This validates the user-facing contract around local webring JSON loading and ge
 ## Fixture Shape
 
 ```text
-test_cases/webring/
+test_cases/build/webring/
   manifest.toml
   TEST_CASE.md
   your_content/
