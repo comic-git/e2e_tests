@@ -10,6 +10,8 @@ fixture, but must never modify these checked-in files.
 
 - The production-generated admin configuration loads through Decap's local backend.
 - Existing pages can be edited without changing their physical page folders.
+- A representative page with ordered images and page-level metadata survives a
+  Decap save without losing untouched TOML values.
 - New-page filename collisions are observable through the resulting source tree.
 - Exact-title and normalized-title collisions exercise the same unsafe Decap behavior.
 - A collision is never silently accepted: the CMS must reject it or the engine must

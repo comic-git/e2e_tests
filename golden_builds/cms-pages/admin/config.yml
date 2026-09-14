@@ -201,7 +201,7 @@ collections:
         widget: "string"
         required: true
         pattern: ['.*\S.*', "Enter a title before adding images or saving the page."]
-        hint: "New pages use this title to create their folder name. The CMS keeps that folder name if the title changes later. To reuse an existing title, first save with a unique title, then change the title."
+        hint: "New pages use this title to create their folder name. The CMS keeps that folder name if the title changes later."
       - label: "Images"
         name: "images"
         widget: "list"
@@ -250,7 +250,7 @@ collections:
         widget: "string"
         required: true
         pattern: ['.*\S.*', "Enter a title before adding images or saving the page."]
-        hint: "New pages use this title to create their folder name. The CMS keeps that folder name if the title changes later. To reuse an existing title, first save with a unique title, then change the title."
+        hint: "New pages use this title to create their folder name. The CMS keeps that folder name if the title changes later."
       - label: "Images"
         name: "images"
         widget: "list"
