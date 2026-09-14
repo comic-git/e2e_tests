@@ -13,7 +13,10 @@ fixture, but must never modify these checked-in files.
 - New-page filename collisions are observable through the resulting source tree.
 - Exact-title and normalized-title collisions exercise the same unsafe Decap behavior.
 - A collision is never silently accepted: the CMS must reject it or the engine must
-  reject Decap's suffixed metadata artifact on rebuild.
+  reject Decap's suffixed metadata artifact on rebuild, while a valid sibling page
+  bundle is accepted and rebuilt.
+- Candidate path-aware suffix behavior creates `<slug>-1/info.toml`, not
+  `<slug>/info-1.toml`, for exact and normalized collisions.
 - A uniquely titled page produces canonical source and survives a real rebuild.
 - Saved CMS content can be rebuilt by the real engine.
 
@@ -26,3 +29,8 @@ expected failures against stock Decap until a supported collision policy is
 available. Those tests add the proposed `slug_collision: reject` setting only
 to their temporary admin config, so production output remains pinned to stock
 Decap's supported configuration.
+
+A separate expected-failure contract covers path-aware suffix placement. A
+candidate fix should create `same-title-1/info.toml` and `a-b-1/info.toml`, then
+successfully rebuild both pages without leaving numbered metadata beside the
+original entry.

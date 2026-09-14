@@ -29,8 +29,8 @@ exact bundle, such as an upgrade candidate, upstream patch, or maintained fork.
 Pass its `dist` directory instead of one file when a local build has lazy-loaded
 JavaScript or WASM assets; source maps are not staged.
 Use `--runxfail` with a patched Decap bundle when evaluating whether a candidate
-fix satisfies the collision-prevention cases that stock Decap is expected to
-fail.
+fix satisfies collision cases that stock Decap is expected to fail. Combine it
+with `-k` when testing one independent patch rather than an integration bundle.
 Use `--keep-browser-temp` to retain a failed test's staged host repository.
 Failure artifacts are written under ignored `artifacts/browser/`.
 
