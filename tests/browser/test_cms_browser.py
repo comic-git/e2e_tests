@@ -105,6 +105,48 @@ def test_editing_title_preserves_page_folder_and_rebuilds(cms_session) -> None:
     assert (build_dir / 'comic' / 'same-title' / 'index.html').is_file()
 
 
+def test_supported_page_metadata_round_trips_without_losing_images(cms_session) -> None:
+    open_main_collection(cms_session)
+    page = cms_session.page
+    page.get_by_role('link', name=re.compile('Same Title')).click()
+
+    updated_post_text = 'The browser saved this representative CMS page.'
+    page.locator('[aria-label="markdown field"] [role="textbox"]').fill(updated_post_text)
+    publish_entry(page)
+
+    source_path = cms_session.harness.source_root / 'comics' / 'same-title' / 'info.toml'
+    wait_for_toml_value(source_path, 'post_text', updated_post_text)
+    with source_path.open('rb') as source_file:
+        source = tomllib.load(source_file)
+
+    assert source['title'] == 'Same Title'
+    assert source['post_date'] == '2026-09-01'
+    assert source['alt_text'] == 'Page hover text'
+    assert source['screen_reader_text'] == 'Page screen reader text'
+    assert source['thumbnail'] == 'first.svg'
+    assert source['storyline'] == 'Browser contract'
+    assert source['characters'] == ['Alex', 'Bea']
+    assert source['tags'] == ['contract', 'fixture']
+    assert source['images'] == [
+        {
+            'filename': 'first.svg',
+            'title': 'First image',
+            'alt_text': 'First image hover text',
+            'screen_reader_text': 'First image screen reader text',
+            'thumbnail': 'second.svg',
+        },
+        {
+            'filename': 'second.svg',
+            'title': 'Second image',
+            'alt_text': 'Second image hover text',
+            'screen_reader_text': 'Second image screen reader text',
+        },
+    ]
+
+    build_dir = cms_session.harness.rebuild()
+    assert (build_dir / 'comic' / 'same-title' / 'index.html').is_file()
+
+
 def test_creating_unique_page_writes_canonical_source_and_rebuilds(cms_session) -> None:
     create_page(cms_session, 'Unique New Page', '2026-09-03')
 

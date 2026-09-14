@@ -1,3 +1,22 @@
 post_date = "2026-09-01"
 title = "Same Title"
 post_text = "This entry reserves the title-derived Decap slug."
+alt_text = "Page hover text"
+screen_reader_text = "Page screen reader text"
+thumbnail = "first.svg"
+storyline = "Browser contract"
+characters = ["Alex", "Bea"]
+tags = ["contract", "fixture"]
+
+[[images]]
+filename = "first.svg"
+title = "First image"
+alt_text = "First image hover text"
+screen_reader_text = "First image screen reader text"
+thumbnail = "second.svg"
+
+[[images]]
+filename = "second.svg"
+title = "Second image"
+alt_text = "Second image hover text"
+screen_reader_text = "Second image screen reader text"
