@@ -51,11 +51,11 @@ def wait_for_toml_value(path: Path, key: str, expected: str, timeout: float = 10
     raise AssertionError(f'{path} did not contain {key}={expected!r} within {timeout:g} seconds')
 
 
-def wait_for_collision_result(page, duplicate_path: Path, timeout: float = 10.0) -> None:
+def wait_for_collision_result(page, result_paths: tuple[Path, ...], timeout: float = 10.0) -> None:
     collision_error = page.get_by_text(re.compile('already exists|collision', re.IGNORECASE))
     deadline = time.monotonic() + timeout
     while time.monotonic() < deadline:
-        if duplicate_path.exists() or collision_error.is_visible():
+        if any(path.exists() for path in result_paths) or collision_error.is_visible():
             return
         time.sleep(0.1)
     raise AssertionError(f'No collision result appeared within {timeout:g} seconds')
@@ -119,21 +119,62 @@ def test_creating_unique_page_writes_canonical_source_and_rebuilds(cms_session) 
 
 def test_new_page_collision_is_never_silently_accepted(cms_session) -> None:
     create_page(cms_session, 'Same Title', '2026-09-02')
+    suffixed_source_path = (
+        cms_session.harness.source_root
+        / 'comics'
+        / 'same-title-1'
+        / 'info.toml'
+    )
     duplicate_path = (
         cms_session.harness.source_root
         / 'comics'
         / 'same-title'
         / 'info-1.toml'
     )
-    wait_for_collision_result(cms_session.page, duplicate_path)
+    wait_for_collision_result(cms_session.page, (suffixed_source_path, duplicate_path))
 
     if duplicate_path.exists():
         with pytest.raises(RuntimeError, match='Engine build reported an error'):
             cms_session.harness.rebuild()
+    elif suffixed_source_path.exists():
+        build_dir = cms_session.harness.rebuild()
+        assert (build_dir / 'comic' / 'same-title-1' / 'index.html').is_file()
     else:
         assert cms_session.page.get_by_text(
             re.compile('already exists|collision', re.IGNORECASE)
         ).is_visible()
+
+
+@pytest.mark.xfail(
+    strict=True,
+    reason='Decap 3.16.0 suffixes a fixed path filename instead of its slug placeholder.',
+)
+@pytest.mark.parametrize(
+    ('title', 'colliding_folder'),
+    [('Same Title', 'same-title'), ('A & B', 'a-b')],
+    ids=['exact-title', 'normalized-title'],
+)
+def test_path_aware_suffix_creates_a_sibling_page_bundle(
+        cms_session,
+        title: str,
+        colliding_folder: str,
+) -> None:
+    create_page(cms_session, title, '2026-09-02')
+    suffixed_folder = f'{colliding_folder}-1'
+    source_path = cms_session.harness.source_root / 'comics' / suffixed_folder / 'info.toml'
+    legacy_duplicate_path = (
+        cms_session.harness.source_root
+        / 'comics'
+        / colliding_folder
+        / 'info-1.toml'
+    )
+
+    wait_for_collision_result(cms_session.page, (source_path, legacy_duplicate_path))
+    wait_for_toml_value(source_path, 'title', title)
+    assert not legacy_duplicate_path.exists()
+
+    build_dir = cms_session.harness.rebuild()
+    assert (build_dir / 'comic' / suffixed_folder / 'index.html').is_file()
 
 
 @pytest.mark.xfail(
@@ -160,6 +201,6 @@ def test_new_page_title_collision_is_reported_without_writing_an_ignored_file(
         / colliding_folder
         / 'info-1.toml'
     )
-    wait_for_collision_result(page, duplicate_path)
+    wait_for_collision_result(page, (duplicate_path,))
     assert not duplicate_path.exists()
     assert page.get_by_text(re.compile('already exists|collision', re.IGNORECASE)).is_visible()
