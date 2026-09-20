@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import json
 from pathlib import Path
 
 import pytest
@@ -8,11 +7,9 @@ import pytest
 from e2e_harness import cms_browser, runner
 
 
-def test_local_bundle_pin_matches_production_bundle_version() -> None:
-    package = json.loads((runner.ROOT / 'package.json').read_text(encoding='utf-8'))
-    version = package['devDependencies']['decap-cms']
-
-    assert f'decap-cms@{version}/' in cms_browser.PRODUCTION_DECAP_BUNDLE_URL
+def test_browser_harness_uses_the_generated_vendored_runtime_by_default() -> None:
+    assert cms_browser.BrowserHarnessOptions().bundle_source is None
+    assert cms_browser.PRODUCTION_DECAP_SCRIPT_PATH.startswith('vendor/decap-cms-')
 
 
 def test_load_browser_fixture_reads_mutable_source_contract() -> None:
@@ -29,7 +26,7 @@ def test_install_test_bundle_copies_local_bundle_and_rewrites_only_temp_admin(tm
     admin_dir.mkdir(parents=True)
     bundle = tmp_path / 'source-decap.js'
     bundle.write_text('window.CMS = {};', encoding='utf-8')
-    index = f'<script src="{cms_browser.PRODUCTION_DECAP_BUNDLE_URL}"></script>'
+    index = f'<script src="{cms_browser.PRODUCTION_DECAP_SCRIPT_PATH}"></script>'
     (admin_dir / 'index.html').write_text(index, encoding='utf-8')
 
     cms_browser.install_test_bundle(build_dir, str(bundle))
@@ -50,7 +47,7 @@ def test_install_test_bundle_copies_runtime_assets_from_dist_directory(tmp_path:
     (dist_dir / '123.decap-cms.js').write_text('chunk', encoding='utf-8')
     (dist_dir / 'codec.wasm').write_bytes(b'wasm')
     (dist_dir / 'decap-cms.js.map').write_text('large map', encoding='utf-8')
-    index = f'<script src="{cms_browser.PRODUCTION_DECAP_BUNDLE_URL}"></script>'
+    index = f'<script src="{cms_browser.PRODUCTION_DECAP_SCRIPT_PATH}"></script>'
     (admin_dir / 'index.html').write_text(index, encoding='utf-8')
 
     cms_browser.install_test_bundle(build_dir, str(dist_dir))
@@ -64,7 +61,7 @@ def test_install_test_bundle_copies_runtime_assets_from_dist_directory(tmp_path:
 def test_install_test_bundle_accepts_remote_override_without_copying(tmp_path: Path) -> None:
     admin_dir = tmp_path / 'admin'
     admin_dir.mkdir()
-    index = f'<script src="{cms_browser.PRODUCTION_DECAP_BUNDLE_URL}"></script>'
+    index = f'<script src="{cms_browser.PRODUCTION_DECAP_SCRIPT_PATH}"></script>'
     (admin_dir / 'index.html').write_text(index, encoding='utf-8')
 
     cms_browser.install_test_bundle(tmp_path, 'http://127.0.0.1:9000/custom-decap.js')
@@ -78,7 +75,7 @@ def test_install_test_bundle_rejects_unexpected_production_admin(tmp_path: Path)
     admin_dir.mkdir()
     (admin_dir / 'index.html').write_text('<script src="other.js"></script>', encoding='utf-8')
 
-    with pytest.raises(RuntimeError, match='exactly one expected Decap bundle URL'):
+    with pytest.raises(RuntimeError, match='exactly one expected Decap runtime path'):
         cms_browser.install_test_bundle(tmp_path, 'unused.js')
 
 

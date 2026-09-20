@@ -19,10 +19,9 @@ from e2e_harness import runner
 
 BROWSER_CASES_ROOT = runner.ROOT / 'test_cases' / 'browser'
 DEFAULT_CASE = 'cms'
-DEFAULT_DECAP_BUNDLE = runner.ROOT / 'node_modules' / 'decap-cms' / 'dist' / 'decap-cms.js'
 DECAP_SERVER_PACKAGE = runner.ROOT / 'node_modules' / 'decap-server' / 'package.json'
 DECAP_PROXY_PORT = 8081
-PRODUCTION_DECAP_BUNDLE_URL = 'https://unpkg.com/decap-cms@3.16.0/dist/decap-cms.js'
+PRODUCTION_DECAP_SCRIPT_PATH = 'vendor/decap-cms-3.16.2-comic-git-b28103c19f4d/decap-cms.js'
 ARTIFACTS_ROOT = runner.ROOT / 'artifacts' / 'browser'
 
 
@@ -36,7 +35,7 @@ class BrowserFixture:
 
 @dataclass(frozen=True)
 class BrowserHarnessOptions:
-    bundle_source: str = str(DEFAULT_DECAP_BUNDLE)
+    bundle_source: str | None = None
     keep_temp: bool = False
     python_executable: str = str(
         runner.DEFAULT_PYTHON if runner.DEFAULT_PYTHON.exists() else Path(sys.executable)
@@ -85,10 +84,10 @@ def resolve_bundle_source(configured_source: str) -> str | Path:
 def install_test_bundle(build_dir: Path, configured_source: str) -> None:
     index_path = build_dir / 'admin' / 'index.html'
     html = index_path.read_text(encoding='utf-8')
-    if html.count(PRODUCTION_DECAP_BUNDLE_URL) != 1:
+    if html.count(PRODUCTION_DECAP_SCRIPT_PATH) != 1:
         raise RuntimeError(
             'Generated admin/index.html did not contain exactly one expected '
-            f'Decap bundle URL: {PRODUCTION_DECAP_BUNDLE_URL}'
+            f'Decap runtime path: {PRODUCTION_DECAP_SCRIPT_PATH}'
         )
 
     source = resolve_bundle_source(configured_source)
@@ -107,7 +106,7 @@ def install_test_bundle(build_dir: Path, configured_source: str) -> None:
         browser_source = '/admin/decap-cms.js'
     else:
         browser_source = source
-    index_path.write_text(html.replace(PRODUCTION_DECAP_BUNDLE_URL, browser_source), encoding='utf-8')
+    index_path.write_text(html.replace(PRODUCTION_DECAP_SCRIPT_PATH, browser_source), encoding='utf-8')
 
 
 def resolve_decap_server_command() -> list[str]:
@@ -230,7 +229,8 @@ class CmsBrowserHarness:
                 self.options.python_executable,
                 cms_local_backend=True,
             )
-            install_test_bundle(self.build_dir, self.options.bundle_source)
+            if self.options.bundle_source is not None:
+                install_test_bundle(self.build_dir, self.options.bundle_source)
 
             self.static_server = StaticSiteServer(self.build_dir)
             self.static_server.start()
@@ -259,7 +259,8 @@ class CmsBrowserHarness:
             self.options.python_executable,
             cms_local_backend=True,
         )
-        install_test_bundle(self.build_dir, self.options.bundle_source)
+        if self.options.bundle_source is not None:
+            install_test_bundle(self.build_dir, self.options.bundle_source)
         return self.build_dir
 
     def capture_artifacts(self, test_name: str, page, console_messages: list[str]) -> Path:

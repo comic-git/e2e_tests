@@ -1,2 +1,3 @@
 golden_builds/** -text
 golden_toml/** -text
+golden_builds/**/admin/vendor/**/decap-cms.js.LICENSE.txt -diff

@@ -23,11 +23,12 @@ venv\Scripts\python.exe -m playwright install chromium
 venv\Scripts\python.exe -m pytest -m browser
 ```
 
-The browser harness serves the locally installed Decap bundle by default. Use
-`--decap-bundle <path-or-url>` or `COMIC_GIT_DECAP_BUNDLE` to exercise another
-exact bundle, such as an upgrade candidate, upstream patch, or maintained fork.
-Pass its `dist` directory instead of one file when a local build has lazy-loaded
-JavaScript or WASM assets; source maps are not staged.
+The browser harness serves the engine-generated vendored Decap runtime by
+default. Use `--decap-bundle <path-or-url>` or `COMIC_GIT_DECAP_BUNDLE` to
+replace it with another exact bundle, such as an upgrade candidate, upstream
+patch, or maintained fork. Pass its `dist` directory instead of one file when a
+local build has lazy-loaded JavaScript or WASM assets; source maps are not
+staged.
 Use `--runxfail` with a patched Decap bundle when evaluating whether a candidate
 fix satisfies collision cases that stock Decap is expected to fail. Combine it
 with `-k` when testing one independent patch rather than an integration bundle.

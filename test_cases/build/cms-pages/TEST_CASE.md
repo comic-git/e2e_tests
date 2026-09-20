@@ -11,7 +11,7 @@ paths and labels are exercised together.
 
 ## Coverage Goals
 
-- A CMS-enabled TOML site generates marked `admin/index.html` and `admin/config.yml`.
+- A CMS-enabled TOML site generates marked `admin/index.html` and `admin/config.yml`, plus the engine-owned vendored Decap runtime.
 - Production backend settings use the manifest repository and configured OAuth URL.
 - The main comic collection appears before the Extra Comic collection.
 - A multi-image page retains its explicit image order.

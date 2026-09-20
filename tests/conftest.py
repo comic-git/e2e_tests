@@ -13,8 +13,11 @@ def pytest_addoption(parser) -> None:
     browser_group = parser.getgroup('comic_git browser tests')
     browser_group.addoption(
         '--decap-bundle',
-        default=os.environ.get('COMIC_GIT_DECAP_BUNDLE', str(cms_browser.DEFAULT_DECAP_BUNDLE)),
-        help='Bundle file, bundle dist directory, or URL for Decap CMS browser tests.',
+        default=os.environ.get('COMIC_GIT_DECAP_BUNDLE'),
+        help=(
+            'Optional bundle file, bundle dist directory, or URL override for Decap CMS browser tests. '
+            'By default, browser tests use the engine-generated vendored runtime.'
+        ),
     )
     browser_group.addoption(
         '--keep-browser-temp',

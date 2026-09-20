@@ -187,10 +187,6 @@ def test_new_page_collision_is_never_silently_accepted(cms_session) -> None:
         ).is_visible()
 
 
-@pytest.mark.xfail(
-    strict=True,
-    reason='Decap 3.16.0 suffixes a fixed path filename instead of its slug placeholder.',
-)
 @pytest.mark.parametrize(
     ('title', 'colliding_folder'),
     [('Same Title', 'same-title'), ('A & B', 'a-b')],
@@ -221,7 +217,7 @@ def test_path_aware_suffix_creates_a_sibling_page_bundle(
 
 @pytest.mark.xfail(
     strict=True,
-    reason='Decap 3.16.0 writes info-1.toml instead of reporting a title-derived slug collision.',
+    reason='The vendored Decap runtime does not yet support the slug_collision: reject policy.',
 )
 @pytest.mark.parametrize(
     ('title', 'colliding_folder'),
