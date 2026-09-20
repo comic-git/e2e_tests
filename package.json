@@ -3,7 +3,6 @@
   "private": true,
   "description": "Pinned browser-test tooling for comic_git_engine end-to-end tests.",
   "devDependencies": {
-    "decap-cms": "3.16.0",
     "decap-server": "3.11.2"
   }
 }
