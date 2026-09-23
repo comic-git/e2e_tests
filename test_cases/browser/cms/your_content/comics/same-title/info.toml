@@ -8,6 +8,14 @@ storyline = "Browser contract"
 characters = ["Alex", "Bea"]
 tags = ["contract", "fixture"]
 
+[transcripts]
+English = "Original English transcript."
+Spanish = "Original Spanish transcript."
+
+[social_media]
+"og:title" = "Original social title"
+"twitter:card" = "summary"
+
 [[images]]
 filename = "first.svg"
 title = "First image"

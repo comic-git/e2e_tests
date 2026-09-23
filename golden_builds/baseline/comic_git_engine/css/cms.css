@@ -1,0 +1,63 @@
+/* Default styles for engine-owned Decap CMS controls. Themes can override these. */
+p[class*="-ControlHint"] a[href^="https://comic-git.gitbook.io/documentation/"] {
+  font-size: 0.875rem !important;
+  font-weight: 600;
+  line-height: 1.5;
+  text-decoration: underline;
+}
+
+.cg-map-widget { min-width: 0; }
+.cg-map-input {
+  box-sizing: border-box;
+  min-width: 0;
+  width: 100%;
+  height: 2rem;
+  padding: 0.25rem 0.5rem;
+  border: 1px solid #cbd0d9;
+  border-radius: 4px;
+  background: #fff;
+  font: inherit;
+}
+.cg-map-input:focus { outline: 2px solid #1270aa; outline-offset: 1px; }
+.cg-map-remove {
+  display: grid;
+  place-items: center;
+  align-self: start;
+  width: 2rem;
+  height: 2rem;
+  padding: 0;
+  border: 1px solid #cbd0d9;
+  border-radius: 4px;
+  background: #fff;
+  color: #b42318;
+  font-size: 1.5rem;
+  line-height: 1;
+  cursor: pointer;
+}
+.cg-map-remove:hover { background: #fff1f0; border-color: #b42318; }
+.cg-map-remove:disabled { opacity: 0.5; cursor: default; }
+/* The multiplication glyph sits low within its centered line box. */
+.cg-map-remove-glyph { display: block; transform: translateY(-2px); }
+.cg-map-error { color: #b42318; margin-top: 0.5rem; }
+.cg-metadata-grid {
+  display: grid;
+  grid-template-columns: minmax(8ch, min(var(--cg-key-width), 40%)) minmax(0, 1fr) 2rem;
+  gap: 0.5rem;
+  align-items: start;
+  margin-bottom: 0.5rem;
+}
+.cg-metadata-row { display: contents; }
+.cg-transcript-row + .cg-transcript-row {
+  border-top: 1px solid #dce0e7;
+  padding-top: 0.75rem;
+}
+.cg-transcript-row { margin-bottom: 0.75rem; min-width: 0; }
+.cg-transcript-header {
+  display: flex;
+  align-items: start;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+.cg-transcript-header .cg-map-input { flex: 0 1 16rem; }
+.cg-transcript-header .cg-map-remove { margin-left: auto; }
+.cg-transcript-editor { min-width: 0; }
