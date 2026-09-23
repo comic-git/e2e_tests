@@ -12,6 +12,10 @@ fixture, but must never modify these checked-in files.
 - Existing pages can be edited without changing their physical page folders.
 - A representative page with ordered images and page-level metadata survives a
   Decap save without losing untouched TOML values.
+- Page-level social-media metadata loads as a key/value map and saves back as a
+  TOML table, including quoted keys such as `og:title`.
+- Page transcripts load as language/text rows and preserve multiline transcript
+  values when the CMS saves their TOML table.
 - New-page filename collisions are observable through the resulting source tree.
 - Exact-title and normalized-title collisions create valid sibling page bundles with
   the engine-vendored Decap runtime.

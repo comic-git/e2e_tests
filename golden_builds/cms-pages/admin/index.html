@@ -6,16 +6,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="robots" content="noindex, nofollow">
     <title>Comic Content Manager</title>
-    <style>
-      p[class*="-ControlHint"] a[href^="https://comic-git.gitbook.io/documentation/"] {
-        font-size: 0.875rem !important;
-        font-weight: 600;
-        line-height: 1.5;
-        text-decoration: underline;
-      }
-    </style>
+    <link rel="stylesheet" href="../comic_git_engine/css/cms.css">
   </head>
   <body>
+    <!-- Register engine widgets before Decap reads config.yml. -->
+    <script>window.CMS_MANUAL_INIT = true;</script>
     <script src="vendor/decap-cms-3.16.2-comic-git-b28103c19f4d/decap-cms.js"></script>
+    <script src="../comic_git_engine/js/cms_widgets.js"></script>
+    <script>window.initCMS();</script>
   </body>
 </html>

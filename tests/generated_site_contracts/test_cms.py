@@ -16,6 +16,11 @@ def test_cms_admin_uses_pinned_bundle_and_expected_collections(cms_build: Path) 
     assert "noindex, nofollow" in index
     runtime_path = 'vendor/decap-cms-3.16.2-comic-git-b28103c19f4d/decap-cms.js'
     assert f'<script src="{runtime_path}"></script>' in index
+    assert '<link rel="stylesheet" href="../comic_git_engine/css/cms.css">' in index
+    assert (cms_build / 'comic_git_engine' / 'css' / 'cms.css').is_file()
+    assert '<script src="../comic_git_engine/js/cms_widgets.js"></script>' in index
+    assert (cms_build / 'comic_git_engine' / 'js' / 'cms_widgets.js').is_file()
+    assert not (cms_build / 'admin' / 'comic-git-widgets.js').exists()
     runtime_dir = cms_build / 'admin' / Path(runtime_path).parent
     manifest = json.loads(
         (runtime_dir / 'comic_git_engine_manifest.json').read_text(encoding='ascii')
