@@ -4,6 +4,17 @@
 
 # Architecture
 
+## Deployment contracts
+
+`test_cases/deployment/sftp` is an independent fixture for deployment behavior.
+Unlike build goldens, its contract is the resulting file publication and actual
+transfer behavior. `e2e_harness/sftp.py` stages and builds it through the public
+CLI, then copies the site and deployment files into separate downloaded folders.
+`tests/test_sftp_deployment.py` runs the build checks without network access.
+`scripts/check_sftp_transfer.py` exercises those prepared artifacts against a
+temporary localhost OpenSSH server with real lftp, separately from default pytest.
+Its manifest and source files are executable inputs; TEST_CASE.md is human-only.
+
 ## Overview
 
 `e2e_tests` is a local end-to-end harness for `comic_git_engine`.

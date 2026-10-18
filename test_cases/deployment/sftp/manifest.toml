@@ -1,0 +1,12 @@
+name = "sftp"
+description = "Build, relocate and deploy a root-mounted comic over real SFTP."
+
+[env]
+GITHUB_REPOSITORY = "ignored/inferred-path"
+SFTP_HOST = "127.0.0.1"
+SFTP_PORT = "22"
+SFTP_REMOTE_DIR = "site"
+SFTP_EXCLUDE_PATHS = ".well-known"
+
+[build]
+hidden_paths = ".htaccess\n.allowed"

@@ -3,6 +3,45 @@
 
 # Testing
 
+## SFTP deployment tests
+
+Run the real-build SFTP cases with `python -m pytest tests/test_sftp_deployment.py`.
+Use a Python environment with the harness and engine dependencies installed.
+These tests stage the independent `test_cases/deployment/sftp` fixture, execute
+the build CLI, and check final hidden-file filtering, scheduled-page removal,
+source preservation and portable deployment artifacts. They need no credentials.
+
+For real OpenSSH/lftp coverage, prepare two portable packages (cleanup on/off):
+
+```sh
+python -m e2e_harness.sftp artifacts/sftp-run
+```
+
+Choose a new output directory each time. On a disposable Linux VM with Python 3,
+`openssh-server`, `openssh-client`, and `lftp` installed, copy the package and run:
+
+```sh
+sudo python3 artifacts/sftp-run/check_sftp_transfer.py artifacts/sftp-run
+```
+
+Only `clean/downloaded/`, `keep/downloaded/` and `check_sftp_transfer.py` are needed
+on that VM; engine dependencies are not needed there. Run the script from a
+trusted checkout. It requires root to create a temporary local account and a
+localhost-only SSH server. It removes the account, process, keys and test files
+on exit. It does not connect to an existing SFTP service or use cloud credentials.
+
+The transfer test uses the exact generated standalone runner and lftp script.
+It verifies password/key authentication, strict host-key rejection, missing
+destination failure, same-size updates despite newer remote timestamps, default
+cleanup, cleanup disabled, hidden-file publication and preserved exclusions.
+The disposable server forces internal-sftp, so remote shell commands cannot make
+the test pass accidentally. It is intentionally separate from normal pytest,
+which must not silently create OS accounts or require root.
+
+Validated with the SFTP engine commit `228fd42`: both build variants and all real
+transfer checks passed on 2026-10-18. This does not replace a provider-specific
+DreamHost smoke test or the full release regression pass.
+
 ## Running Tests
 
 Run commands from the `e2e_tests` repo root.

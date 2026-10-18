@@ -1,5 +1,6 @@
 .idea/
 venv/
+.venv-sftp/
 __pycache__/
 .pytest_cache/
 
