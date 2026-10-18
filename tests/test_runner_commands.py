@@ -8,6 +8,16 @@ import pytest
 from e2e_harness import runner
 
 
+def test_template_comparison_normalizes_line_endings_but_detects_changes(tmp_path):
+    expected = tmp_path / 'expected.tpl'
+    actual = tmp_path / 'actual.tpl'
+    expected.write_bytes(b'{% block content %}\nComic\n{% endblock %}\n')
+    actual.write_bytes(b'{% block content %}\r\nComic\r\n{% endblock %}\r\n')
+    assert runner.text_files_match_after_line_ending_normalization(expected, actual)
+    actual.write_bytes(b'{% block content %}\r\nChanged\r\n{% endblock %}\r\n')
+    assert not runner.text_files_match_after_line_ending_normalization(expected, actual)
+
+
 def build_manifest(enabled: bool) -> dict:
     return {
         'checks': {

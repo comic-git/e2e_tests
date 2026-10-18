@@ -3,6 +3,8 @@ venv/
 .venv-sftp/
 __pycache__/
 .pytest_cache/
+/artifacts/
+/node_modules/
 
 specs/
 
