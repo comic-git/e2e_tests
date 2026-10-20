@@ -35,6 +35,33 @@ def test_structured_social_metadata_uses_resolved_thumbnail_and_alt_text(
     assert 'property="og:image:alt" content="Flat page inherited alt text."' in page_html
 
 
+def test_structured_toml_page_separates_hover_and_screen_reader_text(
+    structured_build: Path,
+) -> None:
+    page_html = (structured_build / "comic" / "004" / "index.html").read_text(
+        encoding="utf-8"
+    )
+    feed = ET.parse(structured_build / "feed.xml").getroot()
+    feed_description = feed.findall("./channel/item")[3].findtext("description") or ""
+
+    assert (
+        'title="Explicit TOML image alt text." '
+        'alt="Explicit TOML image screen reader text."'
+    ) in page_html
+    assert (
+        'title="TOML page inherited alt text." '
+        'alt="TOML page inherited screen reader text."'
+    ) in page_html
+    assert (
+        'property="og:image:alt" '
+        'content="Explicit TOML image screen reader text."'
+    ) in page_html
+    assert (
+        'title="Explicit TOML image alt text." '
+        'alt="Explicit TOML image screen reader text."'
+    ) in feed_description
+
+
 def test_text_only_page_social_metadata_uses_site_preview_image(
     golden_builds_root: Path,
 ) -> None:

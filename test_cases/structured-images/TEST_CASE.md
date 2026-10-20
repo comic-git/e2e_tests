@@ -49,7 +49,9 @@ Use real image files. Include:
 - Flat `Filename` and `Filenames` remain valid without advanced image config.
 - Ordered `[Image <label>]` sections preserve source order and reject mixed flat declarations.
 - TOML accepts ordered image tables only; string-list image entries are not valid.
+- Explicit TOML screen-reader text remains distinct from legacy hover text.
 - Omitted image title and alt text inherit resolved page defaults.
+- Omitted image screen-reader text inherits its resolved page default.
 - Explicit blank image title, alt text, and thumbnail suppress inheritance.
 - Page/image identity includes the owning comic and normalized page-relative filename.
 - Main and Extra Comic images with the same page folder and filename have different IDs and anchors.
@@ -61,10 +63,10 @@ Use real image files. Include:
 - Main no-image pages remain visible as one page-only archive entry.
 - Extra Comic page mode emits one thumbnail entry per page.
 - Keeping thumbnails enabled across both archives proves image listing varies independently.
-- Comic HTML uses real `alt` attributes and one-based positional image element IDs.
-- Infinite scroll consumes supplied page/image URLs, alt text, page fragments, and image fragments.
-- RSS remains one item per page, renders every image with its resolved alt text, and keeps no-image post content.
-- Social previews use the resolved page thumbnail and first image alt text.
+- Comic HTML separates legacy hover text from screen-reader `alt` text and uses one-based positional image element IDs.
+- Infinite scroll consumes supplied page/image URLs, hover and screen-reader text, page fragments, and image fragments.
+- RSS remains one item per page, renders every image with resolved hover and screen-reader text, and keeps no-image post content.
+- Social previews use the resolved page thumbnail and first image screen-reader text.
 
 ## Metadata And Schema Contract
 

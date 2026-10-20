@@ -21,7 +21,7 @@
             <link>https://comic-git.github.io/extra-comics-rss/comic/001/</link>
             <guid isPermaLink="true">https://comic-git.github.io/extra-comics-rss/comic/001/</guid>
             <category type="tag">main-rss</category>
-            <description><![CDATA[<p><img src="https://comic-git.github.io/extra-comics-rss/your_content/comics/001/Main RSS Page.png" alt="Main comic page for the Extra Comics RSS fixture."></p>
+            <description><![CDATA[<p><img src="https://comic-git.github.io/extra-comics-rss/your_content/comics/001/Main RSS Page.png" title="Main comic page for the Extra Comics RSS fixture." alt="Main comic page for the Extra Comics RSS fixture."></p>
 
 <hr>
 
@@ -36,7 +36,7 @@
             <guid isPermaLink="true">https://comic-git.github.io/extra-comics-rss/side-story/comic/101/</guid>
             <category type="tag">side-story</category>
             <category type="tag">combined-rss</category>
-            <description><![CDATA[<p><img src="https://comic-git.github.io/extra-comics-rss/your_content/side-story/comics/101/Combined Side Story Page.png" alt="Extra Comic page combined into the main RSS feed."></p>
+            <description><![CDATA[<p><img src="https://comic-git.github.io/extra-comics-rss/your_content/side-story/comics/101/Combined Side Story Page.png" title="Extra Comic page combined into the main RSS feed." alt="Extra Comic page combined into the main RSS feed."></p>
 
 <hr>
 

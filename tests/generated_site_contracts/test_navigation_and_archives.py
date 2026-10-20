@@ -94,7 +94,10 @@ def test_standalone_image_markup_agrees_with_public_metadata(
 
     for image_index, image in enumerate(main["pages"][1]["images"], start=1):
         assert f'id="comic-image-{image_index}"' in comic_html
-        assert f'src="{image["url"]}" alt="{image["alt_text"]}"' in comic_html
+        assert (
+            f'src="{image["url"]}" title="{image["alt_text"]}" '
+            f'alt="{image["screen_reader_text"]}"'
+        ) in comic_html
     assert 'class="comic-page"' in comic_html
     assert 'id="comic-page"' not in comic_html
 

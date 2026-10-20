@@ -1,6 +1,7 @@
 post_date = "2025-08-04"
 title = "Native TOML Page"
 alt_text = "TOML page inherited alt text."
+screen_reader_text = "TOML page inherited screen reader text."
 storyline = "Structured Chapter"
 characters = ["Carol"]
 tags = ["structured-images", "native-toml"]
@@ -10,6 +11,7 @@ post_text = "Native TOML post text with structured image tables."
 filename = "toml-first.png"
 title = "Explicit TOML image title"
 alt_text = "Explicit TOML image alt text."
+screen_reader_text = "Explicit TOML image screen reader text."
 thumbnail = "toml-image-thumb.png"
 
 [[images]]
