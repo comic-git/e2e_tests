@@ -33,6 +33,7 @@ TEXT_FILE_SUFFIXES = {
     '.py',
     '.svg',
     '.toml',
+    '.tpl',
     '.txt',
     '.xml',
     '.yaml',
