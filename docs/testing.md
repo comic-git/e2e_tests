@@ -3,6 +3,15 @@
 
 # Testing
 
+## Security contracts
+
+Run `python -m pytest tests/test_webring_security.py` for owner-selected text,
+sanitized Markdown, and unsafe HTML modes in both webring layouts, abort/omit
+failure policies, and tag traversal rejection. The independent fixture is under
+`test_cases/security/webring`; each test stages a temporary host and executes the
+real build CLI. These tests inspect HTML without executing external scripts and
+require no network endpoint. Install the engine's pinned requirements first.
+
 ## SFTP deployment tests
 
 Run the real-build SFTP cases with `python -m pytest tests/test_sftp_deployment.py`.

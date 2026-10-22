@@ -1,0 +1,10 @@
+{
+  "version": 1,
+  "label": "**Ring** <script>review_marker()</script>",
+  "home": {"name": "**Home**", "url": "https://example.test/", "image": ""},
+  "members": [
+    {"id": "own", "name": "Our comic", "url": "https://example.test/", "image": ""},
+    {"id": "other", "name": "**Other** <script>review_marker()</script>", "url": "https://other.example/", "image": ""},
+    {"id": "image", "name": "\" onerror=\"review_marker()", "url": "https://image.example/", "image": "https://image.example/icon.png"}
+  ]
+}

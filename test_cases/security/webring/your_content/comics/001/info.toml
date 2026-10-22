@@ -1,0 +1,4 @@
+title = "Text-only security fixture"
+post_date = "2020-01-01"
+tags = ["Normal tag"]
+post_text = "**Trusted post formatting**"

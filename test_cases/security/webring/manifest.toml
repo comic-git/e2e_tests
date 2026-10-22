@@ -1,0 +1,11 @@
+name = "webring-security"
+description = "Real CLI rendering and failure contracts for external webring data."
+source_format = "toml"
+
+[checks]
+build = false
+migration = false
+migrated_build = false
+
+[env]
+GITHUB_REPOSITORY = "comic-git/webring-security"

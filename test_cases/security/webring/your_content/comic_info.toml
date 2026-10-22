@@ -1,0 +1,41 @@
+[comic]
+name = "Webring security fixture"
+author = "Harness"
+description = "Display trust and output containment"
+
+[site]
+comic_domain = "example.test"
+comic_subdirectory = ""
+timezone = "UTC"
+date_format = "%B %d, %Y"
+
+[transcripts]
+enabled = false
+
+[archive]
+use_thumbnails = false
+
+[image_processing]
+create_thumbnails = false
+
+[rss]
+build = false
+
+[webring]
+enabled = true
+endpoint = "local"
+id = "own"
+text_mode = "text"
+on_error = "abort"
+show_all_members = true
+
+[[pages]]
+template_name = "index"
+title = "Home"
+[[pages]]
+template_name = "tagged"
+title = "Tags"
+
+[[links]]
+name = "Home"
+url = "/"
