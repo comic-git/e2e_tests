@@ -148,6 +148,24 @@ collections:
               - {label: "Enable webring", name: "enabled", widget: "boolean", required: false, default: false}
               - {label: "Member list endpoint", name: "endpoint", widget: "string", required: false}
               - {label: "This comic's member ID", name: "id", widget: "string", required: false}
+              - label: "Member text format"
+                name: "text_mode"
+                widget: "select"
+                required: false
+                default: "text"
+                options:
+                  - {label: "Plain text", value: "text"}
+                  - {label: "Markdown", value: "markdown"}
+                  - {label: "Trusted HTML", value: "unsafe_html"}
+                hint: "Trusted HTML can run content supplied by the webring endpoint. Use only with an endpoint you trust."
+              - label: "If the webring cannot load"
+                name: "on_error"
+                widget: "select"
+                required: false
+                default: "abort"
+                options:
+                  - {label: "Stop the build", value: "abort"}
+                  - {label: "Omit the webring", value: "omit"}
               - {label: "Show all members", name: "show_all_members", widget: "boolean", required: false, default: false}
               - {label: "Exclude this comic from the member list", name: "exclude_own_comic_from_members", widget: "boolean", required: false, default: false}
           - label: "Analytics"
