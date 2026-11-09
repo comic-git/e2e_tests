@@ -1,0 +1,14 @@
+name = "selective-staging"
+description = "Semantic real-CLI contracts for selective publication across JSON, HTML, RSS, assets, and source caches."
+source_format = "mixed_ini_toml"
+tags = ["selective-staging", "semantic", "extra-comics", "rss"]
+
+# Mode-dependent outputs are asserted by tests/test_selective_staging.py,
+# rather than one static golden tree. Fixture inputs remain independent.
+[checks]
+build = false
+migration = false
+migrated_build = false
+
+[env]
+GITHUB_REPOSITORY = "ignored/inference"

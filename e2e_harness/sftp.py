@@ -11,11 +11,8 @@ from e2e_harness import runner
 CASE = runner.ROOT / 'test_cases/deployment/sftp'
 
 
-def prepare(destination: Path, *, hidden_paths: str | None = None, clean: bool = True) -> Path:
-    """Create a new portable test package, without importing engine internals."""
-    destination.mkdir(parents=True, exist_ok=False)
-    manifest = tomllib.loads((CASE / 'manifest.toml').read_text())
-    workspace = destination / 'host'
+def stage_host(workspace: Path) -> None:
+    """Copy the deployment fixture and engine into a disposable host."""
     runner.stage_test_case_content(workspace, CASE / 'your_content')
     # Copy instead of linking: safe cleanup on both Windows and Linux, and the
     # package proves the downloaded runner needs no engine checkout at deploy time.
@@ -23,6 +20,14 @@ def prepare(destination: Path, *, hidden_paths: str | None = None, clean: bool =
         shutil.copytree(runner.resolve_engine_target() / directory,
                         workspace / 'comic_git_engine' / directory,
                         ignore=shutil.ignore_patterns('__pycache__', '*.pyc'))
+
+
+def prepare(destination: Path, *, hidden_paths: str | None = None, clean: bool = True) -> Path:
+    """Create a new portable test package, without importing engine internals."""
+    destination.mkdir(parents=True, exist_ok=False)
+    manifest = tomllib.loads((CASE / 'manifest.toml').read_text())
+    workspace = destination / 'host'
+    stage_host(workspace)
     env = {key: value for key, value in os.environ.items()
            if not key.startswith('SFTP_') and key not in ('INPUTS', 'SECRETS', 'OUTPUT_DIR')}
     env.update(manifest['env'], OUTPUT_DIR='build', SFTP_CLEAN=str(clean).lower())

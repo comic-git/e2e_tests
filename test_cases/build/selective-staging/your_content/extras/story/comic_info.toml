@@ -1,0 +1,13 @@
+[comic]
+name = "Side Story"
+
+[rss]
+combine_with_main = true
+
+[[pages]]
+template_name = "index"
+title = "Side Home"
+
+[[pages]]
+template_name = "archive"
+title = "Side Archive"

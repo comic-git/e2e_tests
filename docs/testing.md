@@ -3,6 +3,20 @@
 
 # Testing
 
+## Selective publication contracts
+
+Run `python -m pytest tests/test_selective_staging.py` to exercise selective
+copying through the public CLI with the independent
+`test_cases/build/selective-staging` fixture. Tests validate live JSON against the
+schema deployed by the same build and check agreement with HTML, copied assets,
+navigation, and combined RSS across main and nested Extra Comics. They also cover
+source thumbnail caching/overwrite, repeated builds and rescheduling, hidden
+include-all/allowlists, and malformed versus incomplete metadata.
+
+The case intentionally disables static golden checks: its mode-dependent outputs
+have semantic assertions rather than one expected directory tree. Tests mutate
+only staged temporary hosts; never build directly from checked-in fixture data.
+
 ## Security contracts
 
 Run `python -m pytest tests/test_webring_security.py` for owner-selected text,
@@ -19,6 +33,20 @@ Use a Python environment with the harness and engine dependencies installed.
 These tests stage the independent `test_cases/deployment/sftp` fixture, execute
 the build CLI, and check final hidden-file filtering, scheduled-page removal,
 source preservation and portable deployment artifacts. They need no credentials.
+
+To run the native local command against a disposable loopback SFTP server,
+install the optional deployment dependencies into the harness environment:
+
+```sh
+python -m pip install -r comic_git_engine/requirements_sftp.txt
+python -m pytest tests/test_native_sftp_deployment.py
+```
+
+The test executes the public CLI on Windows, macOS, or Linux. It checks both
+cleanup settings, same-size replacements, hidden paths, remote exclusions,
+omission of local Python bytecode caches, and preservation of the local checkout
+and its preview build. The fixture
+binds to loopback and uses generated keys and a test password.
 
 For real OpenSSH/lftp coverage, prepare two portable packages (cleanup on/off):
 

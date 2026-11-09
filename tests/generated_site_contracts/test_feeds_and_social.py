@@ -73,3 +73,9 @@ def test_text_only_page_social_metadata_uses_site_preview_image(
         'property="og:image" '
         'content="https://comic-git.github.io/social-media/your_content/images/preview_image.png"'
     ) in page_html
+
+
+def test_latest_social_url_uses_web_path_separators(structured_build: Path) -> None:
+    for prefix in ("", "side-story/"):
+        latest = (structured_build / prefix / "latest/index.html").read_text(encoding="utf-8")
+        assert f'property="og:url" content="https://comic-git.github.io/structured-images/{prefix}latest/"' in latest

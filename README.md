@@ -19,6 +19,8 @@ venv\Scripts\python.exe -m pytest
 
 Pytest runs each enabled manifest check independently and reports disabled checks as skipped.
 
+Selective copying and native SFTP also have dedicated semantic tests. See [Testing](docs/testing.md) for the commands.
+
 The lower-level harness CLI is available for targeted checks and golden refreshes. To run or refresh a specific case:
 
 ```powershell

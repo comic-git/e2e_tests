@@ -1,0 +1,9 @@
+[comic]
+name = "Nested Bonus"
+
+[rss]
+combine_with_main = true
+
+[[pages]]
+template_name = "index"
+title = "Bonus Home"
