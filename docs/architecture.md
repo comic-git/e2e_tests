@@ -9,11 +9,10 @@
 `test_cases/deployment/sftp` is an independent fixture for deployment behavior.
 Unlike build goldens, its contract is the resulting file publication and actual
 transfer behavior. `e2e_harness/sftp.py` stages and builds it through the public
-CLI, then copies the site and deployment files into separate downloaded folders.
-`tests/test_sftp_deployment.py` runs the build checks without network access.
-`scripts/check_sftp_transfer.py` exercises those prepared artifacts against a
-temporary localhost OpenSSH server with real lftp, separately from default pytest.
-Its manifest and source files are executable inputs; TEST_CASE.md is human-only.
+CLI and relocates the site to simulate the Actions artifact download.
+The build checks run without credentials. The transfer tests exercise both
+public entry points against a disposable loopback server. The manifest and
+source files are executable inputs; TEST_CASE.md describes the fixture.
 
 ## Overview
 

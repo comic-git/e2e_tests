@@ -13,12 +13,12 @@ exercise comic-scoped RSS identity.
 
 The main comic uses legacy INI with image auto-discovery and a TOML text-only
 page. Extra Comics use native TOML. Each comic has a scheduled folder and either
-incomplete or missing metadata, plus loose files under its comics root. Non-comic
+a draft without a metadata file, plus loose files under its comics root. Non-comic
 assets, hidden source files, site_root exceptions, and postprocess-created hidden
 files exercise the separate auxiliary-copy and final-filter paths.
 
-The test varies publish-all, include-hidden, explicit allowlists, malformed
-metadata, and repeated builds. Source snapshots permit only expected thumbnail
+The test varies publish-all and explicit allowlists, checks invalid and incomplete
+metadata errors, and repeats builds. Source snapshots permit only expected thumbnail
 cache writes. This is a semantic-only build case: the three golden check flags
 are disabled deliberately. No golden files are added or refreshed.
 

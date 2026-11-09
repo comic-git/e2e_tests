@@ -132,14 +132,8 @@ def test_selected_pages_agree_across_json_html_rss_assets_and_source_cache(host,
     assert {name: (content / name).stat().st_mtime_ns for name in thumbnails} == cache_times
 
 
-def test_include_all_and_explicit_allowlist_filter_root_assets_pages_and_hook_output(host):
+def test_explicit_allowlist_filters_root_assets_pages_and_hook_output(host):
     config = host / 'your_content/comic_info.ini'
-    config.write_text(config.read_text().replace('Include hidden files = false', 'Include hidden files = true'))
-    build(host)
-    assert_publication_contract(host, publish_all=False)
-    for name in ('your_content/.private', 'your_content/comics/001/.notes',
-                 'your_content/assets/.shared/public.txt', '.htaccess', '.hook-private'):
-        assert (host / 'build' / name).is_file()
     config.write_text(config.read_text().replace('[Build]', '[Build]\nHidden paths = your_content/.private'))
     build(host, '--hidden-paths', '.htaccess\nyour_content/comics/001/.notes\nyour_content/assets/.shared/public.txt')
     assert_publication_contract(host, publish_all=False)
@@ -168,9 +162,10 @@ def test_rescheduling_removes_stale_html_rss_metadata_and_assets_without_source_
 
 @pytest.mark.parametrize('folder,filename,value,diagnostic', [
     ('comics/incomplete', 'info.ini', 'Post date = invalid\n', 'post date'),
-    ('extras/story/comics/incomplete', 'info.toml', 'title = 17\n', "Expected 'title'"),
+    ('extras/story/comics/incomplete', 'info.toml', 'post_date = "2020-01-01"\ntitle = 17\n', "Expected 'title'"),
+    ('extras/story/comics/incomplete', 'info.toml', 'title = "Unfinished"\n', 'Missing required post_date'),
 ])
-def test_malformed_values_fail_instead_of_being_treated_as_incomplete(host, folder, filename, value, diagnostic):
+def test_invalid_or_incomplete_metadata_fails(host, folder, filename, value, diagnostic):
     source = host / 'your_content' / folder / filename
     source.write_text(value)
     original = snapshot(host / 'your_content')
@@ -202,8 +197,7 @@ def test_ini_multiline_hidden_paths_controls_real_build_without_cli_override(hos
         option = 'Hidden paths = ' + paths[0] + '\n' + '\n'.join('    ' + path for path in paths[1:])
     else:
         option = 'Hidden paths =\n' + '\n'.join('    ' + path for path in paths)
-    text = config.read_text().replace('Include hidden files = false',
-                                      'Include hidden files = true\n' + option)
+    text = config.read_text().replace('[Build]', '[Build]\n' + option)
     config.write_bytes(text.replace('\n', newline).encode('utf-8'))
     # No --hidden-paths argument: exercise the public INI loader and config policy.
     build(host)

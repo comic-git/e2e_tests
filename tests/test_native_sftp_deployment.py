@@ -1,5 +1,6 @@
 """Exercise the public native deploy command against a disposable SFTP server."""
 from concurrent.futures import ThreadPoolExecutor
+from io import StringIO
 from pathlib import PurePosixPath
 import os
 import posixpath
@@ -11,7 +12,8 @@ import tomllib
 
 import pytest
 
-from e2e_harness.sftp import CASE, stage_host
+from e2e_harness.sftp import CASE, stage_artifact, stage_host
+from e2e_harness.runner import resolve_engine_target
 
 
 @pytest.fixture
@@ -21,10 +23,19 @@ def sftp_endpoint(tmp_path):
     site = server_root / "site"
     site.mkdir(parents=True)
     host_key = paramiko.RSAKey.generate(2048)
+    login_key = paramiko.RSAKey.generate(2048)
 
     class Login(paramiko.ServerInterface):
         def check_auth_password(self, username, password):
             if (username, password) == ("fixture", "local-only-password"):
+                return paramiko.AUTH_SUCCESSFUL
+            return paramiko.AUTH_FAILED
+
+        def get_allowed_auths(self, username):
+            return "password,publickey"
+
+        def check_auth_publickey(self, username, key):
+            if username == "fixture" and key == login_key:
                 return paramiko.AUTH_SUCCESSFUL
             return paramiko.AUTH_FAILED
 
@@ -94,7 +105,7 @@ def sftp_endpoint(tmp_path):
                 "SFTP_USERNAME": "fixture",
                 "SFTP_PASSWORD": "local-only-password",
                 "SFTP_KNOWN_HOSTS": f"[localhost]:{port},[127.0.0.1]:{port} {host_key.get_name()} {host_key.get_base64()}",
-            }
+            }, login_key
         finally:
             stop.set()
             worker.result(timeout=45)
@@ -102,7 +113,7 @@ def sftp_endpoint(tmp_path):
 
 @pytest.mark.parametrize("clean", [False, True])
 def test_native_cli_builds_and_deploys_without_touching_working_files(tmp_path, sftp_endpoint, clean):
-    site, endpoint = sftp_endpoint
+    site, endpoint, _ = sftp_endpoint
     host = tmp_path / "comic checkout"
     stage_host(host)
     content = host / "your_content"
@@ -145,6 +156,35 @@ def test_native_cli_builds_and_deploys_without_touching_working_files(tmp_path, 
     assert not (site / "your_content" / cache).parent.exists()
     assert original == {p.relative_to(content): p.read_bytes() for p in content.rglob("*") if p.is_file()}
     assert (preview / "preview.txt").read_text(encoding="utf-8") == "local preview"
+
+
+@pytest.mark.parametrize("clean", [False, True])
+def test_upload_only_transfers_relocated_artifact(tmp_path, sftp_endpoint, clean):
+    remote, endpoint, login_key = sftp_endpoint
+    manifest = tomllib.loads((CASE / "manifest.toml").read_text(encoding="utf-8"))
+    site = stage_artifact(tmp_path / "build job", manifest["build"]["hidden_paths"])
+    deploy_job = tmp_path / "deploy job"
+    deploy_job.mkdir()
+    (remote / "obsolete.txt").write_text("old", encoding="utf-8")
+    (remote / ".well-known").mkdir()
+    (remote / ".well-known/token").write_text("keep", encoding="utf-8")
+    env = {key: value for key, value in os.environ.items() if not key.startswith("SFTP_")}
+    env.update(manifest["env"], **endpoint, SFTP_CLEAN=str(clean).lower())
+    if clean:
+        key = StringIO()
+        login_key.write_private_key(key)
+        env.update(SFTP_PASSWORD="", SFTP_PRIVATE_KEY=key.getvalue().replace("\n", "\r\n"))
+    command = resolve_engine_target() / "src/scripts/deploy_sftp.py"
+    result = subprocess.run([sys.executable, "-B", str(command), "--upload-only", str(site)],
+                            cwd=deploy_job, env=env, capture_output=True, text=True, timeout=45)
+
+    assert result.returncode == 0, result.stdout + result.stderr
+    assert (remote / "index.html").read_bytes() == (site / "index.html").read_bytes()
+    assert (remote / ".htaccess").read_bytes() == (site / ".htaccess").read_bytes()
+    assert (remote / ".well-known/token").read_text(encoding="utf-8") == "keep"
+    assert (remote / "obsolete.txt").exists() is not clean
+    assert not (remote / "your_content/comics/future").exists()
+    assert not list(deploy_job.iterdir())
 
 
 def test_native_cli_rejects_links_to_files_outside_content(tmp_path):
